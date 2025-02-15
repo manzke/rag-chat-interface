@@ -1,0 +1,135 @@
+.welcome-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.welcome-container h1 {
+    font-size: 32px;
+    color: #333;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.welcome-subtitle {
+    color: #666;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.assistants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.assistant-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    border: 2px solid transparent;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.assistant-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.assistant-card.active {
+    border-color: #007bff;
+}
+
+.assistant-icon {
+    width: 50px;
+    height: 50px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #007bff;
+    flex-shrink: 0;
+}
+
+.assistant-info {
+    flex-grow: 1;
+}
+
+.assistant-name {
+    font-size: 18px;
+    color: #333;
+    margin: 0 0 8px 0;
+}
+
+.assistant-description {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.assistant-status {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+}
+
+.active-indicator {
+    background: #28a745;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    display: none;
+}
+
+.assistant-card.active .active-indicator {
+    display: inline-block;
+}
+
+.error-message {
+    text-align: center;
+    padding: 40px 20px;
+    background: #fff3f3;
+    border-radius: 12px;
+    margin: 20px 0;
+}
+
+.error-message h2 {
+    color: #dc3545;
+    margin-bottom: 10px;
+}
+
+.error-message p {
+    color: #666;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .welcome-container {
+        margin: 20px auto;
+    }
+
+    .assistants-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .assistant-card {
+        padding: 15px;
+    }
+
+    .assistant-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+}
