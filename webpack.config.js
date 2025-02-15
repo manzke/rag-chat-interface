@@ -11,8 +11,8 @@ const __dirname = dirname(__filename);
 export default {
     mode: 'production',
     entry: {
-        chat: './client/js/script.js',
-        welcome: './client/js/welcome.js'
+        chat: './app/js/chat.js',
+        welcome: './app/js/welcome.js'
     },
     output: {
         path: resolve(__dirname, 'dist'),
@@ -43,10 +43,10 @@ export default {
     plugins: [
         new CleanWebpackPlugin(),
         new MiniCssExtractPlugin({
-            filename: 'css/[name].[contenthash].css'
+            filename: 'app/css/[name].[contenthash].css'
         }),
         new HtmlWebpackPlugin({
-            template: './static/chat.html',
+            template: 'app/static/chat.html',
             filename: 'chat.html',
             chunks: ['chat'],
             minify: {
@@ -55,7 +55,7 @@ export default {
             }
         }),
         new HtmlWebpackPlugin({
-            template: './static/welcome.html',
+            template: 'app/static/welcome.html',
             filename: 'index.html',
             chunks: ['welcome'],
             minify: {
@@ -66,7 +66,7 @@ export default {
         new CopyPlugin({
             patterns: [
                 {
-                    from: './static',
+                    from: './app/static',
                     to: '.',
                     globOptions: {
                         ignore: ['*.html'] // HTML files are handled by HtmlWebpackPlugin

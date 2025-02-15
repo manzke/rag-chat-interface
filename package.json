@@ -10,8 +10,8 @@
     "build:watch": "webpack --watch",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
-    "lint": "eslint client/js/ server/",
-    "format": "prettier --write 'client/**/*.{js,css}' 'server/**/*.js'",
+    "lint": "eslint app/js/ server/",
+    "format": "prettier --write 'app/**/*.{js,css}' 'server/**/*.js'",
     "clean": "rimraf dist"
   },
   "dependencies": {

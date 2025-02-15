@@ -6,7 +6,7 @@ A modern chat interface for Retrieval-Augmented Generation (RAG) systems, featur
 
 ```
 src/
-├── client/              # Client-side code
+├── app/              # Client-side code
 │   ├── js/             # JavaScript files
 │   │   ├── rag-api.js  # Core API implementation
 │   │   ├── rag-client.js # Client implementation
@@ -16,12 +16,12 @@ src/
 │   ├── middleware/     # Client middleware
 │   ├── transformers/   # Response transformers
 │   └── metrics/        # Metrics collectors
+│   └── static/             # Static files
+│       ├── chat.html      # Chat interface
+│       └── welcome.html   # Welcome page
 ├── server/             # Server-side code
 │   ├── server.js       # Express server
 │   └── rag_backend.js  # Backend implementation
-├── static/             # Static files
-│   ├── chat.html      # Chat interface
-│   └── welcome.html   # Welcome page
 ├── tests/             # Test suite
 └── docs/              # Documentation
     └── FEATURES-SPEC.md # Feature specifications
