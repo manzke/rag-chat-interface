@@ -1,5 +1,5 @@
 import { createRAGApi } from './rag-api.js';
-import { InMemoryMetricsCollector } from '../metrics/collector.js';
+import { InMemoryMetricsCollector } from './metrics/collector.js';
 
 // Create metrics collector
 const metricsCollector = new InMemoryMetricsCollector();
