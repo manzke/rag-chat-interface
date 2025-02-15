@@ -1,0 +1,55 @@
+{
+    "assistants": [
+        {
+            "id": "ifinder-assistant",
+            "name": "iFinder Assistant",
+            "description": "Your expert for iFinder-related questions. Get help with configuration, features, and best practices.",
+            "icon": "fas fa-search",
+            "defaultConfig": {
+                "profileName": "searchprofile-standard",
+                "filters": [
+                    {
+                        "key": "query",
+                        "values": ["iFinder"],
+                        "isNegated": false
+                    }
+                ],
+                "query": "iFinder",
+                "docIds": ["ifinder6-5Qy2EcRDb1Npi_5T"],
+                "welcomeMessage": "Hello! I'm your iFinder Assistant. I can help you with questions about iFinder features, configuration, and best practices. What would you like to know?"
+            }
+        },
+        {
+            "id": "support-assistant",
+            "name": "Support Assistant",
+            "description": "Get help with technical issues, troubleshooting, and general support questions.",
+            "icon": "fas fa-life-ring",
+            "defaultConfig": {
+                "profileName": "searchprofile-support",
+                "filters": [
+                    {
+                        "key": "category",
+                        "values": ["support"],
+                        "isNegated": false
+                    }
+                ],
+                "query": null,
+                "docIds": [],
+                "welcomeMessage": "Hi there! I'm your Support Assistant. I can help you with technical issues and troubleshooting. How can I assist you today?"
+            }
+        },
+        {
+            "id": "docs-assistant",
+            "name": "Documentation Guide",
+            "description": "Navigate through documentation, find specific information, and understand complex topics.",
+            "icon": "fas fa-book",
+            "defaultConfig": {
+                "profileName": "searchprofile-docs",
+                "filters": [],
+                "query": null,
+                "docIds": [],
+                "welcomeMessage": "Welcome! I'm your Documentation Guide. I can help you find and understand specific documentation. What are you looking for?"
+            }
+        }
+    ]
+}
