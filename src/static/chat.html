@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chat Interface</title>
+    <link rel="stylesheet" href="../client/css/styles.css">
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="status-bar" id="status-bar">
+            <button class="back-button" id="back-button" title="Back to Assistant Selection">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <span class="assistant-name" id="assistant-name"></span>
+            <span class="status-indicator" id="status-indicator"></span>
+            <span class="status-text" id="status-text">Ready</span>
+        </div>
+        <div class="chat-messages" id="chat-messages"></div>
+        <div class="input-container">
+            <textarea id="user-input" placeholder="Type your message here..." rows="1"></textarea>
+            <button id="send-button">
+                <i class="fas fa-paper-plane send-icon"></i>
+                <i class="fas fa-square-full stop-icon" style="display: none;"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Expert Mode Toggle -->
+    <button class="expert-mode-toggle" id="expert-mode-toggle">
+        <i class="fas fa-cog"></i>
+    </button>
+
+    <!-- Expert Mode Panel -->
+    <div class="expert-panel" id="expert-panel">
+        <div class="expert-panel-content">
+            <h3>Expert Mode</h3>
+            <label for="expert-docIds">Document IDs (comma-separated):</label>
+            <input type="text" id="expert-docIds">
+            
+            <label for="expert-query">Search Query:</label>
+            <input type="text" id="expert-query">
+            
+            <label for="expert-profileName">Profile Name:</label>
+            <input type="text" id="expert-profileName">
+            
+            <label for="expert-profileId">Profile ID (base64):</label>
+            <input type="text" id="expert-profileId">
+            
+            <label for="expert-filters">Filters (JSON):</label>
+            <textarea id="expert-filters" placeholder='[{"key": "id.keyword", "values": ["doc1"], "isNegated": false}]'></textarea>
+            <div class="error-message">Invalid JSON format</div>
+        </div>
+        <div class="expert-panel-buttons">
+            <button class="expert-panel-button expert-cancel" id="expert-cancel">Cancel</button>
+            <button class="expert-panel-button expert-save" id="expert-save">Save</button>
+        </div>
+    </div>
+
+    <!-- Reset Button -->
+    <button class="reset-button" id="reset-button" title="Clear chat">
+        <i class="fas fa-trash"></i>
+    </button>
+
+    <!-- Export Button -->
+    <button class="export-button" id="export-button" title="Export chat">
+        <i class="fas fa-download"></i>
+    </button>
+
+    <!-- Message Template (hidden) -->
+    <template id="message-template">
+        <div class="message">
+            <div class="message-header">
+                <div class="message-actions">
+                    <button class="action-button copy-button" title="Copy text">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                    <button class="action-button edit-button" title="Edit message">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="action-button rerun-button" title="Rerun message">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="message-content"></div>
+            <div class="related-questions"></div>
+            <div class="message-footer">
+                <div class="feedback-buttons">
+                    <button class="feedback-button thumbs-up" title="Helpful">
+                        <i class="fas fa-thumbs-up"></i>
+                    </button>
+                    <button class="feedback-button thumbs-down" title="Not helpful">
+                        <i class="fas fa-thumbs-down"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="related-question-template">
+        <button class="related-question">
+            <i class="fas fa-question-circle"></i>
+            <span class="question-text"></span>
+        </button>
+    </template>
+
+    <script type="module" src="../client/js/chat.js"></script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Assistant Selection</title>
+    <link rel="stylesheet" href="../client/css/styles.css">
+    <link rel="stylesheet" href="../client/css/welcome.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="welcome-container">
+        <h1>Choose your Assistant</h1>
+        <p class="welcome-subtitle">Select an assistant to help you with your questions</p>
+        
+        <div class="assistants-grid" id="assistants-grid">
+            <!-- Assistants will be added here dynamically -->
+        </div>
+    </div>
+
+    <template id="assistant-card-template">
+        <div class="assistant-card">
+            <div class="assistant-icon">
+                <i></i>
+            </div>
+            <div class="assistant-info">
+                <h2 class="assistant-name"></h2>
+                <p class="assistant-description"></p>
+            </div>
+            <div class="assistant-status">
+                <span class="active-indicator">Current</span>
+            </div>
+        </div>
+    </template>
+
+    <script src="../client/js/welcome.js"></script>
+</body>
+</html>
