@@ -93,8 +93,8 @@ class RAGAPIBase {
  * HTTP implementation of the RAG API
  */
 class HTTPRAGApi extends RAGAPIBase {
-    constructor(baseUrl = '') {
-        super();
+    constructor(baseUrl = '', options = {}) {
+        super(options);
         this.baseUrl = baseUrl;
     }
 
@@ -201,8 +201,8 @@ class HTTPRAGApi extends RAGAPIBase {
  * WebSocket implementation of the RAG API (example)
  */
 class WebSocketRAGApi extends RAGAPIBase {
-    constructor(wsUrl = '') {
-        super();
+    constructor(wsUrl = '', options = {}) {
+        super(options);
         this.wsUrl = wsUrl;
         this.ws = null;
         this.eventHandlers = new Map();
@@ -281,12 +281,12 @@ class WebSocketRAGApi extends RAGAPIBase {
  * @param {string} baseUrl - Base URL for the API
  * @returns {RAGAPIBase} RAG API instance
  */
-function createRAGApi(protocol, baseUrl) {
+function createRAGApi(protocol, baseUrl, options = {}) {
     switch (protocol.toLowerCase()) {
         case 'http':
-            return new HTTPRAGApi(baseUrl);
+            return new HTTPRAGApi(baseUrl, options);
         case 'ws':
-            return new WebSocketRAGApi(baseUrl);
+            return new WebSocketRAGApi(baseUrl, options);
         default:
             throw new Error(`Unsupported protocol: ${protocol}`);
     }
