@@ -357,7 +357,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 console.log('Received passages event:', event);
                 try {
                     const passagesData = JSON.parse(event.data);
+                    const sourcesSection = responseElement.querySelector('.message-sources');
                     const sourcesContainer = responseElement.querySelector('.sources-content');
+                    
+                    // Only show sources section if we have passages
+                    if (passagesData.passages && passagesData.passages.length > 0) {
+                        sourcesSection.style.display = 'block';
+                    } else {
+                        sourcesSection.style.display = 'none';
+                        return;
+                    }
                     
                     // Store in chat history
                     currentResponse.passages = passagesData.passages;
@@ -421,7 +430,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     };
                     
                     // Function to create passage element
-                    const createPassageElement = (passage) => {
+                    const createPassageElement = (passage, searchTerm = '', enableLinks = false) => {
                         const element = template.content.cloneNode(true).querySelector('.source-passage');
                         
                         // Set title (use first title or filename if no title)
