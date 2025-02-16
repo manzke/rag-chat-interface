@@ -15,7 +15,8 @@ class RAGMiddleware {
         if (this.next) {
             return await this.next.handle(context);
         }
-        return context;
+        // Execute the context at the end of the chain
+        return await context.execute();
     }
 }
 
@@ -25,7 +26,30 @@ class RAGMiddleware {
 class ErrorMiddleware extends RAGMiddleware {
     async handle(context) {
         try {
-            return await super.handle(context);
+            const result = await super.handle(context);
+            
+            // If we got an EventSource, wrap its error handler
+            if (result instanceof EventSource) {
+                const originalOnerror = result.onerror;
+                result.onerror = (event) => {
+                    // Create enhanced error
+                    const error = new Error('EventSource error');
+                    error.code = 'SSE_ERROR';
+                    error.details = event;
+                    error.context = {
+                        method: context.method,
+                        uuid: context.uuid,
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    // Call original handler if it exists
+                    if (originalOnerror) {
+                        originalOnerror.call(result, error);
+                    }
+                };
+            }
+            
+            return result;
         } catch (caught) {
             // Ensure we have a proper Error object
             const error = caught instanceof Error ? caught : new Error(String(caught));
@@ -68,11 +92,46 @@ class LoggingMiddleware extends RAGMiddleware {
             const result = await super.handle(context);
             
             const duration = Date.now() - startTime;
-            this.logger.info(`[${context.method}] Request completed`, {
-                uuid: context.uuid,
-                duration,
-                timestamp: new Date().toISOString()
-            });
+            
+            // If we got an EventSource, log its events
+            if (result instanceof EventSource) {
+                this.logger.info(`[${context.method}] EventSource connected`, {
+                    uuid: context.uuid,
+                    duration,
+                    timestamp: new Date().toISOString()
+                });
+                
+                // Log events
+                const originalAddEventListener = result.addEventListener.bind(result);
+                result.addEventListener = (type, listener, options) => {
+                    const wrappedListener = (event) => {
+                        this.logger.debug(`[${context.method}] Event: ${type}`, {
+                            uuid: context.uuid,
+                            timestamp: new Date().toISOString()
+                        });
+                        listener(event);
+                    };
+                    originalAddEventListener(type, wrappedListener, options);
+                };
+                
+                // Log errors
+                const originalOnerror = result.onerror;
+                result.onerror = (event) => {
+                    this.logger.error(`[${context.method}] EventSource error`, {
+                        uuid: context.uuid,
+                        timestamp: new Date().toISOString()
+                    });
+                    if (originalOnerror) {
+                        originalOnerror.call(result, event);
+                    }
+                };
+            } else {
+                this.logger.info(`[${context.method}] Request completed`, {
+                    uuid: context.uuid,
+                    duration,
+                    timestamp: new Date().toISOString()
+                });
+            }
 
             return result;
         } catch (error) {
