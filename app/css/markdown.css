@@ -1,0 +1,264 @@
+/* Markdown content */
+.markdown-content {
+    line-height: 1.6;
+    color: var(--color-text);
+}
+
+/* Headings */
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+    margin: 1.5em 0 0.5em;
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+.markdown-content h1 { font-size: 2em; }
+.markdown-content h2 { font-size: 1.5em; }
+.markdown-content h3 { font-size: 1.25em; }
+.markdown-content h4 { font-size: 1em; }
+.markdown-content h5 { font-size: 0.875em; }
+.markdown-content h6 { font-size: 0.85em; }
+
+/* Paragraphs and lists */
+.markdown-content p,
+.markdown-content ul,
+.markdown-content ol {
+    margin: 1em 0;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+    padding-left: 2em;
+}
+
+.markdown-content li {
+    margin: 0.5em 0;
+}
+
+/* Links */
+.markdown-content a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.markdown-content a:hover {
+    text-decoration: underline;
+}
+
+/* Blockquotes */
+.markdown-content blockquote {
+    margin: 1em 0;
+    padding: 0.5em 1em;
+    border-left: 4px solid var(--color-primary);
+    background-color: var(--color-messageBackground);
+    color: var(--color-messageText);
+}
+
+/* Code blocks */
+.code-block {
+    margin: 1em 0;
+    background-color: var(--color-messageBackground);
+    border: 1px solid var(--color-borderColor);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5em 1em;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid var(--color-borderColor);
+}
+
+.code-language {
+    font-size: 0.85em;
+    color: var(--color-messageText);
+    font-family: var(--font-family-mono, monospace);
+}
+
+.copy-code {
+    background: none;
+    border: none;
+    padding: 4px 8px;
+    cursor: pointer;
+    color: var(--color-messageText);
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.copy-code:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.markdown-content pre {
+    margin: 0;
+    padding: 1em;
+    overflow-x: auto;
+    font-family: var(--font-family-mono, monospace);
+    font-size: 0.9em;
+    line-height: 1.5;
+}
+
+.markdown-content code {
+    font-family: var(--font-family-mono, monospace);
+}
+
+/* Inline code */
+.markdown-content :not(pre) > code {
+    padding: 0.2em 0.4em;
+    background-color: var(--color-messageBackground);
+    border-radius: 3px;
+    font-size: 0.9em;
+    color: var(--color-messageText);
+}
+
+/* Tables */
+.table-container {
+    overflow-x: auto;
+    margin: 1em 0;
+}
+
+.markdown-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--color-borderColor);
+}
+
+.markdown-table th,
+.markdown-table td {
+    padding: 0.75em 1em;
+    border: 1px solid var(--color-borderColor);
+    text-align: left;
+}
+
+.markdown-table th {
+    background-color: var(--color-messageBackground);
+    font-weight: 600;
+}
+
+.markdown-table tr:nth-child(even) {
+    background-color: var(--color-messageBackground);
+}
+
+/* Images */
+.markdown-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin: 1em 0;
+}
+
+/* Horizontal rule */
+.markdown-content hr {
+    margin: 2em 0;
+    border: none;
+    border-top: 1px solid var(--color-borderColor);
+}
+
+/* Task lists */
+.markdown-content input[type="checkbox"] {
+    margin-right: 0.5em;
+}
+
+/* Code highlighting themes */
+.hljs {
+    display: block;
+    overflow-x: auto;
+    padding: 1em;
+    color: var(--color-messageText);
+    background: var(--color-messageBackground);
+}
+
+/* Light theme syntax highlighting */
+[data-theme="light"] .hljs-keyword,
+[data-theme="light"] .hljs-selector-tag,
+[data-theme="light"] .hljs-built_in,
+[data-theme="light"] .hljs-name,
+[data-theme="light"] .hljs-tag {
+    color: #d73a49;
+}
+
+[data-theme="light"] .hljs-string,
+[data-theme="light"] .hljs-title,
+[data-theme="light"] .hljs-section,
+[data-theme="light"] .hljs-attribute,
+[data-theme="light"] .hljs-literal,
+[data-theme="light"] .hljs-template-tag,
+[data-theme="light"] .hljs-template-variable,
+[data-theme="light"] .hljs-type,
+[data-theme="light"] .hljs-addition {
+    color: #22863a;
+}
+
+[data-theme="light"] .hljs-comment,
+[data-theme="light"] .hljs-quote,
+[data-theme="light"] .hljs-deletion,
+[data-theme="light"] .hljs-meta {
+    color: #6a737d;
+}
+
+[data-theme="light"] .hljs-number,
+[data-theme="light"] .hljs-regexp,
+[data-theme="light"] .hljs-literal,
+[data-theme="light"] .hljs-variable,
+[data-theme="light"] .hljs-template-variable {
+    color: #005cc5;
+}
+
+/* Dark theme syntax highlighting */
+[data-theme="dark"] .hljs-keyword,
+[data-theme="dark"] .hljs-selector-tag,
+[data-theme="dark"] .hljs-built_in,
+[data-theme="dark"] .hljs-name,
+[data-theme="dark"] .hljs-tag {
+    color: #ff7b72;
+}
+
+[data-theme="dark"] .hljs-string,
+[data-theme="dark"] .hljs-title,
+[data-theme="dark"] .hljs-section,
+[data-theme="dark"] .hljs-attribute,
+[data-theme="dark"] .hljs-literal,
+[data-theme="dark"] .hljs-template-tag,
+[data-theme="dark"] .hljs-template-variable,
+[data-theme="dark"] .hljs-type,
+[data-theme="dark"] .hljs-addition {
+    color: #a5d6ff;
+}
+
+[data-theme="dark"] .hljs-comment,
+[data-theme="dark"] .hljs-quote,
+[data-theme="dark"] .hljs-deletion,
+[data-theme="dark"] .hljs-meta {
+    color: #8b949e;
+}
+
+[data-theme="dark"] .hljs-number,
+[data-theme="dark"] .hljs-regexp,
+[data-theme="dark"] .hljs-literal,
+[data-theme="dark"] .hljs-variable,
+[data-theme="dark"] .hljs-template-variable {
+    color: #79c0ff;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .markdown-content {
+        font-size: 0.95em;
+    }
+
+    .markdown-content pre {
+        font-size: 0.85em;
+    }
+
+    .markdown-table th,
+    .markdown-table td {
+        padding: 0.5em;
+    }
+}
