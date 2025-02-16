@@ -286,6 +286,11 @@ body {
     align-items: center;
 }
 
+.filter-options {
+    display: flex;
+    gap: 16px;
+}
+
 .filter-options label {
     display: flex;
     align-items: center;
@@ -293,6 +298,23 @@ body {
     font-size: 14px;
     color: #495057;
     cursor: pointer;
+}
+
+/* Clickable link styles */
+.passage-content a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.passage-content a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+.passage-content a i {
+    font-size: 12px;
+    margin-left: 2px;
 }
 
 .filter-options input[type="checkbox"] {
@@ -459,6 +481,28 @@ body {
 
 .metadata-content strong {
     color: #495057;
+}
+
+.metadata-content a {
+    color: #007bff;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: color 0.2s;
+}
+
+.metadata-content a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+.metadata-content a i {
+    font-size: 12px;
+}
+
+.metadata-content div:nth-child(even) {
+    word-break: break-word;
 }
 
 .show-more-sources {

@@ -435,9 +435,40 @@ document.addEventListener('DOMContentLoaded', async () => {
                             element.dataset.highRelevance = 'true';
                         }
                         
-                        // Set content
+                        // Set content with highlighting and links
                         const content = passage.text.join(' ');
-                        element.querySelector('.passage-content').textContent = content;
+                        const contentElement = element.querySelector('.passage-content');
+                        
+                        let processedContent = content;
+                        
+                        // Convert links if enabled
+                        if (enableLinks) {
+                            processedContent = convertLinks(processedContent);
+                        }
+                        
+                        // Highlight search term if present
+                        if (searchTerm) {
+                            // If links are enabled, we need to be careful not to break the HTML
+                            if (enableLinks) {
+                                // Split by HTML tags and only highlight text content
+                                const parts = processedContent.split(/(<[^>]*>)/);
+                                processedContent = parts.map(part => {
+                                    return part.startsWith('<') ? part : highlightText(part, searchTerm);
+                                }).join('');
+                            } else {
+                                processedContent = highlightText(processedContent, searchTerm);
+                            }
+                        } else {
+                            // Highlight relevant phrases if no search term
+                            const keyTerms = passage.metadata['keyTerms'] || [];
+                            if (keyTerms.length > 0 && !enableLinks) {
+                                keyTerms.forEach(term => {
+                                    processedContent = highlightText(processedContent, term, true);
+                                });
+                            }
+                        }
+                        
+                        contentElement.innerHTML = processedContent;
                         
                         // Set link if available
                         const url = passage.metadata.url?.[0];
@@ -469,12 +500,40 @@ document.addEventListener('DOMContentLoaded', async () => {
                         const metadataSection = element.querySelector('.passage-metadata');
                         const metadataContent = element.querySelector('.metadata-content');
                         
-                        // Format metadata
+                        // Format metadata with clickable links
                         const formatMetadata = (metadata) => {
                             const content = [];
+                            const urlFields = ['accessInfo.download.itemId', 'url'];
+                            
                             for (const [key, value] of Object.entries(metadata)) {
                                 if (Array.isArray(value) && value.length > 0) {
-                                    content.push(`<div><strong>${key}:</strong></div><div>${value.join(', ')}</div>`);
+                                    let formattedValue;
+                                    
+                                    if (key === 'links') {
+                                        // Handle links array specially
+                                        formattedValue = value.map(link => {
+                                            if (link.url) {
+                                                return `<a href="${link.url}" target="_blank" rel="noopener noreferrer">
+                                                    ${link.type || 'Link'} ${link.listPosition !== undefined ? (link.listPosition + 1) : ''}
+                                                    <i class="fas fa-external-link-alt"></i>
+                                                </a>`;
+                                            }
+                                            return '';
+                                        }).filter(Boolean).join('<br>');
+                                    } else if (urlFields.includes(key)) {
+                                        // Handle URL fields
+                                        formattedValue = value.map(url => 
+                                            `<a href="${url}" target="_blank" rel="noopener noreferrer">
+                                                ${url.length > 50 ? url.substring(0, 47) + '...' : url}
+                                                <i class="fas fa-external-link-alt"></i>
+                                            </a>`
+                                        ).join('<br>');
+                                    } else {
+                                        // Handle regular fields
+                                        formattedValue = value.join(', ');
+                                    }
+                                    
+                                    content.push(`<div><strong>${key}:</strong></div><div>${formattedValue}</div>`);
                                 }
                             }
                             return content.join('');
@@ -493,10 +552,153 @@ document.addEventListener('DOMContentLoaded', async () => {
                         return element;
                     };
                     
-                    // Add initial passages
-                    initialPassages.forEach(passage => {
-                        sourcesContainer.appendChild(createPassageElement(passage));
+                    // Function to detect and convert links in text
+                    const convertLinks = (text) => {
+                        // Regular expressions for different types of links
+                        const patterns = {
+                            url: /(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/g,
+                            email: /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g,
+                            doc: /doc\.do\?[^\s<]+[^<.,:;"')\]\s]/g
+                        };
+
+                        let html = text;
+                        
+                        // Convert URLs
+                        html = html.replace(patterns.url, (url) => 
+                            `<a href="${url}" target="_blank" rel="noopener noreferrer">
+                                ${url.length > 50 ? url.substring(0, 47) + '...' : url}
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>`
+                        );
+                        
+                        // Convert email addresses
+                        html = html.replace(patterns.email, (email) => 
+                            `<a href="mailto:${email}">${email}</a>`
+                        );
+                        
+                        // Convert doc.do links
+                        html = html.replace(patterns.doc, (docUrl) => {
+                            // Extract any ID parameter if present
+                            const idMatch = docUrl.match(/id=([^&\s]+)/);
+                            const displayText = idMatch ? `Document ${idMatch[1].substring(0, 8)}...` : docUrl;
+                            return `<a href="${docUrl}" target="_blank" rel="noopener noreferrer">
+                                ${displayText}
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>`;
+                        });
+                        
+                        return html;
+                    };
+
+                    // Function to update passage display
+                    const updatePassageDisplay = (searchTerm = '', sortBy = 'relevance', highRelevanceOnly = false, enableLinks = false) => {
+                        // Filter and sort passages
+                        filteredPassages = filterPassages(allPassages, searchTerm, highRelevanceOnly);
+                        sortedPassages = sortPassages(filteredPassages, sortBy);
+                        
+                        // Update display
+                        sourcesContainer.innerHTML = '';
+                        const noResults = responseElement.querySelector('.no-results');
+                        
+                        if (filteredPassages.length === 0) {
+                            noResults.style.display = 'block';
+                            return;
+                        }
+                        
+                        noResults.style.display = 'none';
+                        initialPassages = sortedPassages.slice(0, 3);
+                        remainingPassages = sortedPassages.slice(3);
+                        
+                        // Create passage elements with highlighted text
+                        initialPassages.forEach(passage => {
+                            const element = createPassageElement(passage, searchTerm);
+                            sourcesContainer.appendChild(element);
+                        });
+                        
+                        // Add "Show More" button if needed
+                        if (remainingPassages.length > 0) {
+                            const showMoreElement = showMoreTemplate.content.cloneNode(true);
+                            const showMoreButton = showMoreElement.querySelector('.show-more-button');
+                            showMoreButton.querySelector('.remaining-count').textContent = remainingPassages.length;
+                            
+                            showMoreButton.addEventListener('click', () => {
+                                if (showMoreButton.classList.contains('expanded')) {
+                                    // Hide additional passages
+                                    const passages = sourcesContainer.querySelectorAll('.source-passage');
+                                    for (let i = 3; i < passages.length; i++) {
+                                        passages[i].remove();
+                                    }
+                                    showMoreButton.classList.remove('expanded');
+                                    showMoreButton.innerHTML = `
+                                        <i class="fas fa-chevron-down"></i>
+                                        Show More Sources (${remainingPassages.length})
+                                    `;
+                                } else {
+                                    // Show remaining passages
+                                    remainingPassages.forEach(passage => {
+                                        const element = createPassageElement(passage, searchTerm);
+                                        sourcesContainer.insertBefore(element, showMoreButton.parentElement);
+                                    });
+                                    showMoreButton.classList.add('expanded');
+                                    showMoreButton.innerHTML = `
+                                        <i class="fas fa-chevron-up"></i>
+                                        Show Less
+                                    `;
+                                }
+                            });
+                            
+                            sourcesContainer.appendChild(showMoreElement);
+                        }
+                    };
+                    
+                    // Set up search, sort, and filter handlers
+                    const searchInput = responseElement.querySelector('.search-passages');
+                    const sortSelect = responseElement.querySelector('.sort-passages');
+                    const highRelevanceCheckbox = responseElement.querySelector('.high-relevance-only');
+                    const clickableLinksCheckbox = responseElement.querySelector('.clickable-links');
+                    
+                    let searchTimeout;
+                    searchInput.addEventListener('input', () => {
+                        clearTimeout(searchTimeout);
+                        searchTimeout = setTimeout(() => {
+                            updatePassageDisplay(
+                                searchInput.value,
+                                sortSelect.value,
+                                highRelevanceCheckbox.checked,
+                                clickableLinksCheckbox.checked
+                            );
+                        }, 300);
                     });
+                    
+                    sortSelect.addEventListener('change', () => {
+                        updatePassageDisplay(
+                            searchInput.value,
+                            sortSelect.value,
+                            highRelevanceCheckbox.checked,
+                            clickableLinksCheckbox.checked
+                        );
+                    });
+                    
+                    highRelevanceCheckbox.addEventListener('change', () => {
+                        updatePassageDisplay(
+                            searchInput.value,
+                            sortSelect.value,
+                            highRelevanceCheckbox.checked,
+                            clickableLinksCheckbox.checked
+                        );
+                    });
+                    
+                    clickableLinksCheckbox.addEventListener('change', () => {
+                        updatePassageDisplay(
+                            searchInput.value,
+                            sortSelect.value,
+                            highRelevanceCheckbox.checked,
+                            clickableLinksCheckbox.checked
+                        );
+                    });
+                    
+                    // Initial display
+                    updatePassageDisplay();
                     
                     // Add "Show More" button if there are remaining passages
                     if (remainingPassages.length > 0) {
