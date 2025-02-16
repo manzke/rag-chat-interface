@@ -397,7 +397,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             eventSource.addEventListener('error', async (event) => {
                 console.error('SSE connection error:', event);
                 // Only call stopClient if we're not already stopping
-                if (isWaitingForResponse) {
+                if (isWaitingForResponse && eventSource) {
                     await client.stopClient(requestUuid);
                     updateStatus('error', 'Connection error');
                     sendButton.classList.remove('stopping');
@@ -437,7 +437,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Handle page unload
     window.addEventListener('beforeunload', () => {
-        if (currentRequestUuid) {
+        if (currentRequestUuid && eventSource) {
             client.stopClient(currentRequestUuid).catch(console.error);
         }
     });
