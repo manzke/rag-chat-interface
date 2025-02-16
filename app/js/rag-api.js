@@ -50,7 +50,7 @@ class RAGAPIBase {
             new CacheMiddleware(cache),
             new LoggingMiddleware(),
             new ValidationMiddleware(),
-            new RetryMiddleware(retry),
+            new RetryMiddleware(retry.maxRetries, retry.delay),
             new ResponseMetricsMiddleware(metrics)
         );
     }

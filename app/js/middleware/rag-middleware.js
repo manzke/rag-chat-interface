@@ -129,29 +129,38 @@ class ValidationMiddleware extends RAGMiddleware {
 class RetryMiddleware extends RAGMiddleware {
     constructor(maxRetries = 3, delay = 1000) {
         super();
-        this.maxRetries = maxRetries;
-        this.delay = delay;
+        // Ensure we have valid numbers
+        this.maxRetries = typeof maxRetries === 'number' ? maxRetries : 3;
+        this.delay = typeof delay === 'number' ? delay : 1000;
     }
 
     async handle(context) {
         let lastError;
         
+        console.debug(`RetryMiddleware: Starting with maxRetries=${this.maxRetries}, delay=${this.delay}`);
+        
         for (let attempt = 1; attempt <= this.maxRetries; attempt++) {
             try {
+                console.debug(`RetryMiddleware: Attempt ${attempt}/${this.maxRetries} for ${context.method}`);
                 return await super.handle(context);
             } catch (error) {
                 lastError = error;
+                console.debug(`RetryMiddleware: Attempt ${attempt} failed:`, error);
                 
                 // Don't retry on validation errors or if it's the last attempt
                 if (error.code === 'VALIDATION_ERROR' || attempt === this.maxRetries) {
+                    console.debug(`RetryMiddleware: Not retrying. Reason: ${error.code === 'VALIDATION_ERROR' ? 'Validation error' : 'Max retries reached'}`);
                     throw error;
                 }
 
                 // Wait before retrying
-                await new Promise(resolve => setTimeout(resolve, this.delay * attempt));
+                const waitTime = this.delay * attempt;
+                console.debug(`RetryMiddleware: Waiting ${waitTime}ms before retry`);
+                await new Promise(resolve => setTimeout(resolve, waitTime));
             }
         }
 
+        console.debug(`RetryMiddleware: All retries failed. Last error:`, lastError);
         throw lastError;
     }
 }
