@@ -13,7 +13,7 @@ const api = createRAGApi('http', window.location.origin, {
     },
     cache: {
         ttl: 300,              // 5 minutes cache TTL
-        methods: ['askQuestion']  // Cache question responses
+        methods: []  // Cache question responses
     },
     metrics: {
         collector: metricsCollector
