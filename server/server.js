@@ -182,6 +182,7 @@ app.get('/api/v2/rag/stop', (req, res) => {
         client.response.end();
         clients.delete(uuid);
     }
+    console.log(`Trying to stop client for uuid: ${uuid} success: ${success}`);
 
     res.json({ status: success ? 'stopped' : 'client_not_found' });
 });

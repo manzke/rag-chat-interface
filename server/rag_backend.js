@@ -31,7 +31,8 @@ export class RAGBackend {
      * @returns {boolean} Success status
      */
     stopClient(uuid) {
-        return this.activeClients.delete(uuid);
+        this.activeClients.delete(uuid);
+        return true;
     }
 
     /**
