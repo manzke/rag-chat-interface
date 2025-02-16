@@ -620,7 +620,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         
                         // Create passage elements with highlighted text
                         initialPassages.forEach(passage => {
-                            const element = createPassageElement(passage, searchTerm);
+                            const element = createPassageElement(passage, searchTerm, enableLinks);
                             sourcesContainer.appendChild(element);
                         });
                         
@@ -645,7 +645,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 } else {
                                     // Show remaining passages
                                     remainingPassages.forEach(passage => {
-                                        const element = createPassageElement(passage, searchTerm);
+                                        const element = createPassageElement(passage, searchTerm, enableLinks);
                                         sourcesContainer.insertBefore(element, showMoreButton.parentElement);
                                     });
                                     showMoreButton.classList.add('expanded');
@@ -732,7 +732,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             } else {
                                 // Show remaining passages
                                 remainingPassages.forEach(passage => {
-                                    const element = createPassageElement(passage);
+                                    const element = createPassageElement(passage, "", enableLinks);
                                     sourcesContainer.insertBefore(element, showMoreButton.parentElement);
                                 });
                                 showMoreButton.classList.add('expanded');
