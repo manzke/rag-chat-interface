@@ -1,0 +1,266 @@
+/* Theme variables */
+:root {
+    --color-primary: #007bff;
+    --color-background: #ffffff;
+    --color-text: #212529;
+    --color-messageBackground: #f8f9fa;
+    --color-messageText: #495057;
+    --color-userMessageBackground: #007bff;
+    --color-userMessageText: #ffffff;
+    --color-borderColor: #dee2e6;
+    --font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-size: 14px;
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+    --color-primary: #0d6efd;
+    --color-background: #212529;
+    --color-text: #f8f9fa;
+    --color-messageBackground: #343a40;
+    --color-messageText: #e9ecef;
+    --color-userMessageBackground: #0d6efd;
+    --color-userMessageText: #ffffff;
+    --color-borderColor: #495057;
+}
+
+/* Apply theme variables */
+body {
+    background-color: var(--color-background);
+    color: var(--color-text);
+    font-family: var(--font-family);
+    font-size: var(--font-size);
+}
+
+.chat-container {
+    background-color: var(--color-background);
+    border-color: var(--color-borderColor);
+}
+
+.status-bar {
+    background-color: var(--color-background);
+    border-color: var(--color-borderColor);
+}
+
+.message-content {
+    background-color: var(--color-messageBackground);
+    color: var(--color-messageText);
+    border-color: var(--color-borderColor);
+}
+
+.user-message .message-content {
+    background-color: var(--color-userMessageBackground);
+    color: var(--color-userMessageText);
+}
+
+/* Message styles */
+[data-message-style="flat"] .message-content {
+    border-radius: 4px !important;
+}
+
+[data-message-style="bubble"] .user-message .message-content {
+    border-bottom-right-radius: 4px;
+}
+
+[data-message-style="bubble"] .assistant-message .message-content {
+    border-bottom-left-radius: 4px;
+}
+
+/* Theme controls */
+.theme-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.theme-toggle,
+.theme-customize {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: var(--color-text);
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.theme-toggle:hover,
+.theme-customize:hover {
+    background-color: var(--color-messageBackground);
+}
+
+/* Theme dialog */
+.theme-dialog {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-dialog-content {
+    background-color: var(--color-background);
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.theme-dialog-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--color-borderColor);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.theme-dialog-header h3 {
+    margin: 0;
+    color: var(--color-text);
+}
+
+.close-dialog {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: var(--color-text);
+    border-radius: 4px;
+}
+
+.theme-dialog-body {
+    padding: 16px;
+}
+
+.theme-section {
+    margin-bottom: 24px;
+}
+
+.theme-section h4 {
+    margin: 0 0 12px 0;
+    color: var(--color-text);
+}
+
+.theme-presets {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.theme-preset {
+    padding: 8px 16px;
+    border: 1px solid var(--color-borderColor);
+    border-radius: 4px;
+    background: none;
+    cursor: pointer;
+    color: var(--color-text);
+    transition: all 0.2s ease;
+}
+
+.theme-preset:hover {
+    background-color: var(--color-messageBackground);
+}
+
+.color-picker-group {
+    display: grid;
+    gap: 12px;
+}
+
+.color-picker-group label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--color-text);
+}
+
+.color-picker-group input[type="color"] {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid var(--color-borderColor);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.font-select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--color-borderColor);
+    border-radius: 4px;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    margin-bottom: 12px;
+}
+
+.font-size-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.font-size-controls label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--color-text);
+    flex: 1;
+}
+
+.font-size-controls input[type="range"] {
+    flex: 1;
+}
+
+.message-style-options {
+    display: flex;
+    gap: 16px;
+}
+
+.message-style-options label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-text);
+    cursor: pointer;
+}
+
+.theme-dialog-footer {
+    padding: 16px;
+    border-top: 1px solid var(--color-borderColor);
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.reset-theme,
+.apply-theme {
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.reset-theme {
+    background: none;
+    border: 1px solid var(--color-borderColor);
+    color: var(--color-text);
+}
+
+.apply-theme {
+    background-color: var(--color-primary);
+    border: none;
+    color: white;
+}
+
+.reset-theme:hover {
+    background-color: var(--color-messageBackground);
+}
+
+.apply-theme:hover {
+    opacity: 0.9;
+}
