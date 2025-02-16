@@ -2,7 +2,6 @@ import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import CopyPlugin from 'copy-webpack-plugin';
 import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -46,7 +45,7 @@ export default {
             filename: 'app/css/[name].[contenthash].css'
         }),
         new HtmlWebpackPlugin({
-            template: 'app/static/chat.html',
+            template: 'app/chat.html',
             filename: 'chat.html',
             chunks: ['chat'],
             minify: {
@@ -55,24 +54,13 @@ export default {
             }
         }),
         new HtmlWebpackPlugin({
-            template: 'app/static/welcome.html',
+            template: 'app/index.html',
             filename: 'index.html',
-            chunks: ['welcome'],
+            chunks: ['index'],
             minify: {
                 removeComments: true,
                 collapseWhitespace: true
             }
-        }),
-        new CopyPlugin({
-            patterns: [
-                {
-                    from: './app/static',
-                    to: '.',
-                    globOptions: {
-                        ignore: ['*.html'] // HTML files are handled by HtmlWebpackPlugin
-                    }
-                }
-            ]
         })
     ],
     optimization: {
