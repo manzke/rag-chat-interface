@@ -123,8 +123,34 @@ class HTTPRAGApi extends RAGAPIBase {
         const url = new URL(`${this.baseUrl}/api/v2/rag/register-client`);
         url.searchParams.set('uuid', uuid);
         
-        const eventSource = new EventSource(url);
-        return eventSource;
+        return new Promise((resolve, reject) => {
+            try {
+                const eventSource = new EventSource(url);
+                
+                eventSource.onerror = (event) => {
+                    eventSource.close();
+                    const error = new Error('Failed to establish SSE connection');
+                    error.event = event;
+                    reject(error);
+                };
+
+                eventSource.onopen = () => {
+                    resolve(eventSource);
+                };
+
+                // Set a timeout in case the connection hangs
+                const timeout = setTimeout(() => {
+                    eventSource.close();
+                    const error = new Error('SSE connection timeout');
+                    reject(error);
+                }, 5000);
+
+                // Clear timeout if connection succeeds
+                eventSource.addEventListener('open', () => clearTimeout(timeout));
+            } catch (error) {
+                reject(new Error('Failed to create EventSource: ' + error.message));
+            }
+        });
     }
 
     /**

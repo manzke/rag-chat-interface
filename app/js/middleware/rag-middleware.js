@@ -26,11 +26,15 @@ class ErrorMiddleware extends RAGMiddleware {
     async handle(context) {
         try {
             return await super.handle(context);
-        } catch (error) {
+        } catch (caught) {
+            // Ensure we have a proper Error object
+            const error = caught instanceof Error ? caught : new Error(String(caught));
+            
             // Enhance error with additional information
-            const ragError = new Error(error.message);
+            const ragError = new Error(error.message || 'Unknown error occurred');
             ragError.code = error.code || 'UNKNOWN_ERROR';
             ragError.details = error.details || error;
+            ragError.originalError = error;
             
             // Add request context to error
             ragError.context = {
