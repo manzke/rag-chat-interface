@@ -171,6 +171,132 @@ body {
     position: relative;
 }
 
+/* Source passages styles */
+.message-sources {
+    margin-top: 10px;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.sources-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #495057;
+    cursor: pointer;
+}
+
+.sources-header i {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.toggle-sources {
+    margin-left: auto;
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: #6c757d;
+}
+
+.toggle-sources:hover {
+    color: #495057;
+}
+
+.sources-content {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.source-passage {
+    background-color: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.passage-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.passage-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #495057;
+}
+
+.passage-title i {
+    color: #6c757d;
+    font-size: 12px;
+}
+
+.passage-score {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.passage-score i {
+    color: #ffc107;
+    font-size: 10px;
+}
+
+.passage-content {
+    padding: 12px;
+    font-size: 14px;
+    color: #495057;
+    line-height: 1.5;
+}
+
+.passage-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-top: 1px solid #e9ecef;
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.passage-link {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.passage-link:hover {
+    text-decoration: underline;
+}
+
+.passage-date {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.passage-date i {
+    font-size: 10px;
+}
+
 .user-message .message-content {
     background-color: #007bff;
     color: white;

@@ -353,6 +353,74 @@ document.addEventListener('DOMContentLoaded', async () => {
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
             });
 
+            eventSource.addEventListener('passages', (event) => {
+                console.log('Received passages event:', event);
+                try {
+                    const passagesData = JSON.parse(event.data);
+                    const sourcesContainer = responseElement.querySelector('.sources-content');
+                    
+                    // Store in chat history
+                    currentResponse.passages = passagesData.passages;
+                    
+                    // Clear any existing passages
+                    sourcesContainer.innerHTML = '';
+                    
+                    // Add new passages
+                    const template = document.getElementById('source-passage-template');
+                    passagesData.passages
+                        .sort((a, b) => b.score - a.score) // Sort by score descending
+                        .forEach(passage => {
+                            const element = template.content.cloneNode(true).querySelector('.source-passage');
+                            
+                            // Set title (use first title or filename if no title)
+                            const title = passage.metadata.title?.[0] || passage.metadata['file.name']?.[0] || 'Unknown Source';
+                            element.querySelector('.passage-source').textContent = title;
+                            
+                            // Set score as percentage
+                            const score = Math.round(passage.score * 100);
+                            element.querySelector('.score-value').textContent = `${score}%`;
+                            
+                            // Set content
+                            element.querySelector('.passage-content').textContent = passage.text.join(' ');
+                            
+                            // Set link if available
+                            const url = passage.metadata.url?.[0];
+                            const linkElement = element.querySelector('.passage-link');
+                            if (url) {
+                                linkElement.href = url;
+                            } else {
+                                linkElement.style.display = 'none';
+                            }
+                            
+                            // Set date if available
+                            const date = passage.metadata['accessInfo.lastModifiedDate']?.[0];
+                            const dateElement = element.querySelector('.date-value');
+                            if (date) {
+                                dateElement.textContent = new Date(date).toLocaleDateString();
+                            } else {
+                                dateElement.parentElement.style.display = 'none';
+                            }
+                            
+                            sourcesContainer.appendChild(element);
+                        });
+                        
+                    // Add click handler to toggle sources visibility
+                    const toggleButton = responseElement.querySelector('.toggle-sources');
+                    const sourcesContent = responseElement.querySelector('.sources-content');
+                    toggleButton.addEventListener('click', () => {
+                        const isExpanded = sourcesContent.style.display !== 'none';
+                        sourcesContent.style.display = isExpanded ? 'none' : 'block';
+                        toggleButton.querySelector('i').className = isExpanded ? 
+                            'fas fa-chevron-down' : 'fas fa-chevron-up';
+                    });
+                    
+                    // Initially hide sources
+                    sourcesContent.style.display = 'none';
+                } catch (error) {
+                    console.error('Error parsing passages:', error);
+                }
+            });
+
             eventSource.addEventListener('related', (event) => {
                 console.log('Received related event:', event);
                 try {
