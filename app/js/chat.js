@@ -630,6 +630,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                             sourcesContainer.appendChild(element);
                         });
                         
+                        // Remove any existing "Show More" button
+                        const existingShowMore = sourcesContainer.querySelector('.show-more-sources');
+                        if (existingShowMore) {
+                            existingShowMore.remove();
+                        }
+
                         // Add "Show More" button if needed
                         if (remainingPassages.length > 0) {
                             const showMoreElement = showMoreTemplate.content.cloneNode(true);
