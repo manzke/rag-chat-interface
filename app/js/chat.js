@@ -367,42 +367,173 @@ document.addEventListener('DOMContentLoaded', async () => {
                     
                     // Add new passages
                     const template = document.getElementById('source-passage-template');
-                    passagesData.passages
-                        .sort((a, b) => b.score - a.score) // Sort by score descending
-                        .forEach(passage => {
-                            const element = template.content.cloneNode(true).querySelector('.source-passage');
-                            
-                            // Set title (use first title or filename if no title)
-                            const title = passage.metadata.title?.[0] || passage.metadata['file.name']?.[0] || 'Unknown Source';
-                            element.querySelector('.passage-source').textContent = title;
-                            
-                            // Set score as percentage
-                            const score = Math.round(passage.score * 100);
-                            element.querySelector('.score-value').textContent = `${score}%`;
-                            
-                            // Set content
-                            element.querySelector('.passage-content').textContent = passage.text.join(' ');
-                            
-                            // Set link if available
-                            const url = passage.metadata.url?.[0];
-                            const linkElement = element.querySelector('.passage-link');
-                            if (url) {
-                                linkElement.href = url;
-                            } else {
-                                linkElement.style.display = 'none';
-                            }
-                            
-                            // Set date if available
-                            const date = passage.metadata['accessInfo.lastModifiedDate']?.[0];
-                            const dateElement = element.querySelector('.date-value');
-                            if (date) {
-                                dateElement.textContent = new Date(date).toLocaleDateString();
-                            } else {
-                                dateElement.parentElement.style.display = 'none';
-                            }
-                            
-                            sourcesContainer.appendChild(element);
+                    const showMoreTemplate = document.getElementById('show-more-sources-template');
+                    
+                    // Store all passages for filtering/sorting
+                    const allPassages = passagesData.passages;
+                    let filteredPassages = [...allPassages];
+                    let sortedPassages = filteredPassages.sort((a, b) => b.score - a.score);
+                    
+                    // Initially show only first 3 passages
+                    let initialPassages = sortedPassages.slice(0, 3);
+                    let remainingPassages = sortedPassages.slice(3);
+                    
+                    // Function to highlight text
+                    const highlightText = (text, searchTerm, isRelevant = false) => {
+                        if (!searchTerm) return text;
+                        const regex = new RegExp(`(${searchTerm})`, 'gi');
+                        return text.replace(regex, `<span class="${isRelevant ? 'highlight-relevant' : 'highlight'}">$1</span>`);
+                    };
+                    
+                    // Function to sort passages
+                    const sortPassages = (passages, sortBy) => {
+                        switch (sortBy) {
+                            case 'relevance':
+                                return passages.sort((a, b) => b.score - a.score);
+                            case 'date':
+                                return passages.sort((a, b) => {
+                                    const dateA = a.metadata['accessInfo.lastModifiedDate']?.[0] || '';
+                                    const dateB = b.metadata['accessInfo.lastModifiedDate']?.[0] || '';
+                                    return dateB.localeCompare(dateA);
+                                });
+                            case 'title':
+                                return passages.sort((a, b) => {
+                                    const titleA = a.metadata.title?.[0] || a.metadata['file.name']?.[0] || '';
+                                    const titleB = b.metadata.title?.[0] || b.metadata['file.name']?.[0] || '';
+                                    return titleA.localeCompare(titleB);
+                                });
+                            default:
+                                return passages;
+                        }
+                    };
+                    
+                    // Function to filter passages
+                    const filterPassages = (passages, searchTerm, highRelevanceOnly) => {
+                        return passages.filter(passage => {
+                            const text = passage.text.join(' ').toLowerCase();
+                            const title = (passage.metadata.title?.[0] || passage.metadata['file.name']?.[0] || '').toLowerCase();
+                            const matchesSearch = !searchTerm || 
+                                text.includes(searchTerm.toLowerCase()) || 
+                                title.includes(searchTerm.toLowerCase());
+                            const matchesRelevance = !highRelevanceOnly || (passage.score * 100) >= 80;
+                            return matchesSearch && matchesRelevance;
                         });
+                    };
+                    
+                    // Function to create passage element
+                    const createPassageElement = (passage) => {
+                        const element = template.content.cloneNode(true).querySelector('.source-passage');
+                        
+                        // Set title (use first title or filename if no title)
+                        const title = passage.metadata.title?.[0] || passage.metadata['file.name']?.[0] || 'Unknown Source';
+                        element.querySelector('.passage-source').textContent = title;
+                        
+                        // Set score and high relevance badge
+                        const score = Math.round(passage.score * 100);
+                        element.querySelector('.score-value').textContent = `${score}%`;
+                        if (score >= 80) {
+                            element.dataset.highRelevance = 'true';
+                        }
+                        
+                        // Set content
+                        const content = passage.text.join(' ');
+                        element.querySelector('.passage-content').textContent = content;
+                        
+                        // Set link if available
+                        const url = passage.metadata.url?.[0];
+                        const linkElement = element.querySelector('.passage-link');
+                        if (url) {
+                            linkElement.href = url;
+                        } else {
+                            linkElement.style.display = 'none';
+                        }
+                        
+                        // Set date if available
+                        const date = passage.metadata['accessInfo.lastModifiedDate']?.[0];
+                        const dateElement = element.querySelector('.date-value');
+                        if (date) {
+                            dateElement.textContent = new Date(date).toLocaleDateString();
+                        } else {
+                            dateElement.parentElement.style.display = 'none';
+                        }
+                        
+                        // Add copy button handler
+                        element.querySelector('.copy-passage').addEventListener('click', () => {
+                            navigator.clipboard.writeText(content).then(() => {
+                                showCopyNotification('Passage copied!');
+                            });
+                        });
+                        
+                        // Add metadata button handler
+                        const metadataButton = element.querySelector('.show-metadata');
+                        const metadataSection = element.querySelector('.passage-metadata');
+                        const metadataContent = element.querySelector('.metadata-content');
+                        
+                        // Format metadata
+                        const formatMetadata = (metadata) => {
+                            const content = [];
+                            for (const [key, value] of Object.entries(metadata)) {
+                                if (Array.isArray(value) && value.length > 0) {
+                                    content.push(`<div><strong>${key}:</strong></div><div>${value.join(', ')}</div>`);
+                                }
+                            }
+                            return content.join('');
+                        };
+                        
+                        metadataButton.addEventListener('click', () => {
+                            if (!metadataContent.innerHTML) {
+                                metadataContent.innerHTML = formatMetadata(passage.metadata);
+                            }
+                            metadataSection.classList.toggle('show');
+                            metadataButton.querySelector('i').className = 
+                                metadataSection.classList.contains('show') ? 
+                                'fas fa-chevron-up' : 'fas fa-info-circle';
+                        });
+                        
+                        return element;
+                    };
+                    
+                    // Add initial passages
+                    initialPassages.forEach(passage => {
+                        sourcesContainer.appendChild(createPassageElement(passage));
+                    });
+                    
+                    // Add "Show More" button if there are remaining passages
+                    if (remainingPassages.length > 0) {
+                        const showMoreElement = showMoreTemplate.content.cloneNode(true);
+                        const showMoreButton = showMoreElement.querySelector('.show-more-button');
+                        const remainingCount = showMoreElement.querySelector('.remaining-count');
+                        
+                        remainingCount.textContent = remainingPassages.length;
+                        
+                        showMoreButton.addEventListener('click', () => {
+                            if (showMoreButton.classList.contains('expanded')) {
+                                // Hide additional passages
+                                const passages = sourcesContainer.querySelectorAll('.source-passage');
+                                for (let i = 3; i < passages.length; i++) {
+                                    passages[i].style.display = 'none';
+                                }
+                                showMoreButton.classList.remove('expanded');
+                                showMoreButton.innerHTML = `
+                                    <i class="fas fa-chevron-down"></i>
+                                    Show More Sources (${remainingPassages.length})
+                                `;
+                            } else {
+                                // Show remaining passages
+                                remainingPassages.forEach(passage => {
+                                    const element = createPassageElement(passage);
+                                    sourcesContainer.insertBefore(element, showMoreButton.parentElement);
+                                });
+                                showMoreButton.classList.add('expanded');
+                                showMoreButton.innerHTML = `
+                                    <i class="fas fa-chevron-up"></i>
+                                    Show Less
+                                `;
+                            }
+                        });
+                        
+                        sourcesContainer.appendChild(showMoreElement);
+                    }
                         
                     // Add click handler to toggle sources visibility
                     const toggleButton = responseElement.querySelector('.toggle-sources');
