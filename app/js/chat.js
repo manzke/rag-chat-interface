@@ -359,6 +359,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
             });
 
+            // Handle passages event
             eventSource.addEventListener('passages', (event) => {
                 console.log('Received passages event:', event);
                 try {
@@ -719,45 +720,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                     });
                     
                     // Initial display
-                    updatePassageDisplay();
-                    
-                    // Add "Show More" button if there are remaining passages
-                    if (remainingPassages.length > 0) {
-                        const showMoreElement = showMoreTemplate.content.cloneNode(true);
-                        const showMoreButton = showMoreElement.querySelector('.show-more-button');
-                        const remainingCount = showMoreElement.querySelector('.remaining-count');
-                        
-                        remainingCount.textContent = remainingPassages.length;
-                        
-                        showMoreButton.addEventListener('click', () => {
-                            if (showMoreButton.classList.contains('expanded')) {
-                                // Hide additional passages
-                                const passages = sourcesContainer.querySelectorAll('.source-passage');
-                                for (let i = 3; i < passages.length; i++) {
-                                    passages[i].remove();
-                                }
-                                showMoreButton.classList.remove('expanded');
-                                showMoreButton.innerHTML = `
-                                    <i class="fas fa-chevron-down"></i>
-                                    Show More Sources (${remainingPassages.length})
-                                `;
-                            } else {
-                                // Show remaining passages
-                                remainingPassages.forEach(passage => {
-                                    const element = createPassageElement(passage, "", enableLinks);
-                                    sourcesContainer.insertBefore(element, showMoreButton.parentElement);
-                                });
-                                showMoreButton.classList.add('expanded');
-                                showMoreButton.innerHTML = `
-                                    <i class="fas fa-chevron-up"></i>
-                                    Show Less
-                                `;
-                            }
-                        });
-                        
-                        sourcesContainer.appendChild(showMoreElement);
-                    }
-                        
+                    updatePassageDisplay(
+                        searchInput.value,
+                        sortSelect.value,
+                        highRelevanceCheckbox.checked,
+                        clickableLinksCheckbox.checked
+                    );
+
                     // Update source count
                     const sourcesCount = responseElement.querySelector('.sources-count');
                     sourcesCount.textContent = `${allPassages.length} sources`;
