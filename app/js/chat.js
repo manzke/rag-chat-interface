@@ -380,11 +380,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             eventSource.addEventListener('complete', async () => {
                 console.log('Received complete event');
-                await client.stopClient(requestUuid);
                 if (eventSource) {
                     eventSource.close();
                     eventSource = null;
                 }
+                await client.stopClient(requestUuid);
                 updateStatus('', 'Ready');
                 sendButton.classList.remove('stopping');
                 isWaitingForResponse = false;
