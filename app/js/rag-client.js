@@ -19,7 +19,7 @@ const api = createRAGApi('http', '', {
         collector: metricsCollector
     },
     retry: {
-        maxRetries: 3,
+        maxRetries: 1,
         delay: 1000
     },
     transformers: {
