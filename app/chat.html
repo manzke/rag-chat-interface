@@ -88,40 +88,45 @@
             <div class="message-content"></div>
             <div class="message-sources" style="display: none;">
                 <div class="sources-header">
-                    <i class="fas fa-book"></i>
-                    <span>Sources</span>
+                    <div class="sources-title">
+                        <i class="fas fa-book"></i>
+                        <span>Sources</span>
+                        <span class="sources-count"></span>
+                    </div>
                     <button class="toggle-sources" title="Show/Hide Sources">
                         <i class="fas fa-chevron-down"></i>
                     </button>
                 </div>
-                <div class="sources-toolbar">
-                    <div class="search-filter">
-                        <input type="text" class="search-passages" placeholder="Search in passages...">
+                <div class="sources-expanded" style="display: none;">
+                    <div class="sources-toolbar">
+                        <div class="search-filter">
+                            <input type="text" class="search-passages" placeholder="Search in passages...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="sort-options">
+                            <label>Sort by:</label>
+                            <select class="sort-passages">
+                                <option value="relevance">Relevance</option>
+                                <option value="date">Date</option>
+                                <option value="title">Title</option>
+                            </select>
+                        </div>
+                        <div class="filter-options">
+                            <label>
+                                <input type="checkbox" class="high-relevance-only">
+                                High Relevance Only
+                            </label>
+                            <label>
+                                <input type="checkbox" class="clickable-links">
+                                Clickable Links
+                            </label>
+                        </div>
+                    </div>
+                    <div class="sources-content"></div>
+                    <div class="no-results" style="display: none;">
                         <i class="fas fa-search"></i>
+                        <p>No matching passages found</p>
                     </div>
-                    <div class="sort-options">
-                        <label>Sort by:</label>
-                        <select class="sort-passages">
-                            <option value="relevance">Relevance</option>
-                            <option value="date">Date</option>
-                            <option value="title">Title</option>
-                        </select>
-                    </div>
-                    <div class="filter-options">
-                        <label>
-                            <input type="checkbox" class="high-relevance-only">
-                            High Relevance Only
-                        </label>
-                        <label>
-                            <input type="checkbox" class="clickable-links">
-                            Clickable Links
-                        </label>
-                    </div>
-                </div>
-                <div class="sources-content"></div>
-                <div class="no-results" style="display: none;">
-                    <i class="fas fa-search"></i>
-                    <p>No matching passages found</p>
                 </div>
             </div>
             <div class="related-questions"></div>

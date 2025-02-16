@@ -181,7 +181,7 @@ body {
 .sources-header {
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: space-between;
     padding: 8px 12px;
     background-color: #f8f9fa;
     border: 1px solid #e9ecef;
@@ -191,22 +191,55 @@ body {
     cursor: pointer;
 }
 
-.sources-header i {
+.sources-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sources-title i {
     font-size: 12px;
     color: #6c757d;
 }
 
+.sources-count {
+    font-size: 12px;
+    color: #6c757d;
+    background-color: #e9ecef;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 4px;
+}
+
 .toggle-sources {
-    margin-left: auto;
     background: none;
     border: none;
     padding: 4px;
     cursor: pointer;
     color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
 }
 
 .toggle-sources:hover {
     color: #495057;
+    background-color: #e9ecef;
+}
+
+.toggle-sources i {
+    transition: transform 0.2s ease;
+}
+
+.sources-expanded {
+    margin-top: 8px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .sources-toolbar {

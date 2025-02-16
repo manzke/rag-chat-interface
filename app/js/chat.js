@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Show welcome message if this is a new chat
     if (isNewChat && activeAssistant?.defaultConfig?.welcomeMessage) {
-        const messageElement = createMessageElement(activeAssistant.defaultConfig.welcomeMessage, false);
+        const messageElement = createMessageElement(activeAssistant.defaultConfig.welcomeMessage, false, true);
         messagesContainer.appendChild(messageElement);
     }
     
@@ -75,13 +75,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         setTimeout(() => notification.remove(), 2000);
     }
 
-    function createMessageElement(text, isUser = false) {
+    function createMessageElement(text, isUser = false, isWelcome = false) {
         const template = document.getElementById('message-template');
         const messageElement = template.content.cloneNode(true).querySelector('.message');
         
         messageElement.classList.add(isUser ? 'user-message' : 'assistant-message');
         const contentDiv = messageElement.querySelector('.message-content');
         contentDiv.textContent = text;
+        
+        // Hide sources section for welcome messages and user messages
+        if (isUser || isWelcome) {
+            const sourcesSection = messageElement.querySelector('.message-sources');
+            sourcesSection.style.display = 'none';
+        }
 
         // Show/hide appropriate buttons based on message type
         const editButton = messageElement.querySelector('.edit-button');
@@ -746,18 +752,34 @@ document.addEventListener('DOMContentLoaded', async () => {
                         sourcesContainer.appendChild(showMoreElement);
                     }
                         
+                    // Update source count
+                    const sourcesCount = responseElement.querySelector('.sources-count');
+                    sourcesCount.textContent = `${allPassages.length} sources`;
+
                     // Add click handler to toggle sources visibility
                     const toggleButton = responseElement.querySelector('.toggle-sources');
-                    const sourcesContent = responseElement.querySelector('.sources-content');
-                    toggleButton.addEventListener('click', () => {
-                        const isExpanded = sourcesContent.style.display !== 'none';
-                        sourcesContent.style.display = isExpanded ? 'none' : 'block';
+                    const sourcesExpanded = responseElement.querySelector('.sources-expanded');
+                    const sourcesHeader = responseElement.querySelector('.sources-header');
+
+                    const toggleSources = () => {
+                        const isExpanded = sourcesExpanded.style.display !== 'none';
+                        sourcesExpanded.style.display = isExpanded ? 'none' : 'block';
                         toggleButton.querySelector('i').className = isExpanded ? 
                             'fas fa-chevron-down' : 'fas fa-chevron-up';
+                        toggleButton.querySelector('i').style.transform = isExpanded ? 
+                            'rotate(0deg)' : 'rotate(180deg)';
+                    };
+
+                    toggleButton.addEventListener('click', toggleSources);
+                    sourcesHeader.addEventListener('click', (e) => {
+                        // Only toggle if click wasn't on the button itself
+                        if (!e.target.closest('.toggle-sources')) {
+                            toggleSources();
+                        }
                     });
                     
-                    // Initially hide sources
-                    sourcesContent.style.display = 'none';
+                    // Initially hide expanded content
+                    sourcesExpanded.style.display = 'none';
                 } catch (error) {
                     console.error('Error parsing passages:', error);
                 }
