@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Add back button handler
     document.getElementById('back-button').addEventListener('click', () => {
-        window.location.href = 'welcome.html';
+        window.location.href = 'index.html';
     });
 
     // Chat history storage

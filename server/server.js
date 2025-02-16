@@ -15,7 +15,28 @@ const backend = new RAGBackend();
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static(join(__dirname, '../static')));
+
+// Serve static files with proper MIME types
+app.use('/css', express.static(join(__dirname, '../app/css'), {
+    setHeaders: (res) => {
+        res.setHeader('Content-Type', 'text/css');
+    }
+}));
+
+app.use('/js', express.static(join(__dirname, '../app/js'), {
+    setHeaders: (res) => {
+        res.setHeader('Content-Type', 'application/javascript');
+    }
+}));
+
+app.use('/configs', express.static(join(__dirname, '../app/configs'), {
+    setHeaders: (res) => {
+        res.setHeader('Content-Type', 'application/json');
+    }
+}));
+
+// Serve other static files
+app.use(express.static(join(__dirname, '../app')));
 
 // SSE client map
 const clients = new Map();
@@ -28,18 +49,20 @@ function sendSSE(res, event, data) {
 
 // Routes
 app.get('/', (req, res) => {
-    res.sendFile(join(__dirname, '../static/welcome.html'));
+    res.sendFile(join(__dirname, '../app/index.html'));
 });
 
 app.get('/chat', (req, res) => {
-    res.sendFile(join(__dirname, '../static/chat.html'));
+    res.sendFile(join(__dirname, '../app/chat.html'));
 });
 
 // RAG API endpoints
 app.get('/api/v2/rag/register-client', (req, res) => {
     const { uuid } = req.query;
     
-    if (!uuid || !/^[\w-]+-[\w-]+$/.test(uuid)) {
+    // Register client with backend
+    const client = backend.registerClient(uuid);
+    if (!client) {
         res.status(400).json({ error: 'Invalid UUID format' });
         return;
     }
@@ -50,7 +73,7 @@ app.get('/api/v2/rag/register-client', (req, res) => {
     res.setHeader('Connection', 'keep-alive');
     res.flushHeaders();
 
-    // Store client
+    // Store SSE response
     clients.set(uuid, {
         response: res,
         messages: [],
@@ -59,6 +82,7 @@ app.get('/api/v2/rag/register-client', (req, res) => {
 
     // Handle client disconnect
     req.on('close', () => {
+        backend.stopClient(uuid);
         clients.delete(uuid);
     });
 });
@@ -66,15 +90,17 @@ app.get('/api/v2/rag/register-client', (req, res) => {
 app.post('/api/v2/rag/ask', async (req, res) => {
     const { uuid } = req.query;
     const { question, profileId, filter = [] } = req.body;
-    const client = clients.get(uuid);
 
-    if (!client) {
-        res.status(404).json({ error: 'Client not found' });
+    // Process question with backend
+    const result = await backend.processQuestion(uuid, { question, profileId, filter });
+    if (result.error) {
+        res.status(400).json({ error: result.error });
         return;
     }
 
-    if (!question) {
-        res.status(400).json({ error: 'Question is required' });
+    const client = clients.get(uuid);
+    if (!client) {
+        res.status(404).json({ error: 'Client not found' });
         return;
     }
 
@@ -86,33 +112,31 @@ app.post('/api/v2/rag/ask', async (req, res) => {
         }
     });
 
-    // Process context
+    // Process context from backend result
+    const { context } = result;
     const contextParts = [];
-    if (filter) {
-        const docIds = filter.find(f => f.key === 'id.keyword')?.values;
-        const query = filter.find(f => f.key === 'query')?.values?.[0];
-
-        if (docIds?.length) {
-            contextParts.push(`Documents: ${docIds.join(', ')}`);
-        }
-        if (query) {
-            contextParts.push(`Search Query: ${query}`);
-        }
+    
+    if (context.docIds?.length) {
+        contextParts.push(`Documents: ${context.docIds.join(', ')}`);
     }
-    if (profileId) {
+    if (context.query) {
+        contextParts.push(`Search Query: ${context.query}`);
+    }
+    if (context.profileId) {
         try {
-            const decodedProfile = Buffer.from(profileId, 'base64').toString('utf-8');
+            const decodedProfile = Buffer.from(context.profileId, 'base64').toString('utf-8');
             contextParts.push(`Profile: ${decodedProfile}`);
         } catch {
-            contextParts.push(`Profile ID: ${profileId}`);
+            contextParts.push(`Profile ID: ${context.profileId}`);
         }
     }
 
     // Send context
     if (contextParts.length) {
-        const context = "Context:\n" + contextParts.join("\n");
-        for (const word of context.split(/\s+/)) {
+        const contextText = "Context:\n" + contextParts.join("\n");
+        for (const word of contextText.split(/\s+/)) {
             sendSSE(client.response, 'answer', word);
+            await new Promise(resolve => setTimeout(resolve, 100));
         }
     }
 
@@ -120,7 +144,7 @@ app.post('/api/v2/rag/ask', async (req, res) => {
     const response = `Answer to: ${question}\nThis is a simulated streaming response for the question.`;
     for (const word of response.split(/\s+/)) {
         sendSSE(client.response, 'answer', word);
-        await new Promise(resolve => setTimeout(resolve, 100)); // Simulate streaming
+        await new Promise(resolve => setTimeout(resolve, 100));
     }
 
     // Send related questions
@@ -148,27 +172,31 @@ app.post('/api/v2/rag/ask', async (req, res) => {
 
 app.get('/api/v2/rag/stop', (req, res) => {
     const { uuid } = req.query;
+    
+    // Stop client in backend
+    const success = backend.stopClient(uuid);
+    
+    // Close SSE connection
     const client = clients.get(uuid);
-
     if (client) {
         client.response.end();
         clients.delete(uuid);
     }
 
-    res.json({ status: 'stopped' });
+    res.json({ status: success ? 'stopped' : 'client_not_found' });
 });
 
 app.post('/api/v2/rag/feedback', (req, res) => {
     const { uuid } = req.query;
     const { feedback } = req.body;
 
-    if (!feedback || !['thumbs_up', 'thumbs_down'].includes(feedback)) {
-        res.status(400).json({ error: 'Invalid feedback value' });
+    // Process feedback with backend
+    const result = backend.processFeedback(uuid, feedback);
+    if (result.error) {
+        res.status(400).json({ error: result.error });
         return;
     }
 
-    // Store feedback (in a real system)
-    console.log(`Received feedback for ${uuid}: ${feedback}`);
     res.json({ status: 'success' });
 });
 
