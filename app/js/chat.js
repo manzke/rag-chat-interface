@@ -381,6 +381,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             eventSource.addEventListener('complete', async () => {
                 console.log('Received complete event');
                 await client.stopClient(requestUuid);
+                if (eventSource) {
+                    eventSource.close();
+                    eventSource = null;
+                }
                 updateStatus('', 'Ready');
                 sendButton.classList.remove('stopping');
                 isWaitingForResponse = false;
@@ -392,12 +396,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             eventSource.addEventListener('error', async (event) => {
                 console.error('SSE connection error:', event);
-                await client.stopClient(requestUuid);
-                updateStatus('error', 'Connection error');
-                sendButton.classList.remove('stopping');
-                isWaitingForResponse = false;
-                disableInput(false);
-                showError('Failed to get response');
+                // Only call stopClient if we're not already stopping
+                if (isWaitingForResponse) {
+                    await client.stopClient(requestUuid);
+                    updateStatus('error', 'Connection error');
+                    sendButton.classList.remove('stopping');
+                    isWaitingForResponse = false;
+                    disableInput(false);
+                    showError('Failed to get response');
+                }
             });
 
             // Send the question
