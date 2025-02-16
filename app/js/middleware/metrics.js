@@ -71,32 +71,43 @@ export class ResponseMetricsMiddleware extends RAGMiddleware {
 
         // Handle streaming response metrics
         if (result instanceof EventSource) {
-            this.handleEventSourceMetrics(result);
+            // Clone the EventSource to add metrics without modifying the original
+            const originalAddEventListener = result.addEventListener.bind(result);
+            result.addEventListener = (type, listener, options) => {
+                if (type === 'answer' || type === 'telemetry') {
+                    const wrappedListener = (event) => {
+                        this.handleMetric(type, event);
+                        listener(event);
+                    };
+                    originalAddEventListener(type, wrappedListener, options);
+                } else {
+                    originalAddEventListener(type, listener, options);
+                }
+            };
         }
 
         return result;
     }
 
-    handleEventSourceMetrics(eventSource) {
-        let answerTokens = 0;
-
-        eventSource.addEventListener('answer', (event) => {
-            // Count tokens in answer
-            if (event.data) {
-                answerTokens += event.data.split(/\s+/).length;
-                this.metrics.recordAnswerTokens(answerTokens);
-            }
-        });
-
-        eventSource.addEventListener('telemetry', (event) => {
-            try {
-                const telemetry = JSON.parse(event.data);
-                if (telemetry.processing_time) {
-                    this.metrics.recordProcessingTime(telemetry.processing_time);
+    handleMetric(type, event) {
+        switch (type) {
+            case 'answer':
+                if (event.data) {
+                    const tokens = event.data.split(/\s+/).length;
+                    this.metrics.recordAnswerTokens(tokens);
                 }
-            } catch (error) {
-                // Ignore telemetry parsing errors
-            }
-        });
+                break;
+
+            case 'telemetry':
+                try {
+                    const telemetry = JSON.parse(event.data);
+                    if (telemetry.processing_time) {
+                        this.metrics.recordProcessingTime(telemetry.processing_time);
+                    }
+                } catch (error) {
+                    // Ignore telemetry parsing errors
+                }
+                break;
+        }
     }
 }

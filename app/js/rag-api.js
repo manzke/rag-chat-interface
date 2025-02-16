@@ -65,7 +65,14 @@ class RAGAPIBase {
             }
         };
 
-        return await this.middleware.handle(context);
+        const result = await this.middleware.handle(context);
+        
+        // If the result is an EventSource, return it directly without transformation
+        if (result instanceof EventSource) {
+            return result;
+        }
+        
+        return result;
     }
 
     async _execute(method, uuid, params) {
