@@ -734,7 +734,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 // Hide additional passages
                                 const passages = sourcesContainer.querySelectorAll('.source-passage');
                                 for (let i = 3; i < passages.length; i++) {
-                                    passages[i].style.display = 'none';
+                                    passages[i].remove();
                                 }
                                 showMoreButton.classList.remove('expanded');
                                 showMoreButton.innerHTML = `
