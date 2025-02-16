@@ -112,10 +112,40 @@ app.post('/api/v2/rag/ask', async (req, res) => {
         }
     });
 
-    // Process context from backend result
-    const { context } = result;
-    const contextParts = [];
+    // Process context and passages from backend result
+    const { context, passages } = result;
     
+    // Send initial telemetry with passage info
+    sendSSE(client.response, 'telemetry', {
+        telemetry: JSON.stringify({
+            telemetry: {
+                retrieval_query_generation_result_text: `GeneratedQueries[semanticQueries=[${question}], keywordQueries=[${context.query || ''}]]`,
+                usage: {
+                    prompt_tokens: 889,
+                    total_tokens: 915,
+                    completion_tokens: 26
+                },
+                retrieval_query_execution_number_of_passages_in_query_result: passages.length,
+                retrieval_final_number_of_retrieved_passages: passages.length,
+                retrieval_query_generation_duration: 1.743,
+                retrieval_query_execution_duration: 0.14,
+                retrieval_passage_processing_duration: 0.007,
+                detected_question_language: "German",
+                language_detection_duration: 0.0,
+                model: "hugging-quants/Meta-Llama-3.1-8B-Instruct-AWQ-INT4",
+                retrieval_threshold_passage_retrieval: 0.9212912,
+                retrieval_duration: 0.257,
+                retrieval_number_of_candidate_documents: passages.length + 2
+            }
+        }),
+        eventType: "telemetry"
+    });
+
+    // Send passages event
+    sendSSE(client.response, 'passages', { passages });
+
+    // Send context as part of the answer
+    const contextParts = [];
     if (context.docIds?.length) {
         contextParts.push(`Documents: ${context.docIds.join(', ')}`);
     }

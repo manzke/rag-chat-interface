@@ -65,14 +65,71 @@ export class RAGBackend {
             }
         }
 
+        // Generate sample passages based on the question
+        const passages = this.generateSamplePassages(data.question, docIds);
+
         return {
             success: true,
             context: {
                 docIds,
                 query,
                 profileId: data.profileId
-            }
+            },
+            passages
         };
+    }
+
+    /**
+     * Generate sample passages for demonstration
+     * @param {string} question The user's question
+     * @param {string[]} docIds Optional document IDs from filters
+     * @returns {Array} Array of passage objects
+     */
+    generateSamplePassages(question, docIds = []) {
+        const baseUrl = 'https://www.bmwk.de/Redaktion/DE/Artikel';
+        const now = new Date();
+        
+        // Generate 3-5 passages
+        const numPassages = 3 + Math.floor(Math.random() * 3);
+        const passages = [];
+
+        for (let i = 0; i < numPassages; i++) {
+            const score = 0.9 - (i * 0.15) + (Math.random() * 0.1); // Decreasing scores with some randomness
+            const docId = docIds[i] || crypto.randomUUID();
+            const path = ['Innovation', 'Digitale-Welt', 'Energie', 'Europa'][i % 4];
+            const filename = `document-${i + 1}.html`;
+            
+            passages.push({
+                id: docId,
+                text: [
+                    `This is a sample passage ${i + 1} related to "${question}". `,
+                    `It contains multiple sentences to demonstrate the content. `,
+                    `You can find more information in our documentation.`
+                ],
+                score,
+                metadata: {
+                    'accessInfo.source': ['bmwk'],
+                    'accessInfo.download.itemType': ['webpage'],
+                    'application': ['HTML'],
+                    'sourceType': ['Web'],
+                    'file.name': [filename],
+                    'file.extension': ['html'],
+                    'accessInfo.lastModifiedDate': [now.toISOString()],
+                    'title': [`BMWK - Sample Document ${i + 1}`, 'Opens in new window'],
+                    'accessInfo.download.itemId': [`${baseUrl}/${path}/${filename}`],
+                    'url': [`${baseUrl}/${path}/${filename}`],
+                    'links': [
+                        {
+                            url: `doc.do?action=fetchdocument&id=${crypto.randomUUID()}`,
+                            type: 'ACCESS',
+                            listPosition: 0
+                        }
+                    ]
+                }
+            });
+        }
+
+        return passages;
     }
 
     /**
