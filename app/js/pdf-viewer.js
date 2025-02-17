@@ -412,9 +412,14 @@ class PDFViewer {
             this.pageRendering = false;
             this.container.querySelector('.page-num').textContent = num;
 
-            // Update thumbnail selection
-            this.container.querySelectorAll('.thumbnail-wrapper').forEach(wrapper => {
-                wrapper.classList.toggle('active', wrapper.dataset.page === String(num));
+            // Update thumbnail selection and scroll into view
+            const thumbnails = this.container.querySelectorAll('.thumbnail-wrapper');
+            thumbnails.forEach(wrapper => {
+                const isActive = wrapper.dataset.page === String(num);
+                wrapper.classList.toggle('active', isActive);
+                if (isActive) {
+                    wrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
             });
 
             // Re-apply search highlights if there are search results for this page
