@@ -239,25 +239,83 @@ class PDFViewer {
         document.addEventListener('keydown', handleEsc);
 
         // Keyboard navigation and shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (container.contains(document.activeElement)) {
-                if (e.key === 'ArrowLeft' && !e.ctrlKey) {
+        const handleKeydown = (e) => {
+            // Don't handle keys if we're in an input field
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                return;
+            }
+
+            // Handle keyboard shortcuts
+            switch (e.key) {
+                case 'ArrowLeft':
+                case 'PageUp':
+                case 'p':
+                case 'k':
+                    e.preventDefault();
                     this.prevPage();
-                } else if (e.key === 'ArrowRight' && !e.ctrlKey) {
+                    break;
+
+                case 'ArrowRight':
+                case 'PageDown':
+                case 'n':
+                case 'j':
+                    e.preventDefault();
                     this.nextPage();
-                } else if (e.key === 'ArrowUp' && e.ctrlKey) {
-                    this.prevSearchResult();
-                } else if (e.key === 'ArrowDown' && e.ctrlKey) {
-                    this.nextSearchResult();
-                } else if (e.key === 'F11') {
+                    break;
+
+                case 'Home':
+                    e.preventDefault();
+                    this.pageNum = 1;
+                    this.renderPage(1);
+                    break;
+
+                case 'End':
+                    e.preventDefault();
+                    this.pageNum = this.pdfDoc.numPages;
+                    this.renderPage(this.pdfDoc.numPages);
+                    break;
+
+                case 'ArrowUp':
+                    if (e.ctrlKey) {
+                        e.preventDefault();
+                        this.prevSearchResult();
+                    }
+                    break;
+
+                case 'ArrowDown':
+                    if (e.ctrlKey) {
+                        e.preventDefault();
+                        this.nextSearchResult();
+                    }
+                    break;
+
+                case 'f':
+                    if (e.ctrlKey || e.metaKey) {
+                        e.preventDefault();
+                        searchInput.focus();
+                    }
+                    break;
+
+                case 'F11':
                     e.preventDefault();
                     this.toggleFullscreen();
-                } else if (e.key === 'f' && (e.ctrlKey || e.metaKey)) {
-                    e.preventDefault();
-                    searchInput.focus();
-                }
+                    break;
+
+                case 'Escape':
+                    if (document.fullscreenElement) {
+                        document.exitFullscreen();
+                    }
+                    break;
             }
-        });
+        };
+
+        document.addEventListener('keydown', handleKeydown);
+        
+        // Clean up event listener on close
+        const cleanup = () => {
+            document.removeEventListener('keydown', handleKeydown);
+        };
+        overlay.addEventListener('remove', cleanup);
         
         // Prevent body scrolling when viewer is open
         document.body.style.overflow = 'hidden';
