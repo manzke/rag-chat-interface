@@ -11,28 +11,36 @@ class PDFViewer {
     }
 
     createViewer(url) {
+        const overlay = document.createElement('div');
+        overlay.className = 'pdf-overlay';
+        
         const container = document.createElement('div');
         container.className = 'pdf-container';
 
-        // Toolbar
-        const toolbar = document.createElement('div');
-        toolbar.className = 'pdf-toolbar';
-        toolbar.innerHTML = `
+        // Header with toolbar
+        const header = document.createElement('div');
+        header.className = 'pdf-header';
+        header.innerHTML = `
             <div class="pdf-controls">
                 <button class="pdf-prev" title="Previous">
                     <i class="fas fa-chevron-left"></i>
                 </button>
-                <span>Page: <span class="page-num">1</span> / <span class="page-count">--</span></span>
+                <span>Page <span class="page-num">1</span> of <span class="page-count">--</span></span>
                 <button class="pdf-next" title="Next">
                     <i class="fas fa-chevron-right"></i>
                 </button>
-                <button class="pdf-zoomin" title="Zoom In">
-                    <i class="fas fa-search-plus"></i>
-                </button>
-                <button class="pdf-zoomout" title="Zoom Out">
-                    <i class="fas fa-search-minus"></i>
-                </button>
+                <div class="pdf-zoom-controls">
+                    <button class="pdf-zoomout" title="Zoom Out">
+                        <i class="fas fa-search-minus"></i>
+                    </button>
+                    <button class="pdf-zoomin" title="Zoom In">
+                        <i class="fas fa-search-plus"></i>
+                    </button>
+                </div>
             </div>
+            <button class="pdf-close" title="Close (Esc)">
+                <i class="fas fa-times"></i>
+            </button>
         `;
 
         // Viewer element
@@ -41,23 +49,51 @@ class PDFViewer {
         const canvas = document.createElement('canvas');
         viewer.appendChild(canvas);
 
-        container.appendChild(toolbar);
+        container.appendChild(header);
         container.appendChild(viewer);
+        overlay.appendChild(container);
 
         this.container = container;
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
 
         // Event listeners
-        toolbar.querySelector('.pdf-prev').addEventListener('click', () => this.prevPage());
-        toolbar.querySelector('.pdf-next').addEventListener('click', () => this.nextPage());
-        toolbar.querySelector('.pdf-zoomin').addEventListener('click', () => this.zoomIn());
-        toolbar.querySelector('.pdf-zoomout').addEventListener('click', () => this.zoomOut());
+        header.querySelector('.pdf-prev').addEventListener('click', () => this.prevPage());
+        header.querySelector('.pdf-next').addEventListener('click', () => this.nextPage());
+        header.querySelector('.pdf-zoomin').addEventListener('click', () => this.zoomIn());
+        header.querySelector('.pdf-zoomout').addEventListener('click', () => this.zoomOut());
+        
+        // Close button handler
+        const closeViewer = () => {
+            overlay.remove();
+            document.body.style.overflow = '';
+        };
+        
+        header.querySelector('.pdf-close').addEventListener('click', closeViewer);
+        
+        // Close on overlay click (but not when clicking the viewer)
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                closeViewer();
+            }
+        });
+        
+        // ESC key handler
+        const handleEsc = (e) => {
+            if (e.key === 'Escape') {
+                closeViewer();
+                document.removeEventListener('keydown', handleEsc);
+            }
+        };
+        document.addEventListener('keydown', handleEsc);
+        
+        // Prevent body scrolling when viewer is open
+        document.body.style.overflow = 'hidden';
 
         // Load PDF
         this.loadPDF(url);
 
-        return container;
+        return overlay;
     }
 
     async loadPDF(url) {
