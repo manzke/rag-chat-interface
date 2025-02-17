@@ -12,6 +12,7 @@ class PDFViewer {
         this.searchResults = [];
         this.currentSearchIndex = -1;
         this.passages = [];
+        this.isFullscreen = false;
     }
 
     createViewer(url, passages = []) {
@@ -94,6 +95,17 @@ class PDFViewer {
                         Match <span class="current-match">0</span> of <span class="total-matches">0</span>
                     </span>
                 </div>
+                <div class="pdf-action-controls">
+                    <button class="pdf-fullscreen" title="Toggle Fullscreen (F11)">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                    <button class="pdf-download" title="Download PDF">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="pdf-source" title="Open Original Source">
+                        <i class="fas fa-external-link-alt"></i>
+                    </button>
+                </div>
             </div>
             <button class="pdf-close" title="Close (Esc)">
                 <i class="fas fa-times"></i>
@@ -117,6 +129,10 @@ class PDFViewer {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
 
+        // Store URLs
+        this.pdfUrl = url;
+        this.sourceUrl = url; // Can be different if provided
+
         // Event listeners for navigation
         header.querySelector('.pdf-prev').addEventListener('click', () => this.prevPage());
         header.querySelector('.pdf-next').addEventListener('click', () => this.nextPage());
@@ -124,6 +140,28 @@ class PDFViewer {
         header.querySelector('.pdf-zoomout').addEventListener('click', () => this.zoomOut());
         header.querySelector('.pdf-rotate-left').addEventListener('click', () => this.rotate(-90));
         header.querySelector('.pdf-rotate-right').addEventListener('click', () => this.rotate(90));
+
+        // Action controls
+        const fullscreenBtn = header.querySelector('.pdf-fullscreen');
+        fullscreenBtn.addEventListener('click', () => this.toggleFullscreen());
+
+        header.querySelector('.pdf-download').addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.href = this.pdfUrl;
+            link.download = this.pdfUrl.split('/').pop() || 'document.pdf';
+            link.click();
+        });
+
+        header.querySelector('.pdf-source').addEventListener('click', () => {
+            window.open(this.sourceUrl, '_blank');
+        });
+
+        // Fullscreen change handler
+        document.addEventListener('fullscreenchange', () => {
+            this.isFullscreen = !!document.fullscreenElement;
+            const icon = fullscreenBtn.querySelector('i');
+            icon.className = this.isFullscreen ? 'fas fa-compress' : 'fas fa-expand';
+        });
 
         // Search functionality
         const searchInput = header.querySelector('.pdf-search-input');
@@ -186,7 +224,7 @@ class PDFViewer {
         };
         document.addEventListener('keydown', handleEsc);
 
-        // Keyboard navigation
+        // Keyboard navigation and shortcuts
         document.addEventListener('keydown', (e) => {
             if (container.contains(document.activeElement)) {
                 if (e.key === 'ArrowLeft' && !e.ctrlKey) {
@@ -197,6 +235,12 @@ class PDFViewer {
                     this.prevSearchResult();
                 } else if (e.key === 'ArrowDown' && e.ctrlKey) {
                     this.nextSearchResult();
+                } else if (e.key === 'F11') {
+                    e.preventDefault();
+                    this.toggleFullscreen();
+                } else if (e.key === 'f' && (e.ctrlKey || e.metaKey)) {
+                    e.preventDefault();
+                    searchInput.focus();
                 }
             }
         });
@@ -520,6 +564,18 @@ class PDFViewer {
     rotate(angle) {
         this.rotation = (this.rotation + angle + 360) % 360;
         this.renderPage(this.pageNum);
+    }
+
+    async toggleFullscreen() {
+        try {
+            if (!this.isFullscreen) {
+                await this.container.requestFullscreen();
+            } else {
+                await document.exitFullscreen();
+            }
+        } catch (error) {
+            console.error('Error toggling fullscreen:', error);
+        }
     }
 }
 
