@@ -112,7 +112,11 @@ class PDFViewer {
             </button>
         `;
 
-        // Create viewer structure
+        // Create main content area
+        const mainContent = document.createElement('div');
+        mainContent.className = 'pdf-main-content';
+
+        // Create viewer
         const viewer = document.createElement('div');
         viewer.className = 'pdf-viewer';
         
@@ -129,10 +133,10 @@ class PDFViewer {
         viewer.appendChild(pageWrapper);
 
         // Assemble the components
-        content.appendChild(header);
-        content.appendChild(viewer);
+        mainContent.appendChild(header);
+        mainContent.appendChild(viewer);
         container.appendChild(sidebar);
-        container.appendChild(content);
+        container.appendChild(mainContent);
         overlay.appendChild(container);
 
         this.container = container;

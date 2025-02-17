@@ -25,13 +25,20 @@
     position: relative;
     z-index: 1;
     display: flex;
-    flex-direction: column;
     width: 95%;
     height: 95%;
     background: var(--color-background);
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+}
+
+.pdf-main-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    height: 100%;
 }
 
 /* Header */
@@ -110,6 +117,9 @@
     overflow: auto;
     padding: 16px;
     background-color: #f0f0f0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
 }
 
 .pdf-page-wrapper {
@@ -123,10 +133,12 @@
     background: white;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     border-radius: 4px;
+    overflow: hidden;
 }
 
 .pdf-page-container canvas {
     display: block;
+    margin: 0 auto;
 }
 
 /* Text Layer */
