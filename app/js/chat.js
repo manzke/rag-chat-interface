@@ -2,7 +2,11 @@ import { client } from './rag-client.js';
 import { processMarkdown, initializeCodeCopyButtons } from './markdown.js';
 import { createPDFViewer } from './pdf-viewer.js';
 
+import { initializeMobileMenu } from './mobile-menu.js';
+
 document.addEventListener('DOMContentLoaded', async () => {
+    // Initialize mobile menu
+    initializeMobileMenu();
     // Load active assistant
     const activeAssistant = JSON.parse(localStorage.getItem('activeAssistant'));
     if (!activeAssistant) {

@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/markdown.css">
     <link rel="stylesheet" href="../css/pdf-viewer.css">
+    <link rel="stylesheet" href="../css/mobile.css">
     <!-- Highlight.js CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css" id="hljs-light-theme">
     <!-- Add Font Awesome for icons -->
@@ -24,13 +25,56 @@
         <div class="main-content">
             <div class="chat-container">
                 <div class="status-bar" id="status-bar">
-                    <button class="back-button" id="back-button" title="Back to Assistant Selection">
-                        <i class="fas fa-arrow-left"></i>
-                    </button>
-                    <span class="assistant-name" id="assistant-name"></span>
-                    <div class="status-container">
+                    <div class="status-left">
+                        <button class="back-button" id="back-button" title="Back to Assistant Selection">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <span class="assistant-name" id="assistant-name"></span>
+                    </div>
+                    <div class="status-center">
                         <span class="status-indicator" id="status-indicator"></span>
                         <span class="status-text" id="status-text">Ready</span>
+                    </div>
+                    <div class="status-right">
+                        <!-- Desktop Controls -->
+                        <div class="desktop-controls">
+                            <button class="theme-toggle" id="theme-toggle" title="Toggle Dark/Light Mode">
+                                <i class="fas fa-moon"></i>
+                            </button>
+                            <button class="export-button" id="export-button" title="Export chat">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            <button class="reset-button" id="reset-button" title="Clear chat">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <button class="expert-mode-toggle" id="expert-mode-toggle" title="Expert Mode">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                        </div>
+                        <!-- Mobile Menu -->
+                        <div class="mobile-menu">
+                            <button class="menu-toggle" id="menu-toggle" title="Menu">
+                                <i class="fas fa-bars"></i>
+                            </button>
+                            <div class="menu-dropdown" id="menu-dropdown">
+                                <button class="menu-item theme-toggle-mobile" title="Toggle Dark/Light Mode">
+                                    <i class="fas fa-moon"></i>
+                                    <span>Dark Mode</span>
+                                </button>
+                                <button class="menu-item export-button-mobile" title="Export chat">
+                                    <i class="fas fa-download"></i>
+                                    <span>Export Chat</span>
+                                </button>
+                                <button class="menu-item reset-button-mobile" title="Clear chat">
+                                    <i class="fas fa-trash"></i>
+                                    <span>Clear Chat</span>
+                                </button>
+                                <button class="menu-item expert-mode-toggle-mobile" title="Expert Mode">
+                                    <i class="fas fa-cog"></i>
+                                    <span>Expert Mode</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="chat-messages" id="chat-messages"></div>
@@ -219,6 +263,7 @@
         </div>
     </template>
 
+    <script type="module" src="../js/mobile-menu.js"></script>
     <script type="module" src="../js/chat.js"></script>
 </body>
 </html>
