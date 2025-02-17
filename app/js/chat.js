@@ -3,10 +3,14 @@ import { processMarkdown, initializeCodeCopyButtons } from './markdown.js';
 import { createPDFViewer } from './pdf-viewer.js';
 
 import { initializeMobileMenu } from './mobile-menu.js';
+import { initializeVoiceInput } from './voice-input.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     // Initialize mobile menu
     initializeMobileMenu();
+    
+    // Initialize voice input
+    initializeVoiceInput();
     // Load active assistant
     const activeAssistant = JSON.parse(localStorage.getItem('activeAssistant'));
     if (!activeAssistant) {

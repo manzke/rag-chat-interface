@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../css/markdown.css">
     <link rel="stylesheet" href="../css/pdf-viewer.css">
     <link rel="stylesheet" href="../css/mobile.css">
+    <link rel="stylesheet" href="../css/voice-input.css">
     <!-- Highlight.js CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css" id="hljs-light-theme">
     <!-- Add Font Awesome for icons -->
@@ -58,11 +59,26 @@
                 </div>
                 <div class="chat-messages" id="chat-messages"></div>
                 <div class="input-container">
+                    <button id="voice-input-button" class="voice-input-button" title="Voice Input (Ctrl+M)">
+                        <i class="fas fa-microphone"></i>
+                    </button>
                     <textarea id="user-input" placeholder="Type your message here..." rows="1"></textarea>
                     <button id="send-button">
                         <i class="fas fa-paper-plane send-icon"></i>
                         <i class="fas fa-square-full stop-icon"></i>
                     </button>
+                </div>
+                <!-- Voice Input Feedback -->
+                <div class="voice-feedback" id="voice-feedback">
+                    <div class="voice-feedback-content">
+                        <div class="voice-waves">
+                            <div class="wave"></div>
+                            <div class="wave"></div>
+                            <div class="wave"></div>
+                        </div>
+                        <div class="voice-text">Listening...</div>
+                        <div class="voice-instructions">Click microphone or press Ctrl+M to stop</div>
+                    </div>
                 </div>
             </div>
         </div>
