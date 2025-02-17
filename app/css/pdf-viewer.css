@@ -98,11 +98,14 @@
     justify-content: center;
     padding: 16px;
     background-color: #f0f0f0;
+    position: relative;
 }
 
 .pdf-canvas-container canvas {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     background-color: white;
+    position: relative;
+    z-index: 1;
 }
 
 /* Error State */
@@ -355,8 +358,38 @@
     left: 0;
     right: 0;
     bottom: 0;
-    pointer-events: none;
     opacity: 0.2;
+    pointer-events: auto;
+    mix-blend-mode: multiply;
+    transform-origin: 0 0;
+}
+
+.pdf-text-layer > span {
+    color: transparent;
+    position: absolute;
+    white-space: pre;
+    cursor: text;
+    transform-origin: 0% 0%;
+    line-height: 1;
+}
+
+.pdf-text-layer > span::selection {
+    background: rgba(0, 0, 255, 0.3);
+}
+
+.pdf-text-layer > span::-moz-selection {
+    background: rgba(0, 0, 255, 0.3);
+}
+
+.pdf-text-layer .highlight {
+    margin: -1px;
+    padding: 1px;
+    background-color: rgba(180, 0, 170, 0.2);
+    border-radius: 4px;
+}
+
+.pdf-text-layer .highlight.selected {
+    background-color: rgba(0, 100, 0, 0.2);
 }
 
 .search-highlight {

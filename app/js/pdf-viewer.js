@@ -9,10 +9,6 @@ class PDFViewer {
         this.rotation = 0;
         this.searchResults = [];
         this.currentSearchIndex = -1;
-        this.annotations = new Map();
-        this.isDrawing = false;
-        this.isHighlighting = false;
-        this.drawingContext = null;
     }
 
     createViewer(url) {
@@ -57,17 +53,6 @@ class PDFViewer {
                     <span class="pdf-zoom-level">100%</span>
                     <button class="pdf-zoom-in" title="Zoom In">
                         <i class="fas fa-search-plus"></i>
-                    </button>
-                </div>
-                <div class="pdf-annotation-controls">
-                    <button class="pdf-toggle-draw" title="Draw">
-                        <i class="fas fa-pencil-alt"></i>
-                    </button>
-                    <button class="pdf-toggle-highlight" title="Highlight">
-                        <i class="fas fa-highlighter"></i>
-                    </button>
-                    <button class="pdf-add-note" title="Add Note">
-                        <i class="fas fa-sticky-note"></i>
                     </button>
                 </div>
                 <div class="pdf-view-controls">
@@ -185,18 +170,20 @@ class PDFViewer {
 
         // Clear previous content
         textLayer.innerHTML = '';
+        
+        // Set text layer viewport and position
+        textLayer.style.width = `${viewport.width}px`;
+        textLayer.style.height = `${viewport.height}px`;
+        
+        // Set the scale factor CSS variable
+        textLayer.style.setProperty('--scale-factor', viewport.scale);
 
         // Get text content
         const textContent = await page.getTextContent();
 
-        // Set text layer viewport and position
-        textLayer.style.width = `${viewport.width}px`;
-        textLayer.style.height = `${viewport.height}px`;
-        textLayer.style.transform = `scale(${this.zoom})`;
-
-        // Render text layer
+        // Render text layer with the new textContentSource parameter
         pdfjsLib.renderTextLayer({
-            textContent: textContent,
+            textContentSource: textContent,
             container: textLayer,
             viewport: viewport,
             textDivs: []
@@ -517,157 +504,6 @@ class PDFViewer {
 
         // Annotation tools
         this.initializeAnnotationTools(container, canvas, annotationLayer);
-    }
-
-    initializeAnnotationTools(container, canvas, annotationLayer) {
-        const drawButton = container.querySelector('.pdf-toggle-draw');
-        const highlightButton = container.querySelector('.pdf-toggle-highlight');
-        const noteButton = container.querySelector('.pdf-add-note');
-
-        // Drawing
-        drawButton.addEventListener('click', () => {
-            this.isDrawing = !this.isDrawing;
-            this.isHighlighting = false;
-            drawButton.classList.toggle('active');
-            highlightButton.classList.remove('active');
-            annotationLayer.style.pointerEvents = this.isDrawing ? 'auto' : 'none';
-        });
-
-        // Highlighting
-        highlightButton.addEventListener('click', () => {
-            this.isHighlighting = !this.isHighlighting;
-            this.isDrawing = false;
-            highlightButton.classList.toggle('active');
-            drawButton.classList.remove('active');
-            annotationLayer.style.pointerEvents = this.isHighlighting ? 'auto' : 'none';
-        });
-
-        // Notes
-        noteButton.addEventListener('click', () => {
-            const note = prompt('Enter your note:');
-            if (note) {
-                this.addNote(note, annotationLayer);
-            }
-        });
-
-        // Drawing events
-        let isDrawing = false;
-        let lastX = 0;
-        let lastY = 0;
-
-        annotationLayer.addEventListener('mousedown', (e) => {
-            if (!this.isDrawing && !this.isHighlighting) return;
-
-            isDrawing = true;
-            const rect = annotationLayer.getBoundingClientRect();
-            lastX = e.clientX - rect.left;
-            lastY = e.clientY - rect.top;
-        });
-
-        annotationLayer.addEventListener('mousemove', (e) => {
-            if (!isDrawing) return;
-
-            const rect = annotationLayer.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-
-            if (this.isDrawing) {
-                this.drawLine(annotationLayer, lastX, lastY, x, y);
-            } else if (this.isHighlighting) {
-                this.highlight(annotationLayer, lastX, lastY, x, y);
-            }
-
-            lastX = x;
-            lastY = y;
-        });
-
-        annotationLayer.addEventListener('mouseup', () => {
-            isDrawing = false;
-        });
-
-        annotationLayer.addEventListener('mouseleave', () => {
-            isDrawing = false;
-        });
-    }
-
-    drawLine(layer, x1, y1, x2, y2) {
-        if (!this.drawingContext) {
-            this.drawingContext = layer.getContext('2d');
-            this.drawingContext.strokeStyle = '#000000';
-            this.drawingContext.lineWidth = 2;
-            this.drawingContext.lineCap = 'round';
-        }
-
-        this.drawingContext.beginPath();
-        this.drawingContext.moveTo(x1, y1);
-        this.drawingContext.lineTo(x2, y2);
-        this.drawingContext.stroke();
-    }
-
-    highlight(layer, x1, y1, x2, y2) {
-        if (!this.drawingContext) {
-            this.drawingContext = layer.getContext('2d');
-            this.drawingContext.fillStyle = 'rgba(255, 255, 0, 0.3)';
-        }
-
-        const width = Math.abs(x2 - x1);
-        const height = Math.abs(y2 - y1);
-        const x = Math.min(x1, x2);
-        const y = Math.min(y1, y2);
-
-        this.drawingContext.fillRect(x, y, width, height);
-    }
-
-    addNote(text, layer) {
-        const note = document.createElement('div');
-        note.className = 'pdf-note';
-        note.innerHTML = `
-            <div class="note-header">
-                <i class="fas fa-sticky-note"></i>
-                <button class="close-note">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="note-content">${text}</div>
-        `;
-
-        note.style.left = '50%';
-        note.style.top = '50%';
-        layer.appendChild(note);
-
-        // Make note draggable
-        let isDragging = false;
-        let currentX;
-        let currentY;
-        let initialX;
-        let initialY;
-        let xOffset = 0;
-        let yOffset = 0;
-
-        note.querySelector('.note-header').addEventListener('mousedown', (e) => {
-            isDragging = true;
-            initialX = e.clientX - xOffset;
-            initialY = e.clientY - yOffset;
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            if (isDragging) {
-                e.preventDefault();
-                currentX = e.clientX - initialX;
-                currentY = e.clientY - initialY;
-                xOffset = currentX;
-                yOffset = currentY;
-                note.style.transform = `translate(${currentX}px, ${currentY}px)`;
-            }
-        });
-
-        document.addEventListener('mouseup', () => {
-            isDragging = false;
-        });
-
-        note.querySelector('.close-note').addEventListener('click', () => {
-            note.remove();
-        });
     }
 }
 
