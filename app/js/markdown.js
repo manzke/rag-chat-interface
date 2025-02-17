@@ -92,6 +92,16 @@ renderer.code = (code, language) => {
     `;
 };
 
+// Handle links including PDFs
+renderer.link = (href, title, text) => {
+    if (href.toLowerCase().endsWith('.pdf')) {
+        return `<a href="javascript:void(0)" onclick="handlePDFLink('${href}')" title="${title || ''}">${text}</a>`;
+    } else if (href.startsWith('http')) {
+        return `<a href="${href}" title="${title || ''}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+    }
+    return `<a href="${href}" title="${title || ''}">${text}</a>`;
+};
+
 // Add custom classes to tables
 renderer.table = (header, body) => {
     return `

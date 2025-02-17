@@ -29,30 +29,94 @@ class PDFViewer {
                     <i class="fas fa-chevron-right"></i>
                 </button>
             </div>
-            <div class="pdf-zoom-controls">
-                <button class="pdf-zoom-out" title="Zoom Out">
-                    <i class="fas fa-search-minus"></i>
-                </button>
-                <span class="pdf-zoom-level">100%</span>
-                <button class="pdf-zoom-in" title="Zoom In">
-                    <i class="fas fa-search-plus"></i>
-                </button>
+            <div class="pdf-search">
+                <div class="search-input">
+                    <input type="text" placeholder="Search PDF..." class="pdf-search-input">
+                    <button class="pdf-search-prev" title="Previous Match" disabled>
+                        <i class="fas fa-angle-up"></i>
+                    </button>
+                    <button class="pdf-search-next" title="Next Match" disabled>
+                        <i class="fas fa-angle-down"></i>
+                    </button>
+                </div>
+                <span class="pdf-search-results" style="display: none">
+                    Match <span class="current-match">0</span> of <span class="total-matches">0</span>
+                </span>
             </div>
-            <div class="pdf-rotate-controls">
-                <button class="pdf-rotate" title="Rotate">
-                    <i class="fas fa-redo"></i>
-                </button>
-            </div>
-            <div class="pdf-download">
-                <a href="${url}" download title="Download PDF">
-                    <i class="fas fa-download"></i>
-                </a>
+            <div class="pdf-tools">
+                <div class="pdf-zoom-controls">
+                    <button class="pdf-zoom-out" title="Zoom Out">
+                        <i class="fas fa-search-minus"></i>
+                    </button>
+                    <span class="pdf-zoom-level">100%</span>
+                    <button class="pdf-zoom-in" title="Zoom In">
+                        <i class="fas fa-search-plus"></i>
+                    </button>
+                </div>
+                <div class="pdf-annotation-controls">
+                    <button class="pdf-toggle-draw" title="Draw">
+                        <i class="fas fa-pencil-alt"></i>
+                    </button>
+                    <button class="pdf-toggle-highlight" title="Highlight">
+                        <i class="fas fa-highlighter"></i>
+                    </button>
+                    <button class="pdf-add-note" title="Add Note">
+                        <i class="fas fa-sticky-note"></i>
+                    </button>
+                </div>
+                <div class="pdf-view-controls">
+                    <button class="pdf-rotate" title="Rotate">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                    <button class="pdf-toggle-thumbnails" title="Toggle Thumbnails">
+                        <i class="fas fa-th-large"></i>
+                    </button>
+                    <button class="pdf-fullscreen" title="Fullscreen">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+                <div class="pdf-download">
+                    <a href="${url}" download title="Download PDF">
+                        <i class="fas fa-download"></i>
+                    </a>
+                </div>
             </div>
         `;
+
+        // Create main viewer area
+        const viewerArea = document.createElement('div');
+        viewerArea.className = 'pdf-viewer-area';
+        
+        // Create thumbnails sidebar
+        const thumbnailsSidebar = document.createElement('div');
+        thumbnailsSidebar.className = 'pdf-thumbnails';
+        thumbnailsSidebar.innerHTML = `
+            <div class="thumbnails-header">
+                <h4>Pages</h4>
+                <button class="close-thumbnails">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="thumbnails-container"></div>
+        `;
+        viewerArea.appendChild(thumbnailsSidebar);
 
         // Create canvas container
         const canvasContainer = document.createElement('div');
         canvasContainer.className = 'pdf-canvas-container';
+        const canvas = document.createElement('canvas');
+        canvasContainer.appendChild(canvas);
+        
+        // Create annotation layer
+        const annotationLayer = document.createElement('div');
+        annotationLayer.className = 'pdf-annotation-layer';
+        canvasContainer.appendChild(annotationLayer);
+
+        viewerArea.appendChild(canvasContainer);
+        
+        // Add elements to container
+        container.appendChild(toolbar);
+        container.appendChild(viewerArea);
         const canvas = document.createElement('canvas');
         canvasContainer.appendChild(canvas);
 
