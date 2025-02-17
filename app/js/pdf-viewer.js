@@ -11,9 +11,11 @@ class PDFViewer {
     }
 
     createViewer(url) {
+        // Create modal overlay
         const overlay = document.createElement('div');
         overlay.className = 'pdf-overlay';
         
+        // Create viewer container
         const container = document.createElement('div');
         container.className = 'pdf-container';
 
@@ -65,7 +67,19 @@ class PDFViewer {
         
         // Close button handler
         const closeViewer = () => {
+            // Clean up resources
+            if (this.pdfDoc) {
+                this.pdfDoc.destroy();
+                this.pdfDoc = null;
+            }
+            
+            // Remove event listeners
+            document.removeEventListener('keydown', handleEsc);
+            
+            // Remove the viewer from DOM
             overlay.remove();
+            
+            // Restore body scroll
             document.body.style.overflow = '';
         };
         
@@ -82,7 +96,6 @@ class PDFViewer {
         const handleEsc = (e) => {
             if (e.key === 'Escape') {
                 closeViewer();
-                document.removeEventListener('keydown', handleEsc);
             }
         };
         document.addEventListener('keydown', handleEsc);
