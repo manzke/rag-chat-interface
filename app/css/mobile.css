@@ -1,132 +1,299 @@
-/* Status Bar Layout */
-.status-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 16px;
-    background-color: var(--color-background);
-    border-bottom: 1px solid var(--color-borderColor);
-}
-
-.status-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.status-center {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.status-right {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.back-button {
-    background: none;
-    border: none;
-    padding: 8px;
-    cursor: pointer;
-    color: var(--color-text);
-}
-
-.assistant-name {
-    font-weight: 500;
-    color: var(--color-text);
-}
-
-/* Mobile Menu */
-.mobile-menu {
-    display: none;
-    position: relative;
-}
-
-.menu-toggle {
-    background: none;
-    border: none;
-    padding: 8px;
-    cursor: pointer;
-    color: var(--color-text);
-    border-radius: 4px;
-    transition: all 0.2s ease;
-}
-
-.menu-toggle:hover {
-    background-color: var(--color-messageBackground);
-}
-
-.menu-dropdown {
-    position: absolute;
-    top: calc(100% + 8px);
-    right: 0;
-    background-color: var(--color-background);
-    border: 1px solid var(--color-borderColor);
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    min-width: 200px;
-    display: none;
-    z-index: 1000;
-    padding: 4px;
-}
-
-.menu-dropdown.show {
-    display: block;
-    animation: menuFadeIn 0.2s ease;
-}
-
-.menu-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    width: 100%;
-    border: none;
-    background: white;
-    color: var(--color-text);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-align: left;
-    border-radius: 4px;
-}
-
-.menu-item:focus {
-    background-color: black;
-    border: 1px solid black;
-}
-
-.menu-item i {
-    width: 16px;
-    text-align: center;
-}
-
-/* Mobile Responsive */
+/* Mobile and Touch Optimizations */
 @media (max-width: 768px) {
+    /* General Layout */
+    body {
+        overflow: hidden;
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .app-container {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .main-content {
+        flex: 1;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .chat-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Status Bar */
+    .status-bar {
+        padding: 8px 12px;
+        gap: 8px;
+    }
+
+    .assistant-name {
+        font-size: 1rem;
+        max-width: 150px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Desktop Controls */
     .desktop-controls {
         display: none;
     }
 
+    /* Mobile Menu */
     .mobile-menu {
         display: block;
+        position: relative;
     }
 
-    .status-bar {
-        padding: 8px 12px;
+    .menu-toggle {
+        padding: 8px;
+        min-width: 44px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        color: var(--color-text);
+        cursor: pointer;
+        border-radius: 4px;
     }
 
-    .assistant-name {
-        max-width: 150px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+    .menu-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background-color: var(--color-background);
+        border: 1px solid var(--color-borderColor);
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        min-width: 200px;
+        z-index: 1000;
+        display: none;
+        margin-top: 8px;
     }
 
-    .status-center {
+    .menu-dropdown.show {
+        display: block;
+        animation: menuFadeIn 0.2s ease;
+    }
+
+    .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        width: 100%;
+        border: none;
+        background: none;
+        color: var(--color-text);
+        cursor: pointer;
+        transition: background-color 0.2s;
+        text-align: left;
+    }
+
+    .menu-item:hover {
+        background-color: var(--color-messageBackground);
+    }
+
+    .menu-item i {
+        width: 20px;
+        text-align: center;
+    }
+
+    /* Chat Messages */
+    .chat-messages {
         flex: 1;
-        justify-content: right;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 12px;
+    }
+
+    .message {
+        max-width: 100%;
+        margin: 8px 0;
+    }
+
+    .message-content {
+        font-size: 0.95rem;
+        padding: 10px;
+    }
+
+    /* Input Area */
+    .input-container {
+        padding: 8px;
+        gap: 8px;
+        background-color: var(--color-background);
+        border-top: 1px solid var(--color-borderColor);
+        position: relative;
+    }
+
+    .input-container textarea {
+        font-size: 1rem;
+        padding: 8px;
+        max-height: 120px;
+    }
+
+    .input-container button {
+        padding: 8px;
+        min-width: 40px;
+        min-height: 40px;
+    }
+
+    /* Sources Section */
+    .message-sources {
+        margin-top: 8px;
+    }
+
+    .sources-expanded {
+        max-height: 60vh;
+    }
+
+    .sources-toolbar {
+        flex-direction: column;
+        gap: 8px;
+        padding: 8px;
+    }
+
+    .search-filter,
+    .sort-options,
+    .filter-options {
+        width: 100%;
+    }
+
+    /* Expert Mode */
+    .expert-panel {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+    }
+
+    .expert-panel-content {
+        padding: 16px;
+        max-height: calc(100vh - 120px);
+    }
+
+    /* PDF Viewer */
+    .pdf-container {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+    }
+
+    .pdf-header {
+        padding: 8px;
+    }
+
+    .pdf-controls {
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .pdf-search-controls {
+        order: 2;
+        width: 100%;
+        max-width: none;
+    }
+
+    .pdf-viewer {
+        padding: 8px;
+    }
+
+    /* Touch Targets */
+    button,
+    .action-button,
+    .feedback-button,
+    .menu-item {
+        min-width: 44px;
+        min-height: 44px;
+        padding: 12px;
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 3px;
+    }
+
+    /* Safe Areas */
+    @supports (padding: max(0px)) {
+        .status-bar {
+            padding-top: max(8px, env(safe-area-inset-top));
+            padding-left: max(12px, env(safe-area-inset-left));
+            padding-right: max(12px, env(safe-area-inset-right));
+        }
+
+        .input-container {
+            padding-bottom: max(8px, env(safe-area-inset-bottom));
+            padding-left: max(8px, env(safe-area-inset-left));
+            padding-right: max(8px, env(safe-area-inset-right));
+        }
+    }
+}
+
+/* Tablet Optimizations */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .message {
+        max-width: 85%;
+    }
+
+    .sources-toolbar {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .search-filter {
+        width: 100%;
+    }
+}
+
+/* Landscape Mode */
+@media (max-width: 768px) and (orientation: landscape) {
+    .input-container {
+        position: sticky;
+        bottom: 0;
+    }
+
+    .chat-messages {
+        max-height: calc(100vh - 120px);
+    }
+
+    .sources-expanded {
+        max-height: 40vh;
+    }
+}
+
+/* Dark Mode and High Contrast */
+@media (prefers-color-scheme: dark) {
+    .input-container {
+        background-color: var(--color-background);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+    }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
     }
 }
 
