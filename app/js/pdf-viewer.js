@@ -345,6 +345,14 @@ class PDFViewer {
                 wrapper.classList.toggle('active', wrapper.dataset.page === String(num));
             });
 
+            // Re-apply search highlights if there are search results for this page
+            if (this.searchResults.length > 0) {
+                const pageResult = this.searchResults.find(result => result.page === num);
+                if (pageResult) {
+                    this.highlightSearchResults(pageResult);
+                }
+            }
+
             if (this.pageNumPending !== null) {
                 this.renderPage(this.pageNumPending);
                 this.pageNumPending = null;
@@ -462,27 +470,41 @@ class PDFViewer {
         const textLayer = this.container.querySelector('.pdf-text-layer');
         if (!textLayer) return;
 
-        const textDivs = textLayer.querySelectorAll('span');
-        pageResult.matches.forEach((match, index) => {
-            const textDiv = textDivs[match.itemIndex];
-            if (textDiv) {
-                // Create highlight span
-                const highlightSpan = document.createElement('span');
-                highlightSpan.className = 'highlight-search';
-                if (index === this.currentMatchInPage) {
-                    highlightSpan.classList.add('highlight-selected');
+        const textDivs = Array.from(textLayer.querySelectorAll('span'));
+        
+        // Wait for text layer to be fully rendered
+        setTimeout(() => {
+            pageResult.matches.forEach((match, index) => {
+                const textDiv = textDivs[match.itemIndex];
+                if (textDiv) {
+                    // Create highlight span
+                    const highlightSpan = document.createElement('div');
+                    highlightSpan.className = 'highlight-search';
+                    if (index === this.currentMatchInPage) {
+                        highlightSpan.classList.add('highlight-selected');
+                        
+                        // Scroll the highlight into view
+                        setTimeout(() => {
+                            highlightSpan.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'center'
+                            });
+                        }, 100);
+                    }
+                    
+                    // Position highlight
+                    const rect = textDiv.getBoundingClientRect();
+                    const containerRect = textLayer.getBoundingClientRect();
+                    
+                    highlightSpan.style.left = (rect.left - containerRect.left) + 'px';
+                    highlightSpan.style.top = (rect.top - containerRect.top) + 'px';
+                    highlightSpan.style.width = rect.width + 'px';
+                    highlightSpan.style.height = rect.height + 'px';
+                    
+                    textLayer.appendChild(highlightSpan);
                 }
-                
-                // Position highlight
-                const rect = textDiv.getBoundingClientRect();
-                highlightSpan.style.left = rect.left + 'px';
-                highlightSpan.style.top = rect.top + 'px';
-                highlightSpan.style.width = rect.width + 'px';
-                highlightSpan.style.height = rect.height + 'px';
-                
-                textLayer.appendChild(highlightSpan);
-            }
-        });
+            });
+        }, 100);
     }
 
     async nextSearchResult() {
