@@ -60,7 +60,7 @@ hljs.registerLanguage('latex', latex);
 // Configure marked options
 marked.setOptions({
     gfm: true, // GitHub Flavored Markdown
-    breaks: false, // Convert line breaks to <br>
+    breaks: true, // Convert line breaks to <br>
     highlight: function(code, lang) {
         if (lang && hljs.getLanguage(lang)) {
             try {

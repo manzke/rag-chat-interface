@@ -5,7 +5,7 @@ Here's a sample PDF document that you can view directly in our PDF viewer:
 
 📄 [Sample PDF Document](/api/v2/pdf/sample.pdf)
 
-## Example Table
+## Example Table \n
 
 | Feature       | Status    | Description                           |
 |--------------|-----------|---------------------------------------|
@@ -15,7 +15,7 @@ Here's a sample PDF document that you can view directly in our PDF viewer:
 | Dark Mode    | ✅ Active  | Toggle between light and dark themes |
 | Mobile View  | ✅ Active  | Responsive design for mobile devices |
 
-## System Information
+## System Information \n
 
 | Component    | Version   | Status    |
 |-------------|-----------|-----------|
