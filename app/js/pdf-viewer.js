@@ -1,8 +1,5 @@
-// Import PDF.js
-import pdfjsLib from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.379/+esm';
-
-// Set worker path
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.379/build/pdf.worker.min.js';
+// Import PDF.js (using CDN for both library and worker)
+const pdfjsLib = window.pdfjsLib;
 
 class PDFViewer {
     constructor() {
