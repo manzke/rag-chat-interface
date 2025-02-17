@@ -194,13 +194,19 @@ class PDFViewer {
             const textContent = await page.getTextContent();
 
             // Render text layer
-            return pdfjsLib.renderTextLayer({
+            await pdfjsLib.renderTextLayer({
                 textContent: textContent,
                 container: textLayer,
                 viewport: viewport,
                 textDivs: [],
                 enhanceTextSelection: true
             }).promise;
+        } catch (error) {
+            console.error('Error rendering text layer:', error);
+            // Remove text layer on error to prevent visual artifacts
+            textLayer.remove();
+            throw error;
+        }
     }
 
     async loadPDF(url, canvas, container) {
