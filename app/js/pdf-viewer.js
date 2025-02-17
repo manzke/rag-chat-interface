@@ -370,14 +370,48 @@ class PDFViewer {
     }
 
     initializeEventHandlers(container, canvas, annotationLayer) {
-        // ... (previous event handlers remain the same)
+        // Page navigation
+        container.querySelector('.pdf-prev').addEventListener('click', async () => {
+            if (this.currentPage > 1) {
+                this.currentPage--;
+                await this.renderPage(canvas, container);
+            }
+        });
+
+        container.querySelector('.pdf-next').addEventListener('click', async () => {
+            if (this.currentPDF && this.currentPage < this.currentPDF.numPages) {
+                this.currentPage++;
+                await this.renderPage(canvas, container);
+            }
+        });
+
+        // Zoom controls
+        container.querySelector('.pdf-zoom-in').addEventListener('click', async () => {
+            this.zoom = Math.min(this.zoom + 0.25, 3.0);
+            await this.renderPage(canvas, container);
+        });
+
+        container.querySelector('.pdf-zoom-out').addEventListener('click', async () => {
+            this.zoom = Math.max(this.zoom - 0.25, 0.25);
+            await this.renderPage(canvas, container);
+        });
+
+        // Rotation
+        container.querySelector('.pdf-rotate').addEventListener('click', async () => {
+            this.rotation = (this.rotation + 90) % 360;
+            await this.renderPage(canvas, container);
+        });
 
         // Search functionality
         const searchInput = container.querySelector('.pdf-search-input');
+        let searchTimeout;
         searchInput.addEventListener('input', () => {
-            if (searchInput.value.length >= 3) {
-                this.searchPDF(searchInput.value, container);
-            }
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                if (searchInput.value.length >= 3) {
+                    this.searchPDF(searchInput.value, container);
+                }
+            }, 300);
         });
 
         container.querySelector('.pdf-search-next').addEventListener('click', () => {
@@ -404,6 +438,81 @@ class PDFViewer {
             } else {
                 document.exitFullscreen();
             }
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', async (e) => {
+            if (container.contains(document.activeElement)) {
+                if (e.key === 'ArrowLeft' && this.currentPage > 1) {
+                    this.currentPage--;
+                    await this.renderPage(canvas, container);
+                } else if (e.key === 'ArrowRight' && this.currentPDF && this.currentPage < this.currentPDF.numPages) {
+                    this.currentPage++;
+                    await this.renderPage(canvas, container);
+                }
+            }
+        });
+
+        // Touch gestures
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let initialPinchDistance = 0;
+
+        canvas.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                // Pinch gesture start
+                initialPinchDistance = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+            } else if (e.touches.length === 1) {
+                // Swipe gesture start
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+            }
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2) {
+                // Pinch gesture for zoom
+                e.preventDefault();
+                const currentDistance = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+                const delta = currentDistance - initialPinchDistance;
+                if (Math.abs(delta) > 10) {
+                    this.zoom = Math.max(0.25, Math.min(3.0, this.zoom + (delta > 0 ? 0.1 : -0.1)));
+                    this.renderPage(canvas, container);
+                    initialPinchDistance = currentDistance;
+                }
+            }
+        });
+
+        canvas.addEventListener('touchend', async (e) => {
+            if (e.touches.length === 0 && touchStartX !== 0) {
+                // Swipe gesture end
+                const touchEndX = e.changedTouches[0].clientX;
+                const touchEndY = e.changedTouches[0].clientY;
+                const deltaX = touchEndX - touchStartX;
+                const deltaY = touchEndY - touchStartY;
+
+                // Only handle horizontal swipes
+                if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+                    if (deltaX > 0 && this.currentPage > 1) {
+                        // Swipe right - previous page
+                        this.currentPage--;
+                        await this.renderPage(canvas, container);
+                    } else if (deltaX < 0 && this.currentPDF && this.currentPage < this.currentPDF.numPages) {
+                        // Swipe left - next page
+                        this.currentPage++;
+                        await this.renderPage(canvas, container);
+                    }
+                }
+            }
+            touchStartX = 0;
+            touchStartY = 0;
+            initialPinchDistance = 0;
         });
 
         // Annotation tools
