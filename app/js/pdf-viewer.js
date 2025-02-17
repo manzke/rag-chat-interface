@@ -183,24 +183,24 @@ class PDFViewer {
         textLayer.style.left = `${canvas.offsetLeft}px`;
         textLayer.style.top = `${canvas.offsetTop}px`;
 
+        // Set the scale factor CSS variable
+        container.style.setProperty('--scale-factor', viewport.scale);
+
         // Add text layer after canvas
         canvas.parentNode.appendChild(textLayer);
 
-        // Get text content
-        const textContent = await page.getTextContent();
+        try {
+            // Get text content
+            const textContent = await page.getTextContent();
 
-        // Create text layer parameters
-        const parameters = {
-            textContentSource: textContent,
-            container: textLayer,
-            viewport: viewport,
-            textDivs: [],
-            enhanceTextSelection: true
-        };
-
-        // Render text layer
-        const renderTextLayer = new pdfjsLib.renderTextLayer(parameters);
-        await renderTextLayer.render();
+            // Render text layer
+            return pdfjsLib.renderTextLayer({
+                textContent: textContent,
+                container: textLayer,
+                viewport: viewport,
+                textDivs: [],
+                enhanceTextSelection: true
+            }).promise;
     }
 
     async loadPDF(url, canvas, container) {

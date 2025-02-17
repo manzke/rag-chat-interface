@@ -99,6 +99,7 @@
     padding: 16px;
     background-color: #f0f0f0;
     position: relative;
+    --scale-factor: 1;
 }
 
 .pdf-canvas-container canvas {
@@ -106,6 +107,8 @@
     background-color: white;
     display: block;
     margin: 0 auto;
+    position: relative;
+    z-index: 1;
 }
 
 /* Error State */
@@ -354,8 +357,13 @@
 /* Text Layer */
 .pdf-text-layer {
     position: absolute;
-    pointer-events: none;
-    opacity: 1;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    opacity: 0.2;
+    line-height: 1.0;
     z-index: 2;
 }
 
@@ -364,7 +372,7 @@
     position: absolute;
     white-space: pre;
     cursor: text;
-    pointer-events: all;
+    transform-origin: 0% 0%;
 }
 
 .pdf-text-layer .endOfContent {
@@ -377,6 +385,24 @@
     z-index: -1;
     cursor: default;
     user-select: none;
+}
+
+/* Text selection */
+.pdf-text-layer > span::selection {
+    background: rgb(0, 0, 255, 0.3);
+}
+
+.pdf-text-layer > span::-moz-selection {
+    background: rgb(0, 0, 255, 0.3);
+}
+
+/* Dark mode text selection */
+[data-theme="dark"] .pdf-text-layer > span::selection {
+    background: rgb(255, 255, 0, 0.3);
+}
+
+[data-theme="dark"] .pdf-text-layer > span::-moz-selection {
+    background: rgb(255, 255, 0, 0.3);
 }
 
 .pdf-text-layer > span::selection {
