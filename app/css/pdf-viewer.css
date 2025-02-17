@@ -1,0 +1,232 @@
+/* PDF Viewer Container */
+.pdf-viewer-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-background);
+    border: 1px solid var(--color-borderColor);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* PDF Toolbar */
+.pdf-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 8px 16px;
+    background-color: var(--color-messageBackground);
+    border-bottom: 1px solid var(--color-borderColor);
+    flex-shrink: 0;
+}
+
+.pdf-nav-controls,
+.pdf-zoom-controls,
+.pdf-rotate-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pdf-page-info {
+    font-size: 14px;
+    color: var(--color-text);
+    white-space: nowrap;
+}
+
+/* Buttons */
+.pdf-toolbar button {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: var(--color-text);
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.pdf-toolbar button:hover:not(:disabled) {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.pdf-toolbar button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pdf-toolbar button i {
+    font-size: 14px;
+}
+
+/* Zoom Level */
+.pdf-zoom-level {
+    font-size: 14px;
+    color: var(--color-text);
+    min-width: 60px;
+    text-align: center;
+}
+
+/* Download Link */
+.pdf-download a {
+    color: var(--color-text);
+    text-decoration: none;
+    padding: 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+}
+
+.pdf-download a:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Canvas Container */
+.pdf-canvas-container {
+    flex: 1;
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background-color: #f0f0f0;
+}
+
+.pdf-canvas-container canvas {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background-color: white;
+}
+
+/* Error State */
+.pdf-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    color: var(--color-text);
+    text-align: center;
+}
+
+.pdf-error i {
+    font-size: 48px;
+    color: #dc3545;
+    margin-bottom: 16px;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+    .pdf-toolbar {
+        padding: 8px;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .pdf-nav-controls {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .pdf-zoom-controls,
+    .pdf-rotate-controls {
+        justify-content: center;
+    }
+
+    .pdf-toolbar button {
+        padding: 6px;
+    }
+
+    .pdf-page-info {
+        font-size: 12px;
+    }
+
+    .pdf-zoom-level {
+        font-size: 12px;
+        min-width: 50px;
+    }
+
+    .pdf-canvas-container {
+        padding: 8px;
+    }
+
+    .pdf-canvas-container canvas {
+        max-width: 100%;
+        height: auto;
+    }
+}
+
+/* Modal Styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: var(--color-background);
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 1200px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--color-borderColor);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: var(--color-text);
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: var(--color-text);
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.close-modal:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.modal-body {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+.pdf-modal-content {
+    height: 90vh;
+}
+
+.pdf-modal-body {
+    height: calc(100% - 60px); /* Subtract header height */
+}
+
+/* Dark Theme Support */
+[data-theme="dark"] .pdf-canvas-container {
+    background-color: #2d3236;
+}
+
+[data-theme="dark"] .pdf-canvas-container canvas {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}

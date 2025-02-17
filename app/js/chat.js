@@ -1,5 +1,6 @@
 import { client } from './rag-client.js';
 import { processMarkdown, initializeCodeCopyButtons, processMathExpressions } from './markdown.js';
+import { createPDFViewer } from './pdf-viewer.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     // Load active assistant
@@ -66,6 +67,44 @@ document.addEventListener('DOMContentLoaded', async () => {
     function updateStatus(status, message) {
         statusIndicator.className = 'status-indicator ' + status;
         statusText.textContent = message;
+    }
+
+    // Make PDF handler globally available
+    window.handlePDFLink = function(url) {
+        // Create modal for PDF viewer
+        const modal = document.createElement('div');
+        modal.className = 'modal pdf-modal';
+        modal.innerHTML = `
+            <div class="modal-content pdf-modal-content">
+                <div class="modal-header">
+                    <h3>PDF Viewer</h3>
+                    <button class="close-modal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body pdf-modal-body"></div>
+            </div>
+        `;
+
+        // Add PDF viewer to modal
+        const modalBody = modal.querySelector('.modal-body');
+        const pdfViewer = createPDFViewer(url);
+        modalBody.appendChild(pdfViewer);
+
+        // Add close button handler
+        modal.querySelector('.close-modal').addEventListener('click', () => {
+            modal.remove();
+        });
+
+        // Close on click outside
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+
+        // Add to document
+        document.body.appendChild(modal);
     }
 
     function showCopyNotification() {
