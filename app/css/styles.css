@@ -108,6 +108,16 @@ body {
     animation: spin 1s linear infinite;
 }
 
+.status-indicator.receiving-answer {
+    background-color: #ffc107;
+    color: #ffc107;
+}
+
+.status-indicator.receiving-answer::after {
+    opacity: 1;
+    animation: spin 1s linear infinite;
+}
+
 .status-indicator.error {
     background-color: #dc3545;
 }

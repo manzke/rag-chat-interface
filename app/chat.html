@@ -31,36 +31,15 @@
                         </button>
                         <span class="assistant-name" id="assistant-name"></span>
                     </div>
-                    <div class="status-center">
+                    <div class="status-right">
                         <span class="status-indicator" id="status-indicator"></span>
                         <span class="status-text" id="status-text">Ready</span>
-                    </div>
-                    <div class="status-right">
-                        <!-- Desktop Controls -->
-                        <div class="desktop-controls">
-                            <button class="theme-toggle" id="theme-toggle" title="Toggle Dark/Light Mode">
-                                <i class="fas fa-moon"></i>
-                            </button>
-                            <button class="export-button" id="export-button" title="Export chat">
-                                <i class="fas fa-download"></i>
-                            </button>
-                            <button class="reset-button" id="reset-button" title="Clear chat">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                            <button class="expert-mode-toggle" id="expert-mode-toggle" title="Expert Mode">
-                                <i class="fas fa-cog"></i>
-                            </button>
-                        </div>
                         <!-- Mobile Menu -->
                         <div class="mobile-menu">
                             <button class="menu-toggle" id="menu-toggle" title="Menu">
                                 <i class="fas fa-bars"></i>
                             </button>
                             <div class="menu-dropdown" id="menu-dropdown">
-                                <button class="menu-item theme-toggle-mobile" title="Toggle Dark/Light Mode">
-                                    <i class="fas fa-moon"></i>
-                                    <span>Dark Mode</span>
-                                </button>
                                 <button class="menu-item export-button-mobile" title="Export chat">
                                     <i class="fas fa-download"></i>
                                     <span>Export Chat</span>
@@ -82,17 +61,29 @@
                     <textarea id="user-input" placeholder="Type your message here..." rows="1"></textarea>
                     <button id="send-button">
                         <i class="fas fa-paper-plane send-icon"></i>
-                        <i class="fas fa-square-full stop-icon" style="display: none;"></i>
+                        <i class="fas fa-square-full stop-icon"></i>
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Expert Mode Toggle -->
-    <button class="expert-mode-toggle" id="expert-mode-toggle">
-        <i class="fas fa-cog"></i>
-    </button>
+    <div class="desktop-controls">
+        <!-- Expert Mode Toggle -->
+        <button class="expert-mode-toggle" id="expert-mode-toggle">
+            <i class="fas fa-cog"></i>
+        </button>
+
+        <!-- Reset Button -->
+        <button class="reset-button" id="reset-button" title="Clear chat">
+            <i class="fas fa-trash"></i>
+        </button>
+
+        <!-- Export Button -->
+        <button class="export-button" id="export-button" title="Export chat">
+            <i class="fas fa-download"></i>
+        </button>
+    </div>
 
     <!-- Expert Mode Panel -->
     <div class="expert-panel" id="expert-panel">
@@ -119,16 +110,6 @@
             <button class="expert-panel-button expert-save" id="expert-save">Save</button>
         </div>
     </div>
-
-    <!-- Reset Button -->
-    <button class="reset-button" id="reset-button" title="Clear chat">
-        <i class="fas fa-trash"></i>
-    </button>
-
-    <!-- Export Button -->
-    <button class="export-button" id="export-button" title="Export chat">
-        <i class="fas fa-download"></i>
-    </button>
 
     <!-- Message Template (hidden) -->
     <template id="message-template">

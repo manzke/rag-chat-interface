@@ -396,6 +396,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             let fullResponse = '';
             
             eventSource.addEventListener('answer', (event) => {
+                updateStatus('receiving-answer', 'Answering...');
                 console.log('Received answer event:', event);
                 fullResponse += event.data + ' ';
                 // Process and render markdown content
@@ -422,6 +423,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             // Handle passages event
             eventSource.addEventListener('passages', (event) => {
+                updateStatus('receiving-passages', 'Passages...');
                 console.log('Received passages event:', event);
                 try {
                     const passagesData = JSON.parse(event.data);
@@ -822,6 +824,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
 
             eventSource.addEventListener('related', (event) => {
+                updateStatus('receiving-related-questions', 'Receiving Related Questions...');
                 console.log('Received related event:', event);
                 try {
                     const relatedData = JSON.parse(event.data);
