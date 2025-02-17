@@ -11,7 +11,9 @@ export default {
     mode: 'production',
     entry: {
         chat: './app/js/chat.js',
-        welcome: './app/js/welcome.js'
+        index: './app/js/index.js',
+        'pdf-viewer': './app/js/pdf-viewer.js',
+        'voice-input': './app/js/voice-input.js'
     },
     output: {
         path: resolve(__dirname, 'dist'),
@@ -26,7 +28,8 @@ export default {
                 use: {
                     loader: 'babel-loader',
                     options: {
-                        presets: ['@babel/preset-env']
+                        presets: ['@babel/preset-env'],
+                        plugins: ['@babel/plugin-syntax-dynamic-import']
                     }
                 }
             },
@@ -75,5 +78,23 @@ export default {
                 }
             }
         }
+    },
+    experiments: {
+        topLevelAwait: true,
+        outputModule: true
+    },
+    externalsType: 'module',
+    externals: {
+        'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/highlight.min.js': 'module https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/highlight.min.js',
+        'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/python.min.js': 'module https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/python.min.js',
+        'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/javascript.min.js': 'module https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/javascript.min.js',
+        'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/typescript.min.js': 'module https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/typescript.min.js',
+        'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/bash.min.js': 'module https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/bash.min.js',
+        'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/sql.min.js': 'module https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/sql.min.js',
+        'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/json.min.js': 'module https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/json.min.js',
+        'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/xml.min.js': 'module https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/xml.min.js',
+        'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/yaml.min.js': 'module https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/yaml.min.js',
+        'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/css.min.js': 'module https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/css.min.js',
+        'https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js': 'module https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js'
     }
 };
