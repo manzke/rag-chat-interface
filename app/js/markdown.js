@@ -93,7 +93,8 @@ renderer.code = (code, language) => {
 };
 
 // Handle links including PDFs and other document types
-renderer.link = (href, title, text) => {
+renderer.link = (link, title, text) => {
+    const href = link.href;
     // Function to check if URL points to a document
     const isDocument = (url) => {
         const docExtensions = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx'];
@@ -147,14 +148,6 @@ renderer.table = (header, body) => {
             </table>
         </div>
     `;
-};
-
-// Add target="_blank" to external links
-renderer.link = (link, title, text) => {
-    if (link.href.startsWith('http')) {
-        return `<a href="${link.href}" title="${link.title || ''}" target="_blank" rel="noopener noreferrer">${link.text}</a>`;
-    }
-    return `<a href="${link.href}" title="${title || ''}">${text}</a>`;
 };
 
 marked.use({ renderer });
