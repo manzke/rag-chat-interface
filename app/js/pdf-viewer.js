@@ -343,18 +343,42 @@ class PDFViewer {
     }
 
     async search(query) {
+        if (!query.trim()) return;
+
         this.searchResults = [];
         this.currentSearchIndex = -1;
+        this.searchQuery = query.toLowerCase();
+
+        // Remove existing highlights
+        this.clearSearchHighlights();
 
         for (let i = 1; i <= this.pdfDoc.numPages; i++) {
             const page = await this.pdfDoc.getPage(i);
             const textContent = await page.getTextContent();
-            const text = textContent.items.map(item => item.str).join(' ');
+            const pageMatches = [];
+            
+            // Find matches in text items
+            textContent.items.forEach((item, index) => {
+                const itemText = item.str.toLowerCase();
+                let position = 0;
+                
+                while ((position = itemText.indexOf(this.searchQuery, position)) !== -1) {
+                    pageMatches.push({
+                        pageIndex: i,
+                        itemIndex: index,
+                        offset: position,
+                        length: this.searchQuery.length,
+                        str: item.str.substr(position, this.searchQuery.length),
+                        transform: item.transform
+                    });
+                    position += this.searchQuery.length;
+                }
+            });
 
-            if (text.toLowerCase().includes(query.toLowerCase())) {
+            if (pageMatches.length > 0) {
                 this.searchResults.push({
                     page: i,
-                    text: text
+                    matches: pageMatches
                 });
             }
         }
@@ -364,9 +388,11 @@ class PDFViewer {
         const prevButton = this.container.querySelector('.pdf-search-prev');
         const nextButton = this.container.querySelector('.pdf-search-next');
 
-        if (this.searchResults.length > 0) {
+        const totalMatchCount = this.searchResults.reduce((sum, result) => sum + result.matches.length, 0);
+
+        if (totalMatchCount > 0) {
             searchResults.style.display = 'inline';
-            totalMatches.textContent = this.searchResults.length;
+            totalMatches.textContent = totalMatchCount;
             prevButton.disabled = false;
             nextButton.disabled = false;
             this.nextSearchResult();
@@ -377,18 +403,82 @@ class PDFViewer {
         }
     }
 
+    clearSearchHighlights() {
+        const textLayer = this.container.querySelector('.pdf-text-layer');
+        if (textLayer) {
+            textLayer.querySelectorAll('.highlight-search').forEach(el => {
+                el.classList.remove('highlight-search', 'highlight-selected');
+            });
+        }
+    }
+
+    highlightSearchResults(pageResult) {
+        this.clearSearchHighlights();
+        
+        const textLayer = this.container.querySelector('.pdf-text-layer');
+        if (!textLayer) return;
+
+        const textDivs = textLayer.querySelectorAll('span');
+        pageResult.matches.forEach((match, index) => {
+            const textDiv = textDivs[match.itemIndex];
+            if (textDiv) {
+                // Create highlight span
+                const highlightSpan = document.createElement('span');
+                highlightSpan.className = 'highlight-search';
+                if (index === this.currentMatchInPage) {
+                    highlightSpan.classList.add('highlight-selected');
+                }
+                
+                // Position highlight
+                const rect = textDiv.getBoundingClientRect();
+                highlightSpan.style.left = rect.left + 'px';
+                highlightSpan.style.top = rect.top + 'px';
+                highlightSpan.style.width = rect.width + 'px';
+                highlightSpan.style.height = rect.height + 'px';
+                
+                textLayer.appendChild(highlightSpan);
+            }
+        });
+    }
+
     async nextSearchResult() {
         if (this.searchResults.length === 0) return;
 
-        this.currentSearchIndex = (this.currentSearchIndex + 1) % this.searchResults.length;
-        const result = this.searchResults[this.currentSearchIndex];
+        let totalMatches = 0;
+        let currentMatch = 0;
 
-        if (result.page !== this.pageNum) {
-            this.pageNum = result.page;
-            await this.renderPage(result.page);
+        // Calculate total matches and current match position
+        for (let i = 0; i < this.searchResults.length; i++) {
+            const result = this.searchResults[i];
+            if (i < this.currentSearchIndex) {
+                currentMatch += result.matches.length;
+            }
+            totalMatches += result.matches.length;
         }
 
-        this.container.querySelector('.current-match').textContent = this.currentSearchIndex + 1;
+        // Move to next match
+        currentMatch = (currentMatch + 1) % totalMatches;
+        
+        // Find the page and match index
+        let matchCount = 0;
+        for (let i = 0; i < this.searchResults.length; i++) {
+            const result = this.searchResults[i];
+            if (matchCount + result.matches.length > currentMatch) {
+                this.currentSearchIndex = i;
+                this.currentMatchInPage = currentMatch - matchCount;
+                
+                if (result.page !== this.pageNum) {
+                    this.pageNum = result.page;
+                    await this.renderPage(result.page);
+                } else {
+                    this.highlightSearchResults(result);
+                }
+                break;
+            }
+            matchCount += result.matches.length;
+        }
+
+        this.container.querySelector('.current-match').textContent = currentMatch + 1;
     }
 
     async prevSearchResult() {
