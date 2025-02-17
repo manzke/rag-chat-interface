@@ -165,29 +165,42 @@ class PDFViewer {
     }
 
     async updateTextLayer(page, viewport, container) {
-        const textLayer = container.querySelector('.pdf-text-layer');
-        if (!textLayer) return;
-
-        // Clear previous content
-        textLayer.innerHTML = '';
+        let textLayer = container.querySelector('.pdf-text-layer');
         
-        // Set text layer viewport and position
+        // Remove existing text layer if it exists
+        if (textLayer) {
+            textLayer.remove();
+        }
+
+        // Create new text layer
+        textLayer = document.createElement('div');
+        textLayer.className = 'pdf-text-layer';
+        
+        // Position the text layer exactly over the canvas
+        const canvas = container.querySelector('canvas');
         textLayer.style.width = `${viewport.width}px`;
         textLayer.style.height = `${viewport.height}px`;
-        
-        // Set the scale factor CSS variable
-        textLayer.style.setProperty('--scale-factor', viewport.scale);
+        textLayer.style.left = `${canvas.offsetLeft}px`;
+        textLayer.style.top = `${canvas.offsetTop}px`;
+
+        // Add text layer after canvas
+        canvas.parentNode.appendChild(textLayer);
 
         // Get text content
         const textContent = await page.getTextContent();
 
-        // Render text layer with the new textContentSource parameter
-        pdfjsLib.renderTextLayer({
+        // Create text layer parameters
+        const parameters = {
             textContentSource: textContent,
             container: textLayer,
             viewport: viewport,
-            textDivs: []
-        });
+            textDivs: [],
+            enhanceTextSelection: true
+        };
+
+        // Render text layer
+        const renderTextLayer = new pdfjsLib.renderTextLayer(parameters);
+        await renderTextLayer.render();
     }
 
     async loadPDF(url, canvas, container) {

@@ -104,8 +104,8 @@
 .pdf-canvas-container canvas {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     background-color: white;
-    position: relative;
-    z-index: 1;
+    display: block;
+    margin: 0 auto;
 }
 
 /* Error State */
@@ -354,14 +354,9 @@
 /* Text Layer */
 .pdf-text-layer {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    opacity: 0.2;
-    pointer-events: auto;
-    mix-blend-mode: multiply;
-    transform-origin: 0 0;
+    pointer-events: none;
+    opacity: 1;
+    z-index: 2;
 }
 
 .pdf-text-layer > span {
@@ -369,8 +364,19 @@
     position: absolute;
     white-space: pre;
     cursor: text;
-    transform-origin: 0% 0%;
-    line-height: 1;
+    pointer-events: all;
+}
+
+.pdf-text-layer .endOfContent {
+    display: block;
+    position: absolute;
+    left: 0px;
+    top: 100%;
+    right: 0px;
+    bottom: 0px;
+    z-index: -1;
+    cursor: default;
+    user-select: none;
 }
 
 .pdf-text-layer > span::selection {
