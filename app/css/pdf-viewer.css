@@ -53,7 +53,6 @@
     overflow: hidden;
 }
 
-.thumbnails-header,
 .passages-header {
     padding: 12px;
     font-weight: 500;
@@ -123,6 +122,7 @@
 }
 
 /* Header */
+.thumbnails-header,
 .pdf-header {
     position: relative;
     z-index: 2;
@@ -130,7 +130,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 12px 16px;
-    background-color: var(--color-background);
+    background-color: white;
     border-bottom: 1px solid var(--color-borderColor);
 }
 
