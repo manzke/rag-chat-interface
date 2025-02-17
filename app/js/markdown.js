@@ -105,11 +105,11 @@ renderer.table = (header, body) => {
 };
 
 // Add target="_blank" to external links
-renderer.link = (href, title, text) => {
-    if (href.startsWith('http')) {
-        return `<a href="${href}" title="${title || ''}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+renderer.link = (link, title, text) => {
+    if (link.href.startsWith('http')) {
+        return `<a href="${link.href}" title="${link.title || ''}" target="_blank" rel="noopener noreferrer">${link.text}</a>`;
     }
-    return `<a href="${href}" title="${title || ''}">${text}</a>`;
+    return `<a href="${link.href}" title="${title || ''}">${text}</a>`;
 };
 
 marked.use({ renderer });
