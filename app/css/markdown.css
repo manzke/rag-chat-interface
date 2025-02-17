@@ -157,12 +157,15 @@
 .table-container {
     overflow-x: auto;
     margin: 1em 0;
+    border: 1px solid var(--color-borderColor);
+    border-radius: 4px;
 }
 
 .markdown-table {
     width: 100%;
     border-collapse: collapse;
-    border: 1px solid var(--color-borderColor);
+    margin: 0;
+    font-size: 0.95em;
 }
 
 .markdown-table th,
@@ -175,10 +178,36 @@
 .markdown-table th {
     background-color: var(--color-messageBackground);
     font-weight: 600;
+    white-space: nowrap;
+}
+
+.markdown-table td {
+    vertical-align: top;
 }
 
 .markdown-table tr:nth-child(even) {
     background-color: var(--color-messageBackground);
+}
+
+/* Dark theme support */
+[data-theme="dark"] .markdown-table th {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .markdown-table tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* Mobile optimization */
+@media (max-width: 768px) {
+    .markdown-table {
+        font-size: 0.9em;
+    }
+    
+    .markdown-table th,
+    .markdown-table td {
+        padding: 0.5em;
+    }
 }
 
 /* Images */

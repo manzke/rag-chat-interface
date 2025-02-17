@@ -394,11 +394,27 @@ document.addEventListener('DOMContentLoaded', async () => {
             eventSource.addEventListener('answer', (event) => {
                 console.log('Received answer event:', event);
                 fullResponse += event.data + ' ';
+                // Process and render markdown content
                 const processedContent = processMarkdown(fullResponse.trim());
                 contentDiv.innerHTML = processedContent;
                 contentDiv.classList.add('markdown-content');
+
+                // Initialize code copy buttons
                 initializeCodeCopyButtons(contentDiv);
+
+                // Process math expressions
                 processMathExpressions(contentDiv);
+
+                // Fix table rendering
+                contentDiv.querySelectorAll('table').forEach(table => {
+                    if (!table.parentElement.classList.contains('table-container')) {
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'table-container';
+                        table.parentNode.insertBefore(wrapper, table);
+                        wrapper.appendChild(table);
+                        table.classList.add('markdown-table');
+                    }
+                });
                 currentResponse.content = fullResponse.trim();
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
             });

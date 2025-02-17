@@ -176,18 +176,28 @@ class PDFViewer {
         textLayer = document.createElement('div');
         textLayer.className = 'pdf-text-layer';
         
-        // Position the text layer exactly over the canvas
+        // Create a wrapper div to maintain alignment with canvas
+        const wrapper = document.createElement('div');
+        wrapper.className = 'pdf-layer-wrapper';
+        wrapper.style.width = `${viewport.width}px`;
+        wrapper.style.height = `${viewport.height}px`;
+        
+        // Add text layer to wrapper
+        wrapper.appendChild(textLayer);
+        
+        // Position wrapper exactly over canvas
         const canvas = container.querySelector('canvas');
-        textLayer.style.width = `${viewport.width}px`;
-        textLayer.style.height = `${viewport.height}px`;
-        textLayer.style.left = `${canvas.offsetLeft}px`;
-        textLayer.style.top = `${canvas.offsetTop}px`;
+        const canvasRect = canvas.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        wrapper.style.position = 'absolute';
+        wrapper.style.left = `${canvas.offsetLeft}px`;
+        wrapper.style.top = `${canvas.offsetTop}px`;
 
         // Set the scale factor CSS variable
-        container.style.setProperty('--scale-factor', viewport.scale);
+        wrapper.style.setProperty('--scale-factor', viewport.scale);
 
-        // Add text layer after canvas
-        canvas.parentNode.appendChild(textLayer);
+        // Add wrapper after canvas
+        canvas.parentNode.appendChild(wrapper);
 
         try {
             // Get text content
