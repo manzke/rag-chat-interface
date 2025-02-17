@@ -7,19 +7,32 @@ export class VoiceInput {
         
         this.isListening = false;
         this.recognition = null;
-        this.initializeSpeechRecognition();
+        this.initialized = false;
+        
+        // Don't initialize immediately, wait for first use
+        // This prevents unnecessary permission prompts
     }
 
-    initializeSpeechRecognition() {
+    async initializeSpeechRecognition() {
         if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
             console.error('Speech recognition not supported');
+            return;
+        }
+
+        // Check for microphone permission
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            stream.getTracks().forEach(track => track.stop()); // Stop the stream after permission check
+        } catch (err) {
+            console.error('Microphone access error:', err);
+            this.onError({ error: 'permission-denied' });
             return;
         }
 
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         this.recognition = new SpeechRecognition();
         
-        this.recognition.continuous = true;
+        this.recognition.continuous = false; // Changed to false to prevent issues
         this.recognition.interimResults = true;
         this.recognition.lang = 'en-US';
 
@@ -59,16 +72,28 @@ export class VoiceInput {
         };
     }
 
-    start() {
+    async start() {
         if (!this.recognition) {
-            console.error('Speech recognition not initialized');
-            return;
+            await this.initializeSpeechRecognition();
+            if (!this.recognition) {
+                console.error('Speech recognition initialization failed');
+                return;
+            }
         }
 
         try {
+            // Check if recognition is already started
+            if (this.isListening) {
+                this.recognition.stop();
+            }
+            
+            // Reinitialize recognition to prevent issues
+            this.recognition.abort();
+            await new Promise(resolve => setTimeout(resolve, 100)); // Small delay
             this.recognition.start();
         } catch (error) {
             console.error('Error starting speech recognition:', error);
+            this.onError({ error: 'start-error', originalError: error });
         }
     }
 
@@ -127,7 +152,32 @@ export function initializeVoiceInput(options = {}) {
             console.error('Voice input error:', error);
             button.classList.remove('active');
             feedback.classList.remove('active');
-            input.placeholder = 'Voice input error. Please try again.';
+            
+            // Show specific error messages
+            switch(error.error) {
+                case 'permission-denied':
+                    input.placeholder = 'Please allow microphone access and try again.';
+                    break;
+                case 'audio-capture':
+                    input.placeholder = 'No microphone found. Please check your device settings.';
+                    break;
+                case 'network':
+                    input.placeholder = 'Network error. Please check your connection.';
+                    break;
+                case 'no-speech':
+                    input.placeholder = 'No speech detected. Please try again.';
+                    break;
+                case 'start-error':
+                    input.placeholder = 'Error starting voice input. Please try again.';
+                    break;
+                default:
+                    input.placeholder = 'Voice input error. Please try again.';
+            }
+            
+            // Reset placeholder after 3 seconds
+            setTimeout(() => {
+                input.placeholder = 'Type your message here...';
+            }, 3000);
         }
     });
 
