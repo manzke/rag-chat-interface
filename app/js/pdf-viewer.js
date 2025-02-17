@@ -133,6 +133,76 @@ class PDFViewer {
         return container;
     }
 
+    async renderPage(canvas, container) {
+        if (!this.currentPDF) return;
+
+        try {
+            const page = await this.currentPDF.getPage(this.currentPage);
+            const context = canvas.getContext('2d');
+
+            // Calculate viewport with zoom and rotation
+            const viewport = page.getViewport({ 
+                scale: this.zoom,
+                rotation: this.rotation 
+            });
+
+            // Set canvas dimensions
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+
+            // Render PDF page
+            await page.render({
+                canvasContext: context,
+                viewport: viewport
+            }).promise;
+
+            // Update page number
+            container.querySelector('.pdf-current-page').textContent = this.currentPage;
+            
+            // Update zoom level
+            container.querySelector('.pdf-zoom-level').textContent = `${Math.round(this.zoom * 100)}%`;
+
+            // Enable/disable navigation buttons
+            container.querySelector('.pdf-prev').disabled = this.currentPage <= 1;
+            container.querySelector('.pdf-next').disabled = this.currentPage >= this.currentPDF.numPages;
+
+            // Update thumbnails
+            container.querySelectorAll('.pdf-thumbnail').forEach(thumb => {
+                thumb.classList.toggle('active', thumb.dataset.page === String(this.currentPage));
+            });
+
+            // Update text layer
+            await this.updateTextLayer(page, viewport, container);
+        } catch (error) {
+            console.error('Error rendering page:', error);
+            throw error;
+        }
+    }
+
+    async updateTextLayer(page, viewport, container) {
+        const textLayer = container.querySelector('.pdf-text-layer');
+        if (!textLayer) return;
+
+        // Clear previous content
+        textLayer.innerHTML = '';
+
+        // Get text content
+        const textContent = await page.getTextContent();
+
+        // Set text layer viewport and position
+        textLayer.style.width = `${viewport.width}px`;
+        textLayer.style.height = `${viewport.height}px`;
+        textLayer.style.transform = `scale(${this.zoom})`;
+
+        // Render text layer
+        pdfjsLib.renderTextLayer({
+            textContent: textContent,
+            container: textLayer,
+            viewport: viewport,
+            textDivs: []
+        });
+    }
+
     async loadPDF(url, canvas, container) {
         try {
             // Load the PDF
@@ -158,6 +228,7 @@ class PDFViewer {
                     <p>Error loading PDF. Please try again later.</p>
                 </div>
             `;
+            throw error;
         }
     }
 
@@ -200,20 +271,18 @@ class PDFViewer {
     }
 
     async initializeTextLayer(canvas, container) {
-        const textLayer = document.createElement('div');
-        textLayer.className = 'pdf-text-layer';
-        canvas.parentElement.appendChild(textLayer);
+        // Create text layer if it doesn't exist
+        let textLayer = container.querySelector('.pdf-text-layer');
+        if (!textLayer) {
+            textLayer = document.createElement('div');
+            textLayer.className = 'pdf-text-layer';
+            canvas.parentElement.appendChild(textLayer);
+        }
 
+        // Initial text layer setup
         const page = await this.currentPDF.getPage(this.currentPage);
-        const textContent = await page.getTextContent();
         const viewport = page.getViewport({ scale: this.zoom });
-
-        pdfjsLib.renderTextLayer({
-            textContent: textContent,
-            container: textLayer,
-            viewport: viewport,
-            textDivs: []
-        });
+        await this.updateTextLayer(page, viewport, container);
     }
 
     async searchPDF(searchTerm, container) {

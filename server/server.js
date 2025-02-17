@@ -209,12 +209,65 @@ app.post('/api/v2/rag/ask', async (req, res) => {
     }
 
     // Send simulated response with markdown and code examples
-    const baseUrl = `${req.protocol}://${req.get('host')}`;
     const response = `# Answer to: ${question}
 
 Here's a sample PDF document that you can view directly in our PDF viewer:
 
-📄 [Sample PDF Document](${baseUrl}/api/v2/pdf/sample.pdf)
+[Sample PDF Document](/api/v2/pdf/sample.pdf)
+
+Here's a comprehensive example showcasing various markdown and code features:
+
+## Text Formatting
+
+You can use **bold**, *italic*, or ***both***. You can also use ~~strikethrough~~ text.
+
+
+## Tables
+| Language | Type | Usage |
+|----------|------|-------|
+| Python   | Dynamic | General Purpose |
+| JavaScript | Dynamic | Web Development |
+| Rust     | Static | Systems Programming |
+
+
+### SQL
+\`\`\`sql
+SELECT 
+    users.name,
+    COUNT(orders.id) as order_count
+FROM users
+LEFT JOIN orders ON users.id = orders.user_id
+WHERE users.status = 'active'
+GROUP BY users.id
+HAVING order_count > 5
+ORDER BY order_count DESC;
+\`\`\`
+
+### JSON
+\`\`\`json
+{
+    "name": "OpenHands AI",
+    "version": "1.0.0",
+    "features": [
+        "Markdown Support",
+        "Code Highlighting",
+        "Math Expressions"
+    ],
+    "settings": {
+        "theme": "dark",
+        "language": "en"
+    }
+}
+\`\`\`
+
+
+This example demonstrates various markdown features including text formatting, lists, tables, code blocks with syntax highlighting, and mathematical expressions.`;
+
+    const original = `# Answer to: ${question}
+
+Here's a sample PDF document that you can view directly in our PDF viewer:
+
+[Sample PDF Document](/api/v2/pdf/sample.pdf)
 
 Here's a comprehensive example showcasing various markdown and code features:
 
