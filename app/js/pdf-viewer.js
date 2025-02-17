@@ -112,11 +112,21 @@ class PDFViewer {
             </button>
         `;
 
-        // Create viewer
+        // Create viewer structure
         const viewer = document.createElement('div');
         viewer.className = 'pdf-viewer';
+        
+        const pageWrapper = document.createElement('div');
+        pageWrapper.className = 'pdf-page-wrapper';
+        
+        const pageContainer = document.createElement('div');
+        pageContainer.className = 'pdf-page-container';
+        
         const canvas = document.createElement('canvas');
-        viewer.appendChild(canvas);
+        
+        pageContainer.appendChild(canvas);
+        pageWrapper.appendChild(pageContainer);
+        viewer.appendChild(pageWrapper);
 
         // Assemble the components
         content.appendChild(header);
@@ -364,7 +374,8 @@ class PDFViewer {
     }
 
     async updateTextLayer(page, viewport) {
-        let textLayer = this.container.querySelector('.pdf-text-layer');
+        const pageContainer = this.container.querySelector('.pdf-page-container');
+        let textLayer = pageContainer.querySelector('.pdf-text-layer');
         
         if (textLayer) {
             textLayer.remove();
