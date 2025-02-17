@@ -116,7 +116,7 @@ renderer.table = (header, body) => {
     `;
 };
 
-//marked.use({ renderer });
+marked.use({ renderer });
 
 // Function to process markdown
 export function processMarkdown(text) {
