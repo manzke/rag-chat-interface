@@ -10,14 +10,16 @@ const __dirname = dirname(__filename);
 export default {
     mode: 'production',
     entry: {
-        chat: './app/js/chat.js',
-        index: './app/js/index.js',
-        'pdf-viewer': './app/js/pdf-viewer.js',
-        'voice-input': './app/js/voice-input.js'
+        app: [
+            './app/js/chat.js',
+            './app/js/index.js',
+            './app/js/pdf-viewer.js',
+            './app/js/voice-input.js'
+        ]
     },
     output: {
         path: resolve(__dirname, 'dist'),
-        filename: 'js/[name].[contenthash].js',
+        filename: 'js/bundle.[contenthash].js',
         clean: true
     },
     module: {
@@ -45,12 +47,12 @@ export default {
     plugins: [
         new CleanWebpackPlugin(),
         new MiniCssExtractPlugin({
-            filename: 'app/css/[name].[contenthash].css'
+            filename: 'app/css/styles.[contenthash].css'
         }),
         new HtmlWebpackPlugin({
             template: 'app/chat.html',
             filename: 'chat.html',
-            chunks: ['chat'],
+            chunks: ['app'],
             minify: {
                 removeComments: true,
                 collapseWhitespace: true
@@ -59,7 +61,7 @@ export default {
         new HtmlWebpackPlugin({
             template: 'app/index.html',
             filename: 'index.html',
-            chunks: ['index'],
+            chunks: ['app'],
             minify: {
                 removeComments: true,
                 collapseWhitespace: true
@@ -67,17 +69,8 @@ export default {
         })
     ],
     optimization: {
-        moduleIds: 'deterministic',
-        runtimeChunk: 'single',
-        splitChunks: {
-            cacheGroups: {
-                vendor: {
-                    test: /[\\/]node_modules[\\/]/,
-                    name: 'vendors',
-                    chunks: 'all'
-                }
-            }
-        }
+        minimize: true,
+        moduleIds: 'deterministic'
     },
     experiments: {
         topLevelAwait: true,
