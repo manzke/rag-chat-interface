@@ -43,10 +43,45 @@
 .markdown-content a {
     color: var(--color-primary);
     text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .markdown-content a:hover {
     text-decoration: underline;
+}
+
+.markdown-content a i {
+    font-size: 0.9em;
+}
+
+/* Document links */
+.markdown-content .document-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    background-color: var(--color-messageBackground);
+    border: 1px solid var(--color-borderColor);
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.markdown-content .document-link:hover {
+    text-decoration: none;
+    background-color: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+}
+
+.markdown-content .document-link i {
+    font-size: 1.1em;
+}
+
+/* Dark theme support */
+[data-theme="dark"] .markdown-content .document-link {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Blockquotes */

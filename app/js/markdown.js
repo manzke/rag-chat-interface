@@ -92,12 +92,47 @@ renderer.code = (code, language) => {
     `;
 };
 
-// Handle links including PDFs
+// Handle links including PDFs and other document types
 renderer.link = (href, title, text) => {
-    if (href.toLowerCase().endsWith('.pdf')) {
-        return `<a href="javascript:void(0)" onclick="handlePDFLink('${href}')" title="${title || ''}">${text}</a>`;
+    // Function to check if URL points to a document
+    const isDocument = (url) => {
+        const docExtensions = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx'];
+        const lowerUrl = url.toLowerCase();
+        return docExtensions.some(ext => lowerUrl.endsWith(ext)) ||
+               lowerUrl.includes('doc.do') ||
+               lowerUrl.includes('document') ||
+               lowerUrl.includes('download');
+    };
+
+    // Function to get icon based on file type
+    const getFileIcon = (url) => {
+        const lowerUrl = url.toLowerCase();
+        if (lowerUrl.endsWith('.pdf')) return 'fa-file-pdf';
+        if (lowerUrl.match(/\.(doc|docx)$/)) return 'fa-file-word';
+        if (lowerUrl.match(/\.(xls|xlsx)$/)) return 'fa-file-excel';
+        if (lowerUrl.match(/\.(ppt|pptx)$/)) return 'fa-file-powerpoint';
+        return 'fa-file';
+    };
+
+    if (isDocument(href)) {
+        const icon = getFileIcon(href);
+        return `
+            <a href="javascript:void(0)" 
+               onclick="handlePDFLink('${href}')" 
+               title="${title || 'View document'}"
+               class="document-link">
+                <i class="fas ${icon}"></i>
+                ${text}
+            </a>`;
     } else if (href.startsWith('http')) {
-        return `<a href="${href}" title="${title || ''}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+        return `
+            <a href="${href}" 
+               title="${title || ''}" 
+               target="_blank" 
+               rel="noopener noreferrer">
+                ${text}
+                <i class="fas fa-external-link-alt"></i>
+            </a>`;
     }
     return `<a href="${href}" title="${title || ''}">${text}</a>`;
 };
