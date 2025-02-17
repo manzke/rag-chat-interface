@@ -170,8 +170,141 @@ app.post('/api/v2/rag/ask', async (req, res) => {
         }
     }
 
-    // Send simulated response
-    const response = `Answer to: ${question}\nThis is a simulated streaming response for the question.`;
+    // Send simulated response with markdown and code examples
+    const response = `# Answer to: ${question}
+
+Here's a comprehensive example showcasing various markdown and code features:
+
+## Text Formatting
+
+You can use **bold**, *italic*, or ***both***. You can also use ~~strikethrough~~ text.
+
+## Lists
+
+### Unordered List
+- Item 1
+- Item 2
+  - Nested item 2.1
+  - Nested item 2.2
+- Item 3
+
+### Ordered List
+1. First item
+2. Second item
+   1. Nested item 2.1
+   2. Nested item 2.2
+3. Third item
+
+## Task List
+- [x] Completed task
+- [ ] Pending task
+- [ ] Future task
+
+## Links and Images
+- [OpenHands AI](https://openhands.ai)
+- ![Sample Image](https://picsum.photos/200/100)
+
+## Blockquotes
+> This is a blockquote
+> It can span multiple lines
+>> And can be nested
+
+## Tables
+| Language | Type | Usage |
+|----------|------|-------|
+| Python   | Dynamic | General Purpose |
+| JavaScript | Dynamic | Web Development |
+| Rust     | Static | Systems Programming |
+
+## Code Examples
+
+### Python
+\`\`\`python
+def fibonacci(n: int) -> int:
+    """Calculate the nth Fibonacci number."""
+    if n <= 1:
+        return n
+    return fibonacci(n-1) + fibonacci(n-2)
+
+# Example usage
+print(fibonacci(10))
+\`\`\`
+
+### JavaScript/TypeScript
+\`\`\`typescript
+interface User {
+    id: number;
+    name: string;
+    email?: string;
+}
+
+function greetUser(user: User): string {
+    return \`Hello, \${user.name}!\`;
+}
+
+// Example usage
+const user: User = {
+    id: 1,
+    name: "Alice"
+};
+console.log(greetUser(user));
+\`\`\`
+
+### SQL
+\`\`\`sql
+SELECT 
+    users.name,
+    COUNT(orders.id) as order_count
+FROM users
+LEFT JOIN orders ON users.id = orders.user_id
+WHERE users.status = 'active'
+GROUP BY users.id
+HAVING order_count > 5
+ORDER BY order_count DESC;
+\`\`\`
+
+### JSON
+\`\`\`json
+{
+    "name": "OpenHands AI",
+    "version": "1.0.0",
+    "features": [
+        "Markdown Support",
+        "Code Highlighting",
+        "Math Expressions"
+    ],
+    "settings": {
+        "theme": "dark",
+        "language": "en"
+    }
+}
+\`\`\`
+
+## Math Expressions
+
+### Inline Math
+The quadratic formula is $x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$
+
+### Display Math
+$$
+\\begin{aligned}
+\\nabla \\times \\vec{\\mathbf{B}} -\\, \\frac{1}{c} \\frac{\\partial\\vec{\\mathbf{E}}}{\\partial t} & = \\frac{4\\pi}{c}\\vec{\\mathbf{j}} \\\\
+\\nabla \\cdot \\vec{\\mathbf{E}} & = 4 \\pi \\rho \\\\
+\\nabla \\times \\vec{\\mathbf{E}}\\, +\\, \\frac{1}{c} \\frac{\\partial\\vec{\\mathbf{B}}}{\\partial t} & = \\vec{\\mathbf{0}} \\\\
+\\nabla \\cdot \\vec{\\mathbf{B}} & = 0
+\\end{aligned}
+$$
+
+## Diagrams (Mermaid)
+\`\`\`mermaid
+graph TD
+    A[Start] --> B{Is it working?}
+    B -->|Yes| C[Great!]
+    B -->|No| D[Debug]
+    D --> B
+\`\`\`
+
+This example demonstrates various markdown features including text formatting, lists, tables, code blocks with syntax highlighting, and mathematical expressions.`;
     for (const word of response.split(/\s+/)) {
         sendSSE(client.response, 'answer', word);
         await new Promise(resolve => setTimeout(resolve, 100));
