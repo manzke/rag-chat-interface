@@ -201,11 +201,11 @@ class PDFViewer {
 
         try {
             // Get text content
-            const textContent = await page.getTextContent();
+            const textContentSource = await page.getTextContent();
 
-            // Render text layer
+            // Render text layer with textContentSource
             await pdfjsLib.renderTextLayer({
-                textContent: textContent,
+                textContentSource: textContentSource,
                 container: textLayer,
                 viewport: viewport,
                 textDivs: [],
@@ -307,8 +307,8 @@ class PDFViewer {
 
         for (let i = 1; i <= this.currentPDF.numPages; i++) {
             const page = await this.currentPDF.getPage(i);
-            const textContent = await page.getTextContent();
-            const text = textContent.items.map(item => item.str).join(' ');
+            const textContentSource = await page.getTextContent();
+            const text = textContentSource.items.map(item => item.str).join(' ');
 
             if (text.toLowerCase().includes(searchTerm.toLowerCase())) {
                 this.searchResults.push({
