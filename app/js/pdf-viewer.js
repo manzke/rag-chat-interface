@@ -97,19 +97,38 @@ class PDFViewer {
                 viewport: viewport
             }).promise;
 
-            // Create text layer
-            const textContent = await page.getTextContent();
-            const textLayer = this.container.querySelector('.pdf-text-layer') || document.createElement('div');
-            textLayer.className = 'pdf-text-layer';
+            // Create or update page container
+            let pageContainer = this.container.querySelector('.pdf-page-container');
+            if (!pageContainer) {
+                pageContainer = document.createElement('div');
+                pageContainer.className = 'pdf-page-container';
+                this.canvas.parentNode.appendChild(pageContainer);
+            }
+            
+            // Position page container
+            pageContainer.style.width = `${viewport.width}px`;
+            pageContainer.style.height = `${viewport.height}px`;
+            
+            // Move canvas into page container if needed
+            if (this.canvas.parentNode !== pageContainer) {
+                pageContainer.appendChild(this.canvas);
+            }
+
+            // Create or update text layer
+            let textLayer = pageContainer.querySelector('.pdf-text-layer');
+            if (!textLayer) {
+                textLayer = document.createElement('div');
+                textLayer.className = 'pdf-text-layer';
+                pageContainer.appendChild(textLayer);
+            }
+
+            // Set scale factor and dimensions
+            pageContainer.style.setProperty('--scale-factor', viewport.scale);
             textLayer.style.width = `${viewport.width}px`;
             textLayer.style.height = `${viewport.height}px`;
 
-            // Position text layer over canvas
-            if (!textLayer.parentNode) {
-                this.canvas.parentNode.appendChild(textLayer);
-            }
-
-            // Render text layer
+            // Get text content and render text layer
+            const textContent = await page.getTextContent();
             pdfjsLib.renderTextLayer({
                 textContentSource: textContent,
                 container: textLayer,
