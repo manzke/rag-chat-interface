@@ -4,7 +4,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 2000; /* Higher z-index to be above other elements */
+    z-index: 2000;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -22,10 +22,9 @@
 }
 
 .pdf-container {
-    position: relative; /* To be above the overlay background */
-    z-index: 1; /* Above the overlay background */
+    position: relative;
+    z-index: 1;
     display: flex;
-    flex-direction: column;
     width: 95%;
     height: 95%;
     background: var(--color-background);
@@ -34,56 +33,108 @@
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
 }
 
-.pdf-header {
-    position: relative;
-    z-index: 2; /* Above the viewer content */
+/* Sidebar */
+.pdf-sidebar {
+    width: 240px;
+    border-right: 1px solid var(--color-borderColor);
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    background-color: #f0f0f0;
-    border-bottom: 1px solid var(--color-borderColor);
-}
-
-.pdf-controls {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.pdf-controls button,
-.pdf-close {
-    background: none;
-    border: none;
-    padding: 8px;
-    cursor: pointer;
-    color: var(--color-text);
-    border-radius: 4px;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.pdf-controls button:hover,
-.pdf-close:hover {
+    flex-direction: column;
     background-color: var(--color-messageBackground);
 }
 
-.pdf-close {
-    padding: 8px;
-    font-size: 1.1em;
+.pdf-thumbnails,
+.pdf-passages {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
-.pdf-close:hover {
-    background-color: rgba(255, 0, 0, 0.1);
-    color: #dc3545;
+.thumbnails-header,
+.passages-header {
+    padding: 12px;
+    font-weight: 500;
+    border-bottom: 1px solid var(--color-borderColor);
+    background-color: var(--color-background);
 }
+
+.thumbnails-container,
+.passages-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+.thumbnail-wrapper {
+    margin-bottom: 8px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.thumbnail-wrapper:hover {
+    border-color: var(--color-primary);
+}
+
+.thumbnail-wrapper.active {
+    border-color: var(--color-primary);
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+.thumbnail-wrapper canvas {
+    width: 100%;
+    height: auto;
+    border-radius: 2px;
+}
+
+.passage-item {
+    padding: 12px;
+    margin-bottom: 8px;
+    background-color: var(--color-background);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.passage-item:hover {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+.passage-number {
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.passage-preview {
+    font-size: 0.9em;
+    opacity: 0.8;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+/* Main Content */
+.pdf-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+/* Header */
+.pdf-header {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
     justify-content: space-between;
     padding: 12px 16px;
-    background: var(--color-background);
+    background-color: var(--color-background);
     border-bottom: 1px solid var(--color-borderColor);
-    gap: 16px;
 }
 
 .pdf-controls {
@@ -93,12 +144,50 @@
     flex: 1;
 }
 
-.pdf-zoom-controls {
+.pdf-nav-controls,
+.pdf-view-controls,
+.pdf-search-controls {
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
+.pdf-search-controls {
+    flex: 1;
+    max-width: 400px;
+}
+
+.search-input {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background-color: var(--color-messageBackground);
+    border: 1px solid var(--color-borderColor);
+    border-radius: 4px;
+    padding: 4px;
+    flex: 1;
+}
+
+.pdf-search-input {
+    border: none;
+    background: none;
+    padding: 4px 8px;
+    flex: 1;
+    min-width: 0;
+    color: var(--color-text);
+}
+
+.pdf-search-input:focus {
+    outline: none;
+}
+
+.pdf-search-results {
+    font-size: 0.9em;
+    color: var(--color-text);
+    white-space: nowrap;
+}
+
+/* Buttons */
 .pdf-controls button,
 .pdf-close {
     background: none;
@@ -113,7 +202,7 @@
     justify-content: center;
 }
 
-.pdf-controls button:hover,
+.pdf-controls button:hover:not(:disabled),
 .pdf-close:hover {
     background-color: var(--color-messageBackground);
 }
@@ -125,7 +214,7 @@
 
 .pdf-close {
     padding: 8px;
-    font-size: 1.2em;
+    font-size: 1.1em;
 }
 
 .pdf-close:hover {
@@ -133,9 +222,9 @@
     color: #dc3545;
 }
 
+/* Viewer */
 .pdf-viewer {
     position: relative;
-    z-index: 1;
     flex: 1;
     overflow: auto;
     padding: 16px;
@@ -156,10 +245,9 @@
 
 .pdf-page-container canvas {
     display: block;
-    width: 100%;
-    height: 100%;
 }
 
+/* Text Layer */
 .pdf-text-layer {
     position: absolute;
     left: 0;
@@ -178,53 +266,48 @@
     position: absolute;
     white-space: pre;
     cursor: text;
-    pointer-events: all;
     transform-origin: 0% 0%;
+    pointer-events: all;
 }
 
-/* Fix for text selection */
-.pdf-text-layer ::selection { 
+.pdf-text-layer ::selection {
     background: rgba(0, 0, 255, 0.2);
 }
 
-/* Fix for Firefox */
-.pdf-text-layer ::-moz-selection { 
-    background: rgba(0, 0, 255, 0.2);
-}
-
-.pdf-text-layer > span::selection {
-    background: rgba(0, 0, 255, 0.3);
-}
-
-.pdf-error {
-    padding: 32px;
-    text-align: center;
-    color: var(--color-text);
-}
-
-.pdf-error i {
-    font-size: 48px;
-    color: #dc3545;
-    margin-bottom: 16px;
-}
-
-/* Dark theme support */
-[data-theme="dark"] .pdf-viewer canvas {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-[data-theme="dark"] .pdf-text-layer > span::selection {
-    background: rgba(255, 255, 0, 0.3);
-}
-
-/* Mobile optimization */
+/* Mobile Responsive */
 @media (max-width: 768px) {
+    .pdf-container {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+    }
+
+    .pdf-sidebar {
+        display: none;
+    }
+
+    .pdf-header {
+        padding: 8px;
+    }
+
     .pdf-controls {
-        flex-wrap: wrap;
-        justify-content: center;
+        gap: 8px;
+    }
+
+    .pdf-search-controls {
+        display: none;
     }
 
     .pdf-viewer {
         padding: 8px;
     }
+}
+
+/* Dark Theme Support */
+[data-theme="dark"] .pdf-viewer {
+    background-color: #1a1a1a;
+}
+
+[data-theme="dark"] .pdf-text-layer ::selection {
+    background: rgba(255, 255, 0, 0.2);
 }
