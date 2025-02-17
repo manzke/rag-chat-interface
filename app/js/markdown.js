@@ -86,22 +86,22 @@ renderer.link = (link, title, text) => {
         return `
             <a href="javascript:void(0)" 
                onclick="handlePDFLink('${href}')" 
-               title="${title || 'View document'}"
+               title="${link.text || 'View document'}"
                class="document-link">
                 <i class="fas ${icon}"></i>
-                ${text}
+                ${link.text}
             </a>`;
     } else if (href.startsWith('http')) {
         return `
             <a href="${href}" 
-               title="${title || ''}" 
+               title="${link.text || ''}" 
                target="_blank" 
                rel="noopener noreferrer">
-                ${text}
+                ${link.text}
                 <i class="fas fa-external-link-alt"></i>
             </a>`;
     }
-    return `<a href="${href}" title="${title || ''}">${text}</a>`;
+    return `<a href="${href}" title="${link.text || ''}">${link.text}</a>`;
 };
 
 // Add custom classes to tables

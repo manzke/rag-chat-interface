@@ -2,9 +2,6 @@ export function generateResponse(question, baseUrl) {
     return `# Answer to: ${question}
 
 Here's a sample PDF document that you can view directly in our PDF viewer:
-
-📄 [Sample PDF Document](/api/v2/pdf/sample.pdf)
-
 ## Example Table \n
 
 | Feature       | Status    | Description                           |
@@ -24,5 +21,7 @@ Here's a sample PDF document that you can view directly in our PDF viewer:
 | Highlight.js| 11.9.0    | Active    |
 | KaTeX       | 0.16.9    | Ready     |
 
+
+[Sample PDF Document](/api/v2/pdf/sample.pdf)
 `;
 }

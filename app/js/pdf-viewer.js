@@ -579,7 +579,13 @@ class PDFViewer {
     }
 }
 
-export function createPDFViewer(url, passages = []) {
+export function createPDFViewer(url, options = {}) {
+    const {
+        sourceUrl = url,
+        passages = []
+    } = options;
+    
     const viewer = new PDFViewer();
+    viewer.sourceUrl = sourceUrl;
     return viewer.createViewer(url, passages);
 }

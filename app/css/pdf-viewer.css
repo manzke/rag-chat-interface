@@ -334,6 +334,17 @@
     }
 }
 
+/* Fullscreen */
+.pdf-container:fullscreen {
+    width: 100vw;
+    height: 100vh;
+    background: var(--color-background);
+}
+
+.pdf-container:fullscreen .pdf-viewer {
+    padding: 24px;
+}
+
 /* Dark Theme Support */
 [data-theme="dark"] .pdf-viewer {
     background-color: #1a1a1a;
