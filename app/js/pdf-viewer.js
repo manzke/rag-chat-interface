@@ -117,8 +117,6 @@ class PDFViewer {
         // Add elements to container
         container.appendChild(toolbar);
         container.appendChild(viewerArea);
-        const canvas = document.createElement('canvas');
-        canvasContainer.appendChild(canvas);
 
         // Add elements to container
         container.appendChild(toolbar);
