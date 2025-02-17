@@ -154,6 +154,17 @@ class ThemeManager {
 
         // Apply message style
         document.documentElement.setAttribute('data-message-style', theme.messageStyle);
+
+        // Switch highlight.js theme
+        const lightTheme = document.getElementById('hljs-light-theme');
+        const darkTheme = document.getElementById('hljs-dark-theme');
+        if (theme.name === 'dark') {
+            lightTheme.disabled = true;
+            darkTheme.disabled = false;
+        } else {
+            lightTheme.disabled = false;
+            darkTheme.disabled = true;
+        }
     }
 
     updateThemeIcon(theme) {

@@ -1,4 +1,5 @@
 import { client } from './rag-client.js';
+import { processMarkdown, initializeCodeCopyButtons, processMathExpressions } from './markdown.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     // Load active assistant
@@ -354,7 +355,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             eventSource.addEventListener('answer', (event) => {
                 console.log('Received answer event:', event);
                 fullResponse += event.data + ' ';
-                contentDiv.textContent = fullResponse.trim();
+                const processedContent = processMarkdown(fullResponse.trim());
+                contentDiv.innerHTML = processedContent;
+                contentDiv.classList.add('markdown-content');
+                initializeCodeCopyButtons(contentDiv);
+                processMathExpressions(contentDiv);
                 currentResponse.content = fullResponse.trim();
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
             });
