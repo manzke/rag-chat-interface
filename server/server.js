@@ -3,6 +3,7 @@ import cors from 'cors';
 import { RAGBackend } from './rag_backend.js';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { createReadStream, statSync } from 'fs';
 import { createServer } from 'http';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -54,6 +55,43 @@ app.get('/', (req, res) => {
 
 app.get('/chat', (req, res) => {
     res.sendFile(join(__dirname, '../app/chat.html'));
+});
+
+// Serve PDF files
+app.get('/api/v2/pdf/:filename', (req, res) => {
+    const { filename } = req.params;
+    const filePath = join(__dirname, filename);
+    
+    try {
+        // Get file stats
+        const stat = statSync(filePath);
+        
+        // Set headers
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Length', stat.size);
+        res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
+        res.setHeader('Accept-Ranges', 'bytes');
+        
+        // Handle range requests for partial content
+        const range = req.headers.range;
+        if (range) {
+            const parts = range.replace(/bytes=/, '').split('-');
+            const start = parseInt(parts[0], 10);
+            const end = parts[1] ? parseInt(parts[1], 10) : stat.size - 1;
+            
+            res.setHeader('Content-Range', `bytes ${start}-${end}/${stat.size}`);
+            res.setHeader('Content-Length', end - start + 1);
+            res.status(206); // Partial Content
+            
+            createReadStream(filePath, { start, end }).pipe(res);
+        } else {
+            // Send entire file
+            createReadStream(filePath).pipe(res);
+        }
+    } catch (error) {
+        console.error('Error serving PDF:', error);
+        res.status(404).json({ error: 'PDF file not found' });
+    }
 });
 
 // RAG API endpoints
@@ -171,7 +209,12 @@ app.post('/api/v2/rag/ask', async (req, res) => {
     }
 
     // Send simulated response with markdown and code examples
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
     const response = `# Answer to: ${question}
+
+Here's a sample PDF document that you can view directly in our PDF viewer:
+
+📄 [Sample PDF Document](${baseUrl}/api/v2/pdf/sample.pdf)
 
 Here's a comprehensive example showcasing various markdown and code features:
 
