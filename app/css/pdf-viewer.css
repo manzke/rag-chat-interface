@@ -4,15 +4,26 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.8);
-    z-index: 1000;
+    z-index: 2000; /* Higher z-index to be above other elements */
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.pdf-overlay::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(5px);
 }
 
 .pdf-container {
+    position: relative; /* To be above the overlay background */
+    z-index: 1; /* Above the overlay background */
     display: flex;
     flex-direction: column;
     width: 95%;
@@ -24,8 +35,50 @@
 }
 
 .pdf-header {
+    position: relative;
+    z-index: 2; /* Above the viewer content */
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background-color: var(--color-background);
+    border-bottom: 1px solid var(--color-borderColor);
+}
+
+.pdf-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pdf-controls button,
+.pdf-close {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: var(--color-text);
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pdf-controls button:hover,
+.pdf-close:hover {
+    background-color: var(--color-messageBackground);
+}
+
+.pdf-close {
+    padding: 8px;
+    font-size: 1.1em;
+}
+
+.pdf-close:hover {
+    background-color: rgba(255, 0, 0, 0.1);
+    color: #dc3545;
+}
     justify-content: space-between;
     padding: 12px 16px;
     background: var(--color-background);
@@ -81,12 +134,15 @@
 }
 
 .pdf-viewer {
+    position: relative;
+    z-index: 1;
     flex: 1;
     overflow: auto;
     padding: 16px;
     display: flex;
     align-items: flex-start;
     justify-content: center;
+    background-color: #f0f0f0;
 }
 
 .pdf-page-container {
@@ -94,6 +150,8 @@
     background: white;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     margin: 0 auto;
+    border-radius: 4px;
+    overflow: hidden;
 }
 
 .pdf-page-container canvas {
