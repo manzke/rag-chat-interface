@@ -501,9 +501,6 @@ class PDFViewer {
             touchStartY = 0;
             initialPinchDistance = 0;
         });
-
-        // Annotation tools
-        this.initializeAnnotationTools(container, canvas, annotationLayer);
     }
 }
 
