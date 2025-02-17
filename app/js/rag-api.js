@@ -5,6 +5,7 @@ import {
     RetryMiddleware,
     createMiddlewareChain
 } from './middleware/rag-middleware.js';
+import { createEventSource } from './sse-polyfill.js';
 import { RateLimitMiddleware } from './middleware/rate-limiter.js';
 import { CacheMiddleware } from './middleware/cache.js';
 import { MetricsMiddleware, ResponseMetricsMiddleware } from './middleware/metrics.js';
@@ -132,7 +133,7 @@ class HTTPRAGApi extends RAGAPIBase {
         
         return new Promise((resolve, reject) => {
             try {
-                const eventSource = new EventSource(url);
+                const eventSource = createEventSource(url);
                 
                 eventSource.onerror = (event) => {
                     eventSource.close();
