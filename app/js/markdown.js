@@ -10,24 +10,7 @@ import sql from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/buil
 import json from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/json.min.js';
 import xml from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/xml.min.js';
 import yaml from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/yaml.min.js';
-import cpp from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/cpp.min.js';
-import csharp from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/csharp.min.js';
-import java from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/java.min.js';
-import kotlin from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/kotlin.min.js';
-import swift from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/swift.min.js';
-import go from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/go.min.js';
-import rust from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/rust.min.js';
-import ruby from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/ruby.min.js';
-import php from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/php.min.js';
-import scala from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/scala.min.js';
-import r from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/r.min.js';
-import matlab from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/matlab.min.js';
-import dockerfile from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/dockerfile.min.js';
 import css from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/css.min.js';
-import less from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/less.min.js';
-import scss from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/scss.min.js';
-import graphql from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/graphql.min.js';
-import latex from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/latex.min.js';
 
 // Register languages
 hljs.registerLanguage('python', python);
@@ -38,24 +21,7 @@ hljs.registerLanguage('sql', sql);
 hljs.registerLanguage('json', json);
 hljs.registerLanguage('xml', xml);
 hljs.registerLanguage('yaml', yaml);
-hljs.registerLanguage('cpp', cpp);
-hljs.registerLanguage('csharp', csharp);
-hljs.registerLanguage('java', java);
-hljs.registerLanguage('kotlin', kotlin);
-hljs.registerLanguage('swift', swift);
-hljs.registerLanguage('go', go);
-hljs.registerLanguage('rust', rust);
-hljs.registerLanguage('ruby', ruby);
-hljs.registerLanguage('php', php);
-hljs.registerLanguage('scala', scala);
-hljs.registerLanguage('r', r);
-hljs.registerLanguage('matlab', matlab);
-hljs.registerLanguage('dockerfile', dockerfile);
 hljs.registerLanguage('css', css);
-hljs.registerLanguage('less', less);
-hljs.registerLanguage('scss', scss);
-hljs.registerLanguage('graphql', graphql);
-hljs.registerLanguage('latex', latex);
 
 // Configure marked options
 marked.setOptions({
@@ -187,22 +153,4 @@ export function initializeCodeCopyButtons(container) {
             });
         });
     });
-}
-
-// Function to process math expressions (optional)
-export function processMathExpressions(container) {
-    if (typeof katex !== 'undefined') {
-        container.querySelectorAll('.math-inline, .math-display').forEach(el => {
-            try {
-                const math = el.textContent;
-                const isDisplay = el.classList.contains('math-display');
-                katex.render(math, el, { 
-                    displayMode: isDisplay,
-                    throwOnError: false
-                });
-            } catch (e) {
-                console.error('Math processing error:', e);
-            }
-        });
-    }
 }

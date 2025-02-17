@@ -1,5 +1,5 @@
 import { client } from './rag-client.js';
-import { processMarkdown, initializeCodeCopyButtons, processMathExpressions } from './markdown.js';
+import { processMarkdown, initializeCodeCopyButtons } from './markdown.js';
 import { createPDFViewer } from './pdf-viewer.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -401,9 +401,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 // Initialize code copy buttons
                 initializeCodeCopyButtons(contentDiv);
-
-                // Process math expressions
-                processMathExpressions(contentDiv);
 
                 // Fix table rendering
                 contentDiv.querySelectorAll('table').forEach(table => {

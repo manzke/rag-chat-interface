@@ -34,6 +34,10 @@ body {
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
+.status-container {
+    display: contents;
+}
+
 .status-bar {
     padding: 10px 20px;
     border-bottom: 1px solid #eee;

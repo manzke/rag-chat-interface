@@ -1,22 +1,16 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Chat Interface</title>
     <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/theme.css">
-    <link rel="stylesheet" href="../css/layout.css">
     <link rel="stylesheet" href="../css/markdown.css">
     <link rel="stylesheet" href="../css/pdf-viewer.css">
     <!-- Highlight.js CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github.min.css" id="hljs-light-theme">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css" id="hljs-dark-theme" disabled>
     <!-- Add Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Add KaTeX for math support -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <!-- Add PDF.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
@@ -26,69 +20,19 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Sidebar -->
-        <div class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <button class="back-button" id="back-button" title="Back to Assistant Selection">
-                    <i class="fas fa-arrow-left"></i>
-                </button>
-                <button class="collapse-sidebar" id="collapse-sidebar" title="Collapse Sidebar">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-            </div>
-            
-            <div class="sidebar-content">
-                <div class="chat-info">
-                    <h3>Chat Information</h3>
-                    <div class="info-section">
-                        <h4>Assistant</h4>
-                        <span class="assistant-name" id="assistant-name"></span>
-                    </div>
-                    <div class="info-section">
-                        <h4>Documents</h4>
-                        <div class="document-list" id="document-list"></div>
-                    </div>
-                    <div class="info-section">
-                        <h4>Settings</h4>
-                        <div class="settings-controls">
-                            <div class="theme-controls">
-                                <button class="theme-toggle" id="theme-toggle" title="Toggle Dark/Light Mode">
-                                    <i class="fas fa-moon"></i>
-                                </button>
-                                <button class="theme-customize" id="theme-customize" title="Customize Theme">
-                                    <i class="fas fa-palette"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Resizer -->
-        <div class="resizer" id="sidebar-resizer"></div>
-
         <!-- Main Content -->
         <div class="main-content">
-            <div class="status-bar" id="status-bar">
-                <button class="toggle-sidebar" id="toggle-sidebar" title="Toggle Sidebar">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div class="status-container">
-                    <span class="status-indicator" id="status-indicator"></span>
-                    <span class="status-text" id="status-text">Ready</span>
-                </div>
-                <div class="toolbar-controls">
-                    <button class="voice-input" id="voice-input" title="Voice Input">
-                        <i class="fas fa-microphone"></i>
-                    </button>
-                    <button class="attach-file" id="attach-file" title="Attach File">
-                        <i class="fas fa-paperclip"></i>
-                    </button>
-                </div>
-            </div>
-
             <div class="chat-container">
+                <div class="status-bar" id="status-bar">
+                    <button class="back-button" id="back-button" title="Back to Assistant Selection">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <span class="assistant-name" id="assistant-name"></span>
+                    <div class="status-container">
+                        <span class="status-indicator" id="status-indicator"></span>
+                        <span class="status-text" id="status-text">Ready</span>
+                    </div>
+                </div>
                 <div class="chat-messages" id="chat-messages"></div>
                 <div class="input-container">
                     <textarea id="user-input" placeholder="Type your message here..." rows="1"></textarea>
@@ -275,80 +219,6 @@
         </div>
     </template>
 
-    <!-- Theme Customization Dialog -->
-    <div class="theme-dialog" id="theme-dialog">
-        <div class="theme-dialog-content">
-            <div class="theme-dialog-header">
-                <h3>Customize Theme</h3>
-                <button class="close-dialog" id="close-theme-dialog">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="theme-dialog-body">
-                <div class="theme-section">
-                    <h4>Color Scheme</h4>
-                    <div class="theme-presets">
-                        <button class="theme-preset" data-theme="light">Light</button>
-                        <button class="theme-preset" data-theme="dark">Dark</button>
-                        <button class="theme-preset" data-theme="system">System</button>
-                    </div>
-                </div>
-                <div class="theme-section">
-                    <h4>Custom Colors</h4>
-                    <div class="color-picker-group">
-                        <label>
-                            Primary Color
-                            <input type="color" id="primary-color" name="primary-color">
-                        </label>
-                        <label>
-                            Background Color
-                            <input type="color" id="background-color" name="background-color">
-                        </label>
-                        <label>
-                            Text Color
-                            <input type="color" id="text-color" name="text-color">
-                        </label>
-                    </div>
-                </div>
-                <div class="theme-section">
-                    <h4>Font</h4>
-                    <select id="font-family" class="font-select">
-                        <option value="system-ui">System Default</option>
-                        <option value="'Segoe UI', sans-serif">Segoe UI</option>
-                        <option value="'Roboto', sans-serif">Roboto</option>
-                        <option value="'Inter', sans-serif">Inter</option>
-                    </select>
-                    <div class="font-size-controls">
-                        <label>
-                            Font Size
-                            <input type="range" id="font-size" min="12" max="20" step="1">
-                            <span class="font-size-value">14px</span>
-                        </label>
-                    </div>
-                </div>
-                <div class="theme-section">
-                    <h4>Message Style</h4>
-                    <div class="message-style-options">
-                        <label>
-                            <input type="radio" name="message-style" value="bubble">
-                            Bubble Style
-                        </label>
-                        <label>
-                            <input type="radio" name="message-style" value="flat">
-                            Flat Style
-                        </label>
-                    </div>
-                </div>
-            </div>
-            <div class="theme-dialog-footer">
-                <button class="reset-theme">Reset to Default</button>
-                <button class="apply-theme">Apply Changes</button>
-            </div>
-        </div>
-    </div>
-
-    <script type="module" src="../js/layout.js"></script>
     <script type="module" src="../js/chat.js"></script>
-    <script type="module" src="../js/theme.js"></script>
 </body>
 </html>
