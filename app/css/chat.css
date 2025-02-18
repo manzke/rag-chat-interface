@@ -717,6 +717,7 @@ body {
     min-height: 48px;
 }
 
+#stop-button,
 #send-button {
     width: 48px;
     height: 48px;
@@ -739,41 +740,50 @@ body {
     background-color: #0056b3;
 }
 
-#send-button:disabled:not(.stopping) {
+#stop-button:disabled,
+#send-button:disabled {
     background-color: #ccc;
     cursor: not-allowed;
+    display: none;
 }
 
-#send-button.stopping {
+#stop-button {
+    width: 48px;
+    height: 48px;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
     background-color: #dc3545 !important;
     cursor: pointer !important;
     opacity: 1 !important;
 }
 
-#send-button .stop-icon {
+#stop-button .stop-icon {
     font-size: 14px;  /* Make the square smaller */
     filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3));  /* Add subtle shadow for visibility */
+    display: inline-block;
 }
 
-#send-button.stopping:hover {
+#stop-button:hover {
     background-color: #c82333 !important;
 }
 
 #send-button .send-icon,
-#send-button .stop-icon {
+#stop-button .stop-icon {
     transition: all 0.2s ease;
 }
 
-#send-button:not(.stopping) .stop-icon {
+#stop-button:disabled .stop-icon,
+#send-button:disabled .send-icon {
     display: none;
-}
-
-#send-button.stopping .send-icon {
-    display: none;
-}
-
-#send-button.stopping .stop-icon {
-    display: inline-block;
 }
 
 .copy-success {

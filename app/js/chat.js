@@ -47,6 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const messagesContainer = document.getElementById('chat-messages');
     const userInput = document.getElementById('user-input');
     const sendButton = document.getElementById('send-button');
+    const stopButton = document.getElementById('stop-button');
     const statusIndicator = document.getElementById('status-indicator');
     const statusText = document.getElementById('status-text');
     
@@ -267,9 +268,27 @@ document.addEventListener('DOMContentLoaded', async () => {
     function disableInput(disabled) {
         userInput.disabled = disabled;
         sendButton.disabled = disabled;
+        sendButton.style.display = disabled ? 'none' : 'flex';
+        sendButton.disabled = !disabled;
+        stopButton.style.display = disabled ? 'flex' : 'none';
     }
 
     let isWaitingForResponse = false;
+
+    async function stop() {
+        updateStatus('', 'Stopping...');
+        isWaitingForResponse = false;
+        disableInput(false);
+            
+        // Stop the current request and clean up
+        if (eventSource) {
+            await client.stopClient(currentRequestUuid);
+            eventSource = null;
+
+            updateStatus('', 'Ready');
+            return;
+        }
+    }
 
     async function sendMessage(message = null) {
         // If we're in stopping mode, stop the current request
@@ -282,8 +301,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 eventSource = null;
             }
             
-            sendButton.classList.remove('stopping');
-            sendButton.disabled = false;
             isWaitingForResponse = false;
             disableInput(false);
             updateStatus('', 'Ready');
@@ -306,10 +323,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         currentRequestUuid = requestUuid;
         
         // Update button to show stop state
-        sendButton.classList.add('stopping');
-        sendButton.disabled = false;
         isWaitingForResponse = true;
-
         if (eventSource) {
             await client.stopClient(currentRequestUuid);
         }
@@ -871,7 +885,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
                 await client.stopClient(requestUuid);
                 updateStatus('', 'Ready');
-                sendButton.classList.remove('stopping');
                 isWaitingForResponse = false;
                 disableInput(false);
 
@@ -885,7 +898,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (isWaitingForResponse && eventSource) {
                     await client.stopClient(requestUuid);
                     updateStatus('error', 'Connection error');
-                    sendButton.classList.remove('stopping');
                     isWaitingForResponse = false;
                     disableInput(false);
                     showError('Failed to get response');
@@ -902,7 +914,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (error) {
             console.error('Error sending message:', error);
             showError(error.message);
-            sendButton.classList.remove('stopping');
             isWaitingForResponse = false;
             disableInput(false);
         }
@@ -918,6 +929,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     sendButton.addEventListener('click', () => {
         sendMessage();
+    });
+
+    stopButton.addEventListener('click', () => {
+        stop();
     });
 
     // Handle page unload
