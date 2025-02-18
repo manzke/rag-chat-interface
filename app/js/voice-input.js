@@ -1,3 +1,5 @@
+import '../css/voice-input.css';
+
 export class VoiceInput {
     constructor(options = {}) {
         this.onStart = options.onStart || (() => {});

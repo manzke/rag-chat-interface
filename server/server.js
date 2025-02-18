@@ -19,13 +19,13 @@ app.use(cors());
 app.use(express.json());
 
 // Serve static files with proper MIME types
-app.use('/css', express.static(join(__dirname, '../app/css'), {
+app.use('/css', express.static(join(__dirname, '../dist/css'), {
     setHeaders: (res) => {
         res.setHeader('Content-Type', 'text/css');
     }
 }));
 
-app.use('/js', express.static(join(__dirname, '../app/js'), {
+app.use('/js', express.static(join(__dirname, '../dist/js'), {
     setHeaders: (res) => {
         res.setHeader('Content-Type', 'application/javascript');
     }
@@ -38,7 +38,7 @@ app.use('/configs', express.static(join(__dirname, '../app/configs'), {
 }));
 
 // Serve other static files
-app.use(express.static(join(__dirname, '../app')));
+app.use(express.static(join(__dirname, '../dist')));
 
 // SSE client map
 const clients = new Map();
@@ -51,11 +51,11 @@ function sendSSE(res, event, data) {
 
 // Routes
 app.get('/', (req, res) => {
-    res.sendFile(join(__dirname, '../app/index.html'));
+    res.sendFile(join(__dirname, '../dist/index.html'));
 });
 
 app.get('/chat', (req, res) => {
-    res.sendFile(join(__dirname, '../app/chat.html'));
+    res.sendFile(join(__dirname, '../dist/chat.html'));
 });
 
 // Serve PDF files

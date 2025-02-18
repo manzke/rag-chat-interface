@@ -1,3 +1,7 @@
+import '../css/index.css';
+import '../css/chat.css';
+import '../css/mobile.css';
+
 import { client } from './rag-client.js';
 import { processMarkdown, initializeCodeCopyButtons } from './markdown.js';
 import { createPDFViewer } from './pdf-viewer.js';

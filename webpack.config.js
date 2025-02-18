@@ -10,16 +10,12 @@ const __dirname = dirname(__filename);
 export default {
     mode: 'production',
     entry: {
-        app: [
-            './app/js/chat.js',
-            './app/js/index.js',
-            './app/js/pdf-viewer.js',
-            './app/js/voice-input.js'
-        ]
+        chat: './app/js/chat.js',
+        index: './app/js/index.js'
     },
     output: {
         path: resolve(__dirname, 'dist'),
-        filename: 'js/bundle.[contenthash].js',
+        filename: 'js/[name].[contenthash].js',
         clean: true
     },
     module: {
@@ -47,29 +43,31 @@ export default {
     plugins: [
         new CleanWebpackPlugin(),
         new MiniCssExtractPlugin({
-            filename: 'app/css/styles.[contenthash].css'
+            filename: 'css/[name].[contenthash].css'
         }),
         new HtmlWebpackPlugin({
             template: 'app/chat.html',
             filename: 'chat.html',
-            chunks: ['app'],
+            chunks: ['chat'],
+            scriptLoading: 'module', // This ensures the script tag uses type="module"
             minify: {
                 removeComments: true,
-                collapseWhitespace: true
+                collapseWhitespace: false
             }
         }),
         new HtmlWebpackPlugin({
             template: 'app/index.html',
             filename: 'index.html',
-            chunks: ['app'],
+            chunks: ['index'],
+            scriptLoading: 'module', // This ensures the script tag uses type="module"
             minify: {
                 removeComments: true,
-                collapseWhitespace: true
+                collapseWhitespace: false
             }
         })
     ],
     optimization: {
-        minimize: true,
+        minimize: false,
         moduleIds: 'deterministic'
     },
     experiments: {

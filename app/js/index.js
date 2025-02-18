@@ -1,3 +1,7 @@
+import '../css/index.css';
+import '../css/chat.css';
+import '../css/mobile.css';
+
 document.addEventListener('DOMContentLoaded', async () => {
     let config;
     let activeAssistantId = localStorage.getItem('activeAssistantId');

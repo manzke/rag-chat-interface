@@ -1,4 +1,5 @@
 // Import PDF.js (using CDN for both library and worker)
+import '../css/pdf-viewer.css';
 const pdfjsLib = window.pdfjsLib;
 
 class PDFViewer {
