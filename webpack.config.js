@@ -3,6 +3,7 @@ import { dirname, resolve } from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { CleanWebpackPlugin } from 'clean-webpack-plugin';
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -52,7 +53,7 @@ export default {
             scriptLoading: 'module', // This ensures the script tag uses type="module"
             minify: {
                 removeComments: true,
-                collapseWhitespace: false
+                collapseWhitespace: true
             }
         }),
         new HtmlWebpackPlugin({
@@ -62,13 +63,17 @@ export default {
             scriptLoading: 'module', // This ensures the script tag uses type="module"
             minify: {
                 removeComments: true,
-                collapseWhitespace: false
+                collapseWhitespace: true
             }
         })
     ],
     optimization: {
-        minimize: false,
-        moduleIds: 'deterministic'
+        minimize: true,
+        moduleIds: 'deterministic',
+        minimizer: [
+            '...', // Keeps the default minimizers (like Terser for JS)
+            new CssMinimizerPlugin()
+        ]
     },
     experiments: {
         topLevelAwait: true,

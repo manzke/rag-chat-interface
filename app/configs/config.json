@@ -7,15 +7,9 @@
             "icon": "fas fa-search",
             "defaultConfig": {
                 "profileName": "searchprofile-standard",
-                "filters": [
-                    {
-                        "key": "query",
-                        "values": ["iFinder"],
-                        "isNegated": false
-                    }
-                ],
-                "query": "iFinder",
-                "docIds": ["ifinder6-5Qy2EcRDb1Npi_5T"],
+                "filters": [],
+                "query": null,
+                "docIds": [],
                 "welcomeMessage": "Hello! I'm your iFinder Assistant. I can help you with questions about iFinder features, configuration, and best practices. What would you like to know?"
             }
         },
@@ -26,13 +20,7 @@
             "icon": "fas fa-life-ring",
             "defaultConfig": {
                 "profileName": "searchprofile-support",
-                "filters": [
-                    {
-                        "key": "category",
-                        "values": ["support"],
-                        "isNegated": false
-                    }
-                ],
+                "filters": [],
                 "query": null,
                 "docIds": [],
                 "welcomeMessage": "Hi there! I'm your Support Assistant. I can help you with technical issues and troubleshooting. How can I assist you today?"

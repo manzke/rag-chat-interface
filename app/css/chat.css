@@ -98,22 +98,18 @@ body {
     transition: opacity 0.2s ease;
 }
 
+.status-indicator.receiving-answer,
+.status-indicator.receiving-passages,
+.status-indicator.receiving-related-questions,
 .status-indicator.connecting {
     background-color: #ffc107;
     color: #ffc107;
 }
 
+.status-indicator.receiving-answer::after,
+.status-indicator.receiving-passages::after,
+.status-indicator.receiving-related-questions::after,
 .status-indicator.connecting::after {
-    opacity: 1;
-    animation: spin 1s linear infinite;
-}
-
-.status-indicator.receiving-answer {
-    background-color: #ffc107;
-    color: #ffc107;
-}
-
-.status-indicator.receiving-answer::after {
     opacity: 1;
     animation: spin 1s linear infinite;
 }

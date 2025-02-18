@@ -91,6 +91,28 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.body.appendChild(viewer);
     }
 
+    function openDocument(url, title, isPDF) {
+        const lowerUrl = url.toLowerCase();
+        console.log(`Opening document: ${lowerUrl} isPDF: ${isPDF}`);
+        if (lowerUrl.includes("doc.do")) {
+            isPDF = true;
+            url = "/" + url;
+        }
+        if (isPDF) {
+            return `<a href="javascript:void(0)" 
+                                onclick="handlePDFLink('${url}')" 
+                                class="document-link">
+                                ${title || 'View document'}
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>`
+        } else {
+            return `<a href="${url}" target="_blank" rel="noopener noreferrer">
+                        ${title || 'Open document'}
+                        <i class="fas fa-external-link-alt"></i>
+                    </a>`
+        }
+    };
+
     function showCopyNotification() {
         const notification = document.createElement('div');
         notification.className = 'copy-success';
@@ -304,6 +326,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         let currentQuery = expertQuery?.value || query;
         let currentProfileName = expertProfileName?.value || profileName;
         let currentProfileId = expertProfileId?.value || profileId;
+        let currentFilters = expertFilters?.value || activeAssistant.defaultConfig.filters || '[]';
         
         if (currentProfileName && !currentProfileId) {
             currentProfileId = btoa(currentProfileName);
@@ -312,7 +335,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Parse filters from expert mode or create default ones
         let filter;
         try {
-            filter = JSON.parse(expertFilters?.value || '[]');
+            // Add a check if it is not already JSON
+            if (typeof currentFilters !== 'string') {
+                currentFilters = JSON.stringify(currentFilters);
+            }
+
+            filter = JSON.parse(currentFilters);
         } catch (e) {
             console.error('Invalid filters JSON:', e);
             filter = [];
@@ -346,7 +374,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 query: currentQuery,
                 profileName: currentProfileName,
                 profileId: currentProfileId,
-                filters: filter
+                filters: currentFilters
             }
         };
         chatHistory.push(historyEntry);
@@ -378,7 +406,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             eventSource.addEventListener('answer', (event) => {
                 updateStatus('receiving-answer', 'Answering...');
                 console.log('Received answer event:', event);
-                fullResponse += event.data + ' ';
+                const answer = JSON.parse(event.data).answer;
+                //fullResponse += event.data + ' ';
+                fullResponse += answer;
                 // Process and render markdown content
                 const processedContent = processMarkdown(fullResponse.trim());
                 contentDiv.innerHTML = processedContent;
@@ -572,20 +602,22 @@ document.addEventListener('DOMContentLoaded', async () => {
                                         // Handle links array specially
                                         formattedValue = value.map(link => {
                                             if (link.url) {
-                                                return `<a href="${link.url}" target="_blank" rel="noopener noreferrer">
-                                                    ${link.type || 'Link'} ${link.listPosition !== undefined ? (link.listPosition + 1) : ''}
-                                                    <i class="fas fa-external-link-alt"></i>
-                                                </a>`;
+                                                return openDocument(link.url, link.text, true);
+                                                // return `<a href="${link.url}" target="_blank" rel="noopener noreferrer">
+                                                //     ${link.type || 'Link'} ${link.listPosition !== undefined ? (link.listPosition + 1) : ''}
+                                                //     <i class="fas fa-external-link-alt"></i>
+                                                // </a>`;
                                             }
                                             return '';
                                         }).filter(Boolean).join('<br>');
                                     } else if (urlFields.includes(key)) {
                                         // Handle URL fields
                                         formattedValue = value.map(url => 
-                                            `<a href="${url}" target="_blank" rel="noopener noreferrer">
-                                                ${url.length > 50 ? url.substring(0, 47) + '...' : url}
-                                                <i class="fas fa-external-link-alt"></i>
-                                            </a>`
+                                            openDocument(url, url.length > 50 ? url.substring(0, 47) + '...' : url)
+                                            // `<a href="${url}" target="_blank" rel="noopener noreferrer">
+                                            //     ${url.length > 50 ? url.substring(0, 47) + '...' : url}
+                                            //     <i class="fas fa-external-link-alt"></i>
+                                            // </a>`
                                         ).join('<br>');
                                     } else {
                                         // Handle regular fields
@@ -624,10 +656,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                         
                         // Convert URLs
                         html = html.replace(patterns.url, (url) => 
-                            `<a href="${url}" target="_blank" rel="noopener noreferrer">
-                                ${url.length > 50 ? url.substring(0, 47) + '...' : url}
-                                <i class="fas fa-external-link-alt"></i>
-                            </a>`
+                            openDocument(url, url.length > 50 ? url.substring(0, 47) + '...' : url)
+                            // `<a href="${url}" target="_blank" rel="noopener noreferrer">
+                            //     ${url.length > 50 ? url.substring(0, 47) + '...' : url}
+                            //     <i class="fas fa-external-link-alt"></i>
+                            // </a>`
                         );
                         
                         // Convert email addresses
@@ -640,10 +673,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                             // Extract any ID parameter if present
                             const idMatch = docUrl.match(/id=([^&\s]+)/);
                             const displayText = idMatch ? `Document ${idMatch[1].substring(0, 8)}...` : docUrl;
-                            return `<a href="${docUrl}" target="_blank" rel="noopener noreferrer">
-                                ${displayText}
-                                <i class="fas fa-external-link-alt"></i>
-                            </a>`;
+                            return openDocument(docUrl, displayText, true);
+                            // `<a href="${docUrl}" target="_blank" rel="noopener noreferrer">
+                            //     ${displayText}
+                            //     <i class="fas fa-external-link-alt"></i>
+                            // </a>`;
                         });
                         
                         return html;
@@ -811,14 +845,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const relatedContainer = responseElement.querySelector('.related-questions');
                     
                     // Store in chat history
-                    currentResponse.relatedQuestions = relatedData.questions;
+                    currentResponse.relatedQuestions = relatedData.questions.related_questions;
                     
                     // Clear any existing related questions
                     relatedContainer.innerHTML = '';
                     
                     // Add new related questions
                     const template = document.getElementById('related-question-template');
-                    relatedData.questions.forEach(question => {
+                    currentResponse.relatedQuestions.forEach(question => {
                         const element = template.content.cloneNode(true).querySelector('.related-question');
                         element.querySelector('.question-text').textContent = question;
                         element.addEventListener('click', () => sendMessage(question));

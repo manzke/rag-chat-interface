@@ -1,13 +1,13 @@
 import {
-    ErrorMiddleware,
+    //ErrorMiddleware,
     LoggingMiddleware,
-    ValidationMiddleware,
-    RetryMiddleware,
+    //ValidationMiddleware,
+    //RetryMiddleware,
     createMiddlewareChain
 } from './middleware/rag-middleware.js';
 import { createEventSource } from './sse-polyfill.js';
-import { RateLimitMiddleware } from './middleware/rate-limiter.js';
-import { CacheMiddleware } from './middleware/cache.js';
+//import { RateLimitMiddleware } from './middleware/rate-limiter.js';
+//import { CacheMiddleware } from './middleware/cache.js';
 import { MetricsMiddleware, ResponseMetricsMiddleware } from './middleware/metrics.js';
 import {
     AnswerTransformer,
@@ -45,13 +45,13 @@ class RAGAPIBase {
 
         // Create middleware chain
         this.middleware = createMiddlewareChain(
-            new ErrorMiddleware(),
+            //new ErrorMiddleware(),
             new MetricsMiddleware(metrics),
-            new RateLimitMiddleware(rateLimiter),
-            new CacheMiddleware(cache),
+            //new RateLimitMiddleware(rateLimiter),
+            //new CacheMiddleware(cache),
             new LoggingMiddleware(),
-            new ValidationMiddleware(),
-            new RetryMiddleware(retry.maxRetries, retry.delay),
+            //new ValidationMiddleware(),
+            //new RetryMiddleware(retry.maxRetries, retry.delay),
             new ResponseMetricsMiddleware(metrics)
         );
     }
@@ -133,7 +133,10 @@ class HTTPRAGApi extends RAGAPIBase {
         
         return new Promise((resolve, reject) => {
             try {
-                const eventSource = createEventSource(url);
+                const eventSource = createEventSource(url, {
+                    withCredentials: true,
+                  },
+                );
                 
                 eventSource.onerror = (event) => {
                     eventSource.close();
@@ -147,14 +150,18 @@ class HTTPRAGApi extends RAGAPIBase {
                 };
 
                 // Set a timeout in case the connection hangs
-                const timeout = setTimeout(() => {
-                    eventSource.close();
-                    const error = new Error('SSE connection timeout');
-                    reject(error);
-                }, 5000);
+                // const timeout = setTimeout(() => {
+                //     eventSource.close();
+                //     const error = new Error('SSE connection timeout');
+                //     reject(error);
+                // }, 120000);
 
                 // Clear timeout if connection succeeds
-                eventSource.addEventListener('open', () => clearTimeout(timeout));
+                //eventSource.addEventListener('open', () => clearTimeout(timeout));
+
+                setTimeout(() => {
+                    resolve(eventSource);
+                }, 500);
             } catch (error) {
                 reject(new Error('Failed to create EventSource: ' + error.message));
             }
@@ -330,6 +337,6 @@ function createRAGApi(protocol, baseUrl, options = {}) {
 export {
     RAGAPIBase,
     HTTPRAGApi,
-    WebSocketRAGApi,
+    //WebSocketRAGApi,
     createRAGApi
 };

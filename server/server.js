@@ -204,7 +204,7 @@ app.post('/api/v2/rag/ask', async (req, res) => {
     if (contextParts.length) {
         const contextText = "Context:\n" + contextParts.join("\n");
         for (const word of contextText.split(/\s+/)) {
-            sendSSE(client.response, 'answer', word);
+            sendSSE(client.response, 'answer', `{"answer":"${word}","eventType":"answer"}`);
             await new Promise(resolve => setTimeout(resolve, 100));
         }
     }
@@ -212,17 +212,19 @@ app.post('/api/v2/rag/ask', async (req, res) => {
     // Send simulated response with markdown and code examples
     const response = generateResponse(question, '');
     for (const word of response.split(/\s+/)) {
-        sendSSE(client.response, 'answer', word);
+        sendSSE(client.response, 'answer', `{"answer":"${word}","eventType":"answer"}`);
         await new Promise(resolve => setTimeout(resolve, 100));
     }
 
     // Send related questions
     sendSSE(client.response, 'related', {
-        questions: [
-            "What are the main features?",
-            "Can you explain more about this?",
-            "How does this work?"
-        ]
+        questions: {
+            related_questions: [
+                "What are the main features?",
+                "Can you explain more about this?",
+                "How does this work?"
+            ]
+        }
     });
 
     // Send final telemetry

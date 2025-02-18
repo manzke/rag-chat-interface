@@ -3,26 +3,26 @@ import { marked } from 'https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js';
 import hljs from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/highlight.min.js';
 
 // Import additional languages for highlight.js
-import python from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/python.min.js';
-import javascript from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/javascript.min.js';
-import typescript from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/typescript.min.js';
-import bash from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/bash.min.js';
-import sql from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/sql.min.js';
-import json from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/json.min.js';
-import xml from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/xml.min.js';
-import yaml from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/yaml.min.js';
-import css from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/css.min.js';
+// import python from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/python.min.js';
+// import javascript from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/javascript.min.js';
+// import typescript from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/typescript.min.js';
+// import bash from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/bash.min.js';
+// import sql from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/sql.min.js';
+// import json from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/json.min.js';
+// import xml from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/xml.min.js';
+// import yaml from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/yaml.min.js';
+// import css from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/es/languages/css.min.js';
 
-// Register languages
-hljs.registerLanguage('python', python);
-hljs.registerLanguage('javascript', javascript);
-hljs.registerLanguage('typescript', typescript);
-hljs.registerLanguage('bash', bash);
-hljs.registerLanguage('sql', sql);
-hljs.registerLanguage('json', json);
-hljs.registerLanguage('xml', xml);
-hljs.registerLanguage('yaml', yaml);
-hljs.registerLanguage('css', css);
+// // Register languages
+// hljs.registerLanguage('python', python);
+// hljs.registerLanguage('javascript', javascript);
+// hljs.registerLanguage('typescript', typescript);
+// hljs.registerLanguage('bash', bash);
+// hljs.registerLanguage('sql', sql);
+// hljs.registerLanguage('json', json);
+// hljs.registerLanguage('xml', xml);
+// hljs.registerLanguage('yaml', yaml);
+// hljs.registerLanguage('css', css);
 
 // Configure marked options
 marked.setOptions({
@@ -60,62 +60,62 @@ renderer.code = (code, language) => {
 };
 
 // Handle links including PDFs and other document types
-renderer.link = (link, title, text) => {
-    const href = link.href;
-    // Function to check if URL points to a document
-    const isDocument = (url) => {
-        const docExtensions = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx'];
-        const lowerUrl = url.toLowerCase();
-        return docExtensions.some(ext => lowerUrl.endsWith(ext)) ||
-               lowerUrl.includes('doc.do') ||
-               lowerUrl.includes('document') ||
-               lowerUrl.includes('download');
-    };
+// renderer.link = (link, title, text) => {
+//     const href = link.href;
+//     // Function to check if URL points to a document
+//     const isDocument = (url) => {
+//         const docExtensions = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx'];
+//         const lowerUrl = url.toLowerCase();
+//         return docExtensions.some(ext => lowerUrl.endsWith(ext)) ||
+//                lowerUrl.includes('doc.do') ||
+//                lowerUrl.includes('document') ||
+//                lowerUrl.includes('download');
+//     };
 
-    // Function to get icon based on file type
-    const getFileIcon = (url) => {
-        const lowerUrl = url.toLowerCase();
-        if (lowerUrl.endsWith('.pdf')) return 'fa-file-pdf';
-        if (lowerUrl.match(/\.(doc|docx)$/)) return 'fa-file-word';
-        if (lowerUrl.match(/\.(xls|xlsx)$/)) return 'fa-file-excel';
-        if (lowerUrl.match(/\.(ppt|pptx)$/)) return 'fa-file-powerpoint';
-        return 'fa-file';
-    };
+//     // Function to get icon based on file type
+//     const getFileIcon = (url) => {
+//         const lowerUrl = url.toLowerCase();
+//         if (lowerUrl.endsWith('.pdf')) return 'fa-file-pdf';
+//         if (lowerUrl.match(/\.(doc|docx)$/)) return 'fa-file-word';
+//         if (lowerUrl.match(/\.(xls|xlsx)$/)) return 'fa-file-excel';
+//         if (lowerUrl.match(/\.(ppt|pptx)$/)) return 'fa-file-powerpoint';
+//         return 'fa-file';
+//     };
 
-    if (isDocument(href)) {
-        const icon = getFileIcon(href);
-        return `
-            <a href="javascript:void(0)" 
-               onclick="handlePDFLink('${href}')" 
-               title="${link.text || 'View document'}"
-               class="document-link">
-                <i class="fas ${icon}"></i>
-                ${link.text}
-            </a>`;
-    } else if (href.startsWith('http')) {
-        return `
-            <a href="${href}" 
-               title="${link.text || ''}" 
-               target="_blank" 
-               rel="noopener noreferrer">
-                ${link.text}
-                <i class="fas fa-external-link-alt"></i>
-            </a>`;
-    }
-    return `<a href="${href}" title="${link.text || ''}">${link.text}</a>`;
-};
+//     if (isDocument(href)) {
+//         const icon = getFileIcon(href);
+//         return `
+//             <a href="javascript:void(0)" 
+//                onclick="handlePDFLink('${href}')" 
+//                title="${link.text || 'View document'}"
+//                class="document-link">
+//                 <i class="fas ${icon}"></i>
+//                 ${link.text}
+//             </a>`;
+//     } else if (href.startsWith('http')) {
+//         return `
+//             <a href="${href}" 
+//                title="${link.text || ''}" 
+//                target="_blank" 
+//                rel="noopener noreferrer">
+//                 ${link.text}
+//                 <i class="fas fa-external-link-alt"></i>
+//             </a>`;
+//     }
+//     return `<a href="${href}" title="${link.text || ''}">${link.text}</a>`;
+// };
 
 // Add custom classes to tables
-renderer.table = (header, body) => {
-    return `
-        <div class="table-container">
-            <table class="markdown-table">
-                <thead>${header}</thead>
-                <tbody>${body}</tbody>
-            </table>
-        </div>
-    `;
-};
+// renderer.table = (header, body) => {
+//     return `
+//         <div class="table-container">
+//             <table class="markdown-table">
+//                 <thead>${header}</thead>
+//                 <tbody>${body}</tbody>
+//             </table>
+//         </div>
+//     `;
+// };
 
 marked.use({ renderer });
 
