@@ -1,11 +1,15 @@
+// Import polyfills first
+import './polyfills.js';
+
+// Import CSS
 import '../css/index.css';
 import '../css/chat.css';
 import '../css/mobile.css';
 
+// Import modules
 import { client } from './rag-client.js';
 import { processMarkdown, initializeCodeCopyButtons } from './markdown.js';
 import { createPDFViewer } from './pdf-viewer.js';
-
 import { initializeMobileMenu } from './mobile-menu.js';
 import { initializeVoiceInput } from './voice-input.js';
 
