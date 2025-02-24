@@ -1,3 +1,6 @@
+// Import CSS
+import '../css/widget.css';
+
 class RAGChatWidget {
     constructor(options = {}) {
         this.options = {
@@ -67,11 +70,7 @@ class RAGChatWidget {
             document.head.appendChild(fontAwesome);
         }
 
-        // Load widget styles
-        const styles = document.createElement('link');
-        styles.rel = 'stylesheet';
-        styles.href = '/css/widget.css';
-        document.head.appendChild(styles);
+        // Widget styles are loaded via webpack CSS import
     }
 
     checkTrigger() {
@@ -109,7 +108,7 @@ class RAGChatWidget {
             
             // Load index.html in widget mode
             const widgetMode = encodeURIComponent('widget');
-            this.iframe.src = `/index.html?mode=${widgetMode}`;
+            this.iframe.src = `index.html?mode=${widgetMode}`;
             
             // Add message listener for iframe communication
             window.addEventListener('message', this.handleMessage.bind(this));

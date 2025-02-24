@@ -236,7 +236,7 @@ function createMiddlewareChain(...middlewares) {
 export {
     RAGMiddleware,
     //ErrorMiddleware,
-    //LoggingMiddleware,
+    LoggingMiddleware,
     //ValidationMiddleware,
     //RetryMiddleware,
     createMiddlewareChain

@@ -12,7 +12,8 @@ export default {
     mode: 'production',
     entry: {
         chat: './app/js/chat.js',
-        index: './app/js/index.js'
+        index: './app/js/index.js',
+        widget: './app/js/widget.js'
     },
     output: {
         path: resolve(__dirname, 'dist'),
@@ -61,6 +62,16 @@ export default {
             filename: 'index.html',
             chunks: ['index'],
             scriptLoading: 'module', // This ensures the script tag uses type="module"
+            minify: {
+                removeComments: true,
+                collapseWhitespace: true
+            }
+        }),
+        new HtmlWebpackPlugin({
+            template: 'demo/index.html',
+            filename: 'demo.html',
+            chunks: ['widget'],
+            scriptLoading: 'module',
             minify: {
                 removeComments: true,
                 collapseWhitespace: true

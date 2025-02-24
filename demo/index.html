@@ -64,9 +64,8 @@
         <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
     </section>
 
-    <!-- Load the RAG Chat Widget -->
-    <script src="/js/widget.js"></script>
-    <script>
+    <!-- Widget will be loaded automatically by webpack -->
+    <script type="module">
         // Initialize the widget
         document.addEventListener('DOMContentLoaded', () => {
             const widget = new RAGChatWidget({
