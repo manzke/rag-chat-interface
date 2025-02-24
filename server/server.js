@@ -204,17 +204,21 @@ app.post('/api/v2/rag/ask', async (req, res) => {
     if (contextParts.length) {
         const contextText = "Context:\n" + contextParts.join("\n");
         for (const word of contextText.split(/\s+/)) {
-            sendSSE(client.response, 'answer', `{"answer":"${word}","eventType":"answer"}`);
+            sendSSE(client.response, 'answer', `{"answer":"${word} ","eventType":"answer"}`);
             await new Promise(resolve => setTimeout(resolve, 100));
         }
     }
 
     // Send simulated response with markdown and code examples
-    const response = generateResponse(question, '');
-    for (const word of response.split(/\s+/)) {
-        sendSSE(client.response, 'answer', `{"answer":"${word}","eventType":"answer"}`);
+    const response = generateResponse(question);
+    // sendSSE(client.response, 'answer', `{"answer":"${response} ","eventType":"answer"}`);
+    for (const line of response.split(/\n+/)) {
+        sendSSE(client.response, 'answer', `{"answer":"${line}\\n","eventType":"answer"}`);
         await new Promise(resolve => setTimeout(resolve, 100));
     }
+    //     sendSSE(client.response, 'answer', `{"answer":"${word} ","eventType":"answer"}`);
+    //     await new Promise(resolve => setTimeout(resolve, 100));
+    // }
 
     // Send related questions
     sendSSE(client.response, 'related', {

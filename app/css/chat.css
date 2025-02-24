@@ -717,7 +717,6 @@ body {
     min-height: 48px;
 }
 
-#stop-button,
 #send-button {
     width: 48px;
     height: 48px;
@@ -754,7 +753,7 @@ body {
     border: none;
     border-radius: 50%;
     font-size: 20px;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     padding: 0;

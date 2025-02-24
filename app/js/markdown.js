@@ -28,36 +28,36 @@ import hljs from 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/bui
 marked.setOptions({
     gfm: true, // GitHub Flavored Markdown
     breaks: true, // Convert line breaks to <br>
-    highlight: function(code, lang) {
-        if (lang && hljs.getLanguage(lang)) {
-            try {
-                return hljs.highlight(code, { language: lang }).value;
-            } catch (e) {
-                console.error('Highlight error:', e);
-            }
-        }
-        return code; // Use code as is if language not found
-    }
+    // highlight: function(code, lang) {
+    //     if (lang && hljs.getLanguage(lang)) {
+    //         try {
+    //             return hljs.highlight(code, { language: lang }).value;
+    //         } catch (e) {
+    //             console.error('Highlight error:', e);
+    //         }
+    //     }
+    //     return code; // Use code as is if language not found
+    // }
 });
 
 // Custom renderer to add copy buttons to code blocks
-const renderer = new marked.Renderer();
-const originalCodeRenderer = renderer.code.bind(renderer);
+// const renderer = new marked.Renderer();
+// const originalCodeRenderer = renderer.code.bind(renderer);
 
-renderer.code = (code, language) => {
-    const html = originalCodeRenderer(code, language);
-    return `
-        <div class="code-block">
-            <div class="code-header">
-                ${language ? `<span class="code-language">${language}</span>` : ''}
-                <button class="copy-code" title="Copy code">
-                    <i class="fas fa-copy"></i>
-                </button>
-            </div>
-            ${html}
-        </div>
-    `;
-};
+// renderer.code = (code, language) => {
+//     const html = originalCodeRenderer(code, language);
+//     return `
+//         <div class="code-block">
+//             <div class="code-header">
+//                 ${language ? `<span class="code-language">${language}</span>` : ''}
+//                 <button class="copy-code" title="Copy code">
+//                     <i class="fas fa-copy"></i>
+//                 </button>
+//             </div>
+//             ${html}
+//         </div>
+//     `;
+// };
 
 // Handle links including PDFs and other document types
 // renderer.link = (link, title, text) => {
@@ -117,7 +117,7 @@ renderer.code = (code, language) => {
 //     `;
 // };
 
-marked.use({ renderer });
+// marked.use({ renderer });
 
 // Function to process markdown
 export function processMarkdown(text) {

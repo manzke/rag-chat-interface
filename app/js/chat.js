@@ -284,7 +284,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         userInput.disabled = disabled;
         sendButton.disabled = disabled;
         sendButton.style.display = disabled ? 'none' : 'flex';
-        sendButton.disabled = !disabled;
+        stopButton.disabled = !disabled;
         stopButton.style.display = disabled ? 'flex' : 'none';
     }
 
@@ -297,8 +297,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             
         // Stop the current request and clean up
         if (eventSource) {
-            await client.stopClient(currentRequestUuid);
             eventSource = null;
+            await client.stopClient(currentRequestUuid);
 
             updateStatus('', 'Ready');
             return;
@@ -922,11 +922,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 console.error('SSE connection error:', event);
                 // Only call stopClient if we're not already stopping
                 if (isWaitingForResponse && eventSource) {
-                    await client.stopClient(requestUuid);
                     updateStatus('error', 'Connection error');
                     isWaitingForResponse = false;
                     disableInput(false);
                     showError('Failed to get response');
+                    await client.stopClient(requestUuid);
                 }
             });
 
@@ -984,6 +984,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     expertQuery.value = query || '';
     expertProfileName.value = profileName || '';
     expertProfileId.value = profileId || '';
+    //expertFilters.value = JSON.stringify(activeAssistant.defaultConfig.filters) || '[]';
 
     let savedExpertValues = {
         docIds: expertDocIds.value,
