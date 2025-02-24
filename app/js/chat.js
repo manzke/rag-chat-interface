@@ -12,8 +12,13 @@ import { processMarkdown, initializeCodeCopyButtons } from './markdown.js';
 import { createPDFViewer } from './pdf-viewer.js';
 import { initializeMobileMenu } from './mobile-menu.js';
 import { initializeVoiceInput } from './voice-input.js';
+import i18n from './i18n.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
+    // Initialize i18n
+    await i18n.init();
+    i18n.translatePage();
+
     // Initialize mobile menu
     initializeMobileMenu();
     
@@ -49,12 +54,33 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('expert-filters').value = filters;
     }
 
-    // Set assistant name
-    document.getElementById('assistant-name').textContent = activeAssistant.name;
+    // Set assistant name with translation
+    const currentLang = i18n.getCurrentLanguage();
+    let assistantName;
+    if (typeof activeAssistant.name === 'string') {
+        // Handle case where message is already a string (old format)
+        assistantName = activeAssistant.name;
+    } else {
+        // Handle new i18n format
+        assistantName = activeAssistant.defaultConfig.name[currentLang] || 
+                       activeAssistant.defaultConfig.name.en;
+    }
+    document.getElementById('assistant-name').textContent = assistantName;
 
     // Add back button handler
     document.getElementById('back-button').addEventListener('click', () => {
-        window.location.href = 'index.html';
+        // Keep all current query parameters when going back
+        const currentParams = new URLSearchParams(window.location.search);
+        const mode = currentParams.get('mode');
+        
+        if (mode === 'widget') {
+            window.parent.postMessage({ 
+                type: 'navigate',
+                url: `index.html?${currentParams.toString()}`
+            }, '*');
+        } else {
+            window.location.href = `index.html?${currentParams.toString()}`;
+        }
     });
 
     // Chat history storage
@@ -73,8 +99,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Show welcome message if this is a new chat
+    console.log('Checking welcome message conditions:', {
+        isNewChat,
+        activeAssistant,
+        welcomeMessage: activeAssistant?.defaultConfig?.welcomeMessage
+    });
+    
     if (isNewChat && activeAssistant?.defaultConfig?.welcomeMessage) {
-        const messageElement = createMessageElement(activeAssistant.defaultConfig.welcomeMessage, false, true);
+        const currentLang = i18n.getCurrentLanguage();
+        console.log('Welcome message language:', {
+            currentLang,
+            availableMessages: activeAssistant.defaultConfig.welcomeMessage
+        });
+        
+        let welcomeMessage;
+        if (typeof activeAssistant.defaultConfig.welcomeMessage === 'string') {
+            // Handle case where message is already a string (old format)
+            welcomeMessage = activeAssistant.defaultConfig.welcomeMessage;
+        } else {
+            // Handle new i18n format
+            welcomeMessage = activeAssistant.defaultConfig.welcomeMessage[currentLang] || 
+                           activeAssistant.defaultConfig.welcomeMessage.en;
+        }
+        
+        console.log('Final welcome message:', welcomeMessage);
+        const messageElement = createMessageElement(welcomeMessage, false, true);
         messagesContainer.appendChild(messageElement);
     }
     
@@ -96,9 +145,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     let eventSource = null;
     let currentRequestUuid = null;
 
-    function updateStatus(status, message) {
+    function updateStatus(status, messageKey) {
         statusIndicator.className = 'status-indicator ' + status;
-        statusText.textContent = message;
+        statusText.textContent = i18n.t(`chat.status.${messageKey}`);
     }
 
     // Make PDF handler globally available
@@ -132,7 +181,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     function showCopyNotification() {
         const notification = document.createElement('div');
         notification.className = 'copy-success';
-        notification.textContent = 'Copied to clipboard!';
+        notification.textContent = i18n.t('chat.feedback.copied');
         document.body.appendChild(notification);
         setTimeout(() => notification.remove(), 2000);
     }
@@ -291,7 +340,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let isWaitingForResponse = false;
 
     async function stop() {
-        updateStatus('', 'Stopping...');
+        updateStatus('', 'stopping');
         isWaitingForResponse = false;
         disableInput(false);
             
@@ -300,7 +349,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             eventSource = null;
             await client.stopClient(currentRequestUuid);
 
-            updateStatus('', 'Ready');
+            updateStatus('', 'ready');
             return;
         }
     }
@@ -308,7 +357,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function sendMessage(message = null) {
         // If we're in stopping mode, stop the current request
         if (isWaitingForResponse) {
-            updateStatus('', 'Stopping...');
+            updateStatus('', 'stopping');
             
             // Stop the current request and clean up
             if (eventSource) {
@@ -318,7 +367,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             isWaitingForResponse = false;
             disableInput(false);
-            updateStatus('', 'Ready');
+            updateStatus('', 'ready');
             return;
         }
 
@@ -420,7 +469,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         chatHistory.push(historyEntry);
 
         try {
-            updateStatus('connecting', 'Connecting...');
+            updateStatus('connecting', 'connecting');
             disableInput(true);
 
             // Create message element for response
@@ -444,7 +493,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             let fullResponse = '';
             
             eventSource.addEventListener('answer', (event) => {
-                updateStatus('receiving-answer', 'Answering...');
+                updateStatus('receiving-answer', 'receiving');
                 console.log('Received answer event:', event);
                 const answer = JSON.parse(event.data).answer;
                 //fullResponse += event.data + ' ';
@@ -910,7 +959,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     eventSource = null;
                 }
                 await client.stopClient(requestUuid);
-                updateStatus('', 'Ready');
+                updateStatus('', 'ready');
                 isWaitingForResponse = false;
                 disableInput(false);
 
@@ -1077,5 +1126,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // Initialize status
-    updateStatus('', 'Ready');
+    updateStatus('', 'ready');
 });

@@ -1,5 +1,6 @@
-// Import CSS
+// Import CSS and i18n
 import '../css/widget.css';
+import i18n from './i18n.js';
 
 class RAGChatWidget {
     constructor(options = {}) {
@@ -49,7 +50,7 @@ class RAGChatWidget {
         document.body.appendChild(this.container);
         
         // Add event listeners
-        this.toggleButton.addEventListener('click', () => this.toggle());
+        this.toggleButton.addEventListener('click', async () => await this.toggle());
         window.addEventListener('scroll', () => this.checkTrigger());
         window.addEventListener('resize', () => this.checkTrigger());
         
@@ -93,7 +94,7 @@ class RAGChatWidget {
         }
     }
 
-    toggle() {
+    async toggle() {
         if (!this.isOpen) {
             this.open();
         } else {
@@ -101,14 +102,21 @@ class RAGChatWidget {
         }
     }
 
-    open() {
+    async open() {
         if (!this.isOpen) {
             this.isOpen = true;
             this.container.classList.add('open');
             
-            // Load index.html in widget mode
+            // Initialize i18n if not already done
+            if (!this.i18nInitialized) {
+                await i18n.init();
+                this.i18nInitialized = true;
+            }
+
+            // Load index.html in widget mode with current language
             const widgetMode = encodeURIComponent('widget');
-            this.iframe.src = `index.html?mode=${widgetMode}`;
+            const currentLang = i18n.getCurrentLanguage();
+            this.iframe.src = `index.html?mode=${widgetMode}&lang=${currentLang}`;
             
             // Add message listener for iframe communication
             window.addEventListener('message', this.handleMessage.bind(this));

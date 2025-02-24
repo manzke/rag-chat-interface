@@ -2,7 +2,12 @@ import '../css/index.css';
 import '../css/chat.css';
 import '../css/mobile.css';
 
+import i18n from './i18n.js';
+
 document.addEventListener('DOMContentLoaded', async () => {
+    // Initialize i18n and translate page
+    await i18n.init();
+    i18n.translatePage();
     let config;
     let activeAssistantId = localStorage.getItem('activeAssistantId');
 
@@ -21,8 +26,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Error loading configuration:', error);
         document.querySelector('.welcome-container').innerHTML = `
             <div class="error-message">
-                <h2>Error Loading Configuration</h2>
-                <p>Please try refreshing the page. If the problem persists, contact support.</p>
+                <h2>${i18n.t('errors.loading.title')}</h2>
+                <p>${i18n.t('errors.loading.message')}</p>
             </div>
         `;
         return;
@@ -44,9 +49,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         const icon = card.querySelector('.assistant-icon i');
         icon.className = assistant.icon;
 
-        // Set text
-        card.querySelector('.assistant-name').textContent = assistant.name;
-        card.querySelector('.assistant-description').textContent = assistant.description;
+        // Set text with translations
+        const currentLang = i18n.getCurrentLanguage();
+        card.querySelector('.assistant-name').textContent = assistant.name[currentLang] || assistant.name.en;
+        card.querySelector('.assistant-description').textContent = assistant.description[currentLang] || assistant.description.en;
 
         // Add click handler
         card.addEventListener('click', () => {
@@ -61,7 +67,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         // Store the selection
         localStorage.setItem('activeAssistantId', assistant.id);
-        localStorage.setItem('activeAssistant', JSON.stringify(assistant));
+        
+        // Create a version of the assistant with current language's translations
+        const currentLang = i18n.getCurrentLanguage();
+        const localizedAssistant = {
+            ...assistant,
+            name: assistant.name[currentLang] || assistant.name.en,
+            description: assistant.description[currentLang] || assistant.description.en,
+            defaultConfig: {
+                ...assistant.defaultConfig,
+                welcomeMessage: assistant.defaultConfig.welcomeMessage[currentLang] || assistant.defaultConfig.welcomeMessage.en
+            }
+        };
+        localStorage.setItem('activeAssistant', JSON.stringify(localizedAssistant));
 
         // Update UI
         document.querySelectorAll('.assistant-card').forEach(card => {
@@ -72,8 +90,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const urlParams = new URLSearchParams(window.location.search);
         const mode = urlParams.get('mode');
         
-        // Set newChat parameter
-        urlParams.set('newChat', (!isSameAssistant).toString());
+        // Set newChat parameter - force to string 'true' or 'false'
+        urlParams.set('newChat', (!isSameAssistant ? 'true' : 'false'));
         
         // Keep widget mode if present
         if (mode === 'widget') {

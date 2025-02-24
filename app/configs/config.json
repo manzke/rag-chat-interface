@@ -2,41 +2,68 @@
     "assistants": [
         {
             "id": "ifinder-assistant",
-            "name": "iFinder Assistant",
-            "description": "Your expert for iFinder-related questions. Get help with configuration, features, and best practices.",
+            "name": {
+                "en": "iFinder Assistant",
+                "de": "iFinder Assistent"
+            },
+            "description": {
+                "en": "Your expert for iFinder-related questions. Get help with configuration, features, and best practices.",
+                "de": "Ihr Experte für iFinder-bezogene Fragen. Erhalten Sie Hilfe bei Konfiguration, Funktionen und Best Practices."
+            },
             "icon": "fas fa-search",
             "defaultConfig": {
                 "profileName": "searchprofile-standard",
                 "filters": [],
                 "query": null,
                 "docIds": [],
-                "welcomeMessage": "Hello! I'm your iFinder Assistant. I can help you with questions about iFinder features, configuration, and best practices. What would you like to know?"
+                "welcomeMessage": {
+                    "en": "Hello! I'm your iFinder Assistant. I can help you with questions about iFinder features, configuration, and best practices. What would you like to know?",
+                    "de": "Hallo! Ich bin Ihr iFinder Assistent. Ich kann Ihnen bei Fragen zu iFinder-Funktionen, Konfiguration und Best Practices helfen. Was möchten Sie wissen?"
+                }
             }
         },
         {
             "id": "support-assistant",
-            "name": "Support Assistant",
-            "description": "Get help with technical issues, troubleshooting, and general support questions.",
+            "name": {
+                "en": "Support Assistant",
+                "de": "Support Assistent"
+            },
+            "description": {
+                "en": "Get help with technical issues, troubleshooting, and general support questions.",
+                "de": "Erhalten Sie Hilfe bei technischen Problemen, Fehlerbehebung und allgemeinen Support-Fragen."
+            },
             "icon": "fas fa-life-ring",
             "defaultConfig": {
                 "profileName": "searchprofile-support",
                 "filters": [],
                 "query": null,
                 "docIds": [],
-                "welcomeMessage": "Hi there! I'm your Support Assistant. I can help you with technical issues and troubleshooting. How can I assist you today?"
+                "welcomeMessage": {
+                    "en": "Hi there! I'm your Support Assistant. I can help you with technical issues and troubleshooting. How can I assist you today?",
+                    "de": "Hallo! Ich bin Ihr Support Assistent. Ich kann Ihnen bei technischen Problemen und Fehlerbehebung helfen. Wie kann ich Ihnen heute helfen?"
+                }
             }
         },
         {
             "id": "docs-assistant",
-            "name": "Documentation Guide",
-            "description": "Navigate through documentation, find specific information, and understand complex topics.",
+            "name": {
+                "en": "Documentation Guide",
+                "de": "Dokumentationsführer"
+            },
+            "description": {
+                "en": "Navigate through documentation, find specific information, and understand complex topics.",
+                "de": "Navigieren Sie durch die Dokumentation, finden Sie spezifische Informationen und verstehen Sie komplexe Themen."
+            },
             "icon": "fas fa-book",
             "defaultConfig": {
                 "profileName": "searchprofile-docs",
                 "filters": [],
                 "query": null,
                 "docIds": [],
-                "welcomeMessage": "Welcome! I'm your Documentation Guide. I can help you find and understand specific documentation. What are you looking for?"
+                "welcomeMessage": {
+                    "en": "Welcome! I'm your Documentation Guide. I can help you find and understand specific documentation. What are you looking for?",
+                    "de": "Willkommen! Ich bin Ihr Dokumentationsführer. Ich kann Ihnen helfen, spezifische Dokumentation zu finden und zu verstehen. Wonach suchen Sie?"
+                }
             }
         }
     ]

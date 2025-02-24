@@ -22,35 +22,35 @@
             <div class="chat-container">
                 <div class="status-bar" id="status-bar">
                     <div class="status-left">
-                        <button class="back-button" id="back-button" title="Back to Assistant Selection">
+                        <button class="back-button" id="back-button" title="chat.actions.back" data-i18n-title>
                             <i class="fas fa-arrow-left"></i>
                         </button>
                         <span class="assistant-name-header" id="assistant-name"></span>
                     </div>
                     <div class="status-right">
                         <span class="status-indicator" id="status-indicator"></span>
-                        <span class="status-text" id="status-text">Ready</span>
+                        <span class="status-text" id="status-text" data-i18n="chat.status.ready">Ready</span>
                         <!-- Widget/Mobile Menu -->
                         <div class="mobile-menu widget-menu">
                             <button class="menu-toggle" id="menu-toggle" title="Menu">
                                 <i class="fas fa-bars"></i>
                             </button>
                             <div class="menu-dropdown" id="menu-dropdown">
-                                <button class="menu-item export-button-mobile" title="Export chat">
+                                <button class="menu-item export-button-mobile" title="chat.actions.exportChat" data-i18n-title>
                                     <i class="fas fa-download"></i>
-                                    <span>Export Chat</span>
+                                    <span data-i18n="chat.actions.exportChat">Export Chat</span>
                                 </button>
-                                <button class="menu-item reset-button-mobile" title="Clear chat">
+                                <button class="menu-item reset-button-mobile" title="chat.actions.clearChat" data-i18n-title>
                                     <i class="fas fa-trash"></i>
-                                    <span>Clear Chat</span>
+                                    <span data-i18n="chat.actions.clearChat">Clear Chat</span>
                                 </button>
-                                <button class="menu-item expert-mode-toggle-mobile" title="Expert Mode">
+                                <button class="menu-item expert-mode-toggle-mobile" title="chat.actions.expertMode" data-i18n-title>
                                     <i class="fas fa-cog"></i>
-                                    <span>Expert Mode</span>
+                                    <span data-i18n="chat.actions.expertMode">Expert Mode</span>
                                 </button>
-                                <button class="menu-item close-widget-mobile widget-only" title="Close Widget">
+                                <button class="menu-item close-widget-mobile widget-only" title="chat.actions.closeWidget" data-i18n-title>
                                     <i class="fas fa-times"></i>
-                                    <span>Close Widget</span>
+                                    <span data-i18n="chat.actions.closeWidget">Close Widget</span>
                                 </button>
                             </div>
                         </div>
@@ -58,14 +58,14 @@
                 </div>
                 <div class="chat-messages" id="chat-messages"></div>
                 <div class="input-container">
-                    <button id="voice-input-button" class="voice-input-button" title="Voice Input (Ctrl+M)">
+                    <button id="voice-input-button" class="voice-input-button" title="chat.actions.voiceInput" data-i18n-title>
                         <i class="fas fa-microphone"></i>
                     </button>
-                    <textarea id="user-input" placeholder="Type your message here..." rows="1"></textarea>
-                    <button id="send-button">
+                    <textarea id="user-input" data-i18n-placeholder="chat.placeholder" placeholder="Type your message here..." rows="1"></textarea>
+                    <button id="send-button" title="chat.actions.send" data-i18n-title>
                         <i class="fas fa-paper-plane send-icon"></i>
                     </button>
-                    <button id="stop-button">
+                    <button id="stop-button" title="chat.actions.stop" data-i18n-title>
                         <i class="fas fa-square-full stop-icon"></i>
                     </button>
                 </div>
@@ -77,8 +77,8 @@
                             <div class="wave"></div>
                             <div class="wave"></div>
                         </div>
-                        <div class="voice-text">Listening...</div>
-                        <div class="voice-instructions">Click microphone or press Ctrl+M to stop</div>
+                        <div class="voice-text" data-i18n="chat.voice.listening">Listening...</div>
+                        <div class="voice-instructions" data-i18n="chat.voice.instructions">Click microphone or press Ctrl+M to stop</div>
                     </div>
                 </div>
             </div>
@@ -105,26 +105,26 @@
     <!-- Expert Mode Panel -->
     <div class="expert-panel" id="expert-panel">
         <div class="expert-panel-content">
-            <h3>Expert Mode</h3>
-            <label for="expert-docIds">Document IDs (comma-separated):</label>
+            <h3 data-i18n="chat.expertMode.title">Expert Mode</h3>
+            <label for="expert-docIds" data-i18n="chat.expertMode.docIds">Document IDs (comma-separated):</label>
             <input type="text" id="expert-docIds">
             
-            <label for="expert-query">Search Query:</label>
+            <label for="expert-query" data-i18n="chat.expertMode.query">Search Query:</label>
             <input type="text" id="expert-query">
             
-            <label for="expert-profileName">Profile Name:</label>
+            <label for="expert-profileName" data-i18n="chat.expertMode.profileName">Profile Name:</label>
             <input type="text" id="expert-profileName">
             
-            <label for="expert-profileId">Profile ID (base64):</label>
+            <label for="expert-profileId" data-i18n="chat.expertMode.profileId">Profile ID (base64):</label>
             <input type="text" id="expert-profileId">
             
-            <label for="expert-filters">Filters (JSON):</label>
+            <label for="expert-filters" data-i18n="chat.expertMode.filters">Filters (JSON):</label>
             <textarea id="expert-filters" placeholder='[{"key": "id.keyword", "values": ["doc1"], "isNegated": false}]'></textarea>
-            <div class="error-message">Invalid JSON format</div>
+            <div class="error-message" data-i18n="chat.expertMode.invalidJson">Invalid JSON format</div>
         </div>
         <div class="expert-panel-buttons">
-            <button class="expert-panel-button expert-cancel" id="expert-cancel">Cancel</button>
-            <button class="expert-panel-button expert-save" id="expert-save">Save</button>
+            <button class="expert-panel-button expert-cancel" id="expert-cancel" data-i18n="chat.expertMode.cancel">Cancel</button>
+            <button class="expert-panel-button expert-save" id="expert-save" data-i18n="chat.expertMode.save">Save</button>
         </div>
     </div>
 
@@ -133,13 +133,13 @@
         <div class="message">
             <div class="message-header">
                 <div class="message-actions">
-                    <button class="action-button copy-button" title="Copy text">
+                    <button class="action-button copy-button" title="chat.actions.copy" data-i18n-title>
                         <i class="fas fa-copy"></i>
                     </button>
-                    <button class="action-button edit-button" title="Edit message">
+                    <button class="action-button edit-button" title="chat.actions.edit" data-i18n-title>
                         <i class="fas fa-edit"></i>
                     </button>
-                    <button class="action-button rerun-button" title="Rerun message">
+                    <button class="action-button rerun-button" title="chat.actions.rerun" data-i18n-title>
                         <i class="fas fa-redo"></i>
                     </button>
                 </div>
@@ -149,52 +149,52 @@
                 <div class="sources-header">
                     <div class="sources-title">
                         <i class="fas fa-book"></i>
-                        <span>Sources</span>
+                        <span data-i18n="chat.sources.title">Sources</span>
                         <span class="sources-count"></span>
                     </div>
-                    <button class="toggle-sources" title="Show/Hide Sources">
+                    <button class="toggle-sources" title="chat.sources.toggle" data-i18n-title>
                         <i class="fas fa-chevron-down"></i>
                     </button>
                 </div>
                 <div class="sources-expanded" style="display: none;">
                     <div class="sources-toolbar">
                         <div class="search-filter">
-                            <input type="text" class="search-passages" placeholder="Search in passages...">
+                            <input type="text" class="search-passages" data-i18n-placeholder="chat.sources.search" placeholder="Search in passages...">
                             <i class="fas fa-search"></i>
                         </div>
                         <div class="sort-options">
-                            <label>Sort by:</label>
+                            <label data-i18n="chat.sources.sortBy">Sort by:</label>
                             <select class="sort-passages">
-                                <option value="relevance">Relevance</option>
-                                <option value="date">Date</option>
-                                <option value="title">Title</option>
+                                <option value="relevance" data-i18n="chat.sources.sortOptions.relevance">Relevance</option>
+                                <option value="date" data-i18n="chat.sources.sortOptions.date">Date</option>
+                                <option value="title" data-i18n="chat.sources.sortOptions.title">Title</option>
                             </select>
                         </div>
                         <div class="filter-options">
                             <label>
                                 <input type="checkbox" class="high-relevance-only">
-                                High Relevance Only
+                                <span data-i18n="chat.sources.filters.highRelevance">High Relevance Only</span>
                             </label>
                             <label>
                                 <input type="checkbox" class="clickable-links">
-                                Clickable Links
+                                <span data-i18n="chat.sources.filters.clickableLinks">Clickable Links</span>
                             </label>
                         </div>
                     </div>
                     <div class="sources-content"></div>
                     <div class="no-results" style="display: none;">
                         <i class="fas fa-search"></i>
-                        <p>No matching passages found</p>
+                        <p data-i18n="chat.sources.noResults">No matching passages found</p>
                     </div>
                 </div>
             </div>
             <div class="related-questions"></div>
             <div class="message-footer">
                 <div class="feedback-buttons">
-                    <button class="feedback-button thumbs-up" title="Helpful">
+                    <button class="feedback-button thumbs-up" title="chat.feedback.helpful" data-i18n-title>
                         <i class="fas fa-thumbs-up"></i>
                     </button>
-                    <button class="feedback-button thumbs-down" title="Not helpful">
+                    <button class="feedback-button thumbs-down" title="chat.feedback.notHelpful" data-i18n-title>
                         <i class="fas fa-thumbs-down"></i>
                     </button>
                 </div>
