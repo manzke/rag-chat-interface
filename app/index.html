@@ -8,13 +8,37 @@
 </head>
 <body>
     <div class="welcome-container">
-        <h1>Choose your Assistant</h1>
+        <h1 class="full-mode-only">Choose your Assistant</h1>
         <p class="welcome-subtitle">Select an assistant to help you with your questions</p>
         
         <div class="assistants-grid" id="assistants-grid">
             <!-- Assistants will be added here dynamically -->
         </div>
     </div>
+
+    <script>
+        // Check if we're in widget mode
+        const urlParams = new URLSearchParams(window.location.search);
+        const mode = urlParams.get('mode');
+        
+        if (mode === 'widget') {
+            document.body.classList.add('widget-mode');
+            
+            // Send height updates to parent
+            const sendHeight = () => {
+                const height = document.documentElement.scrollHeight;
+                window.parent.postMessage({ type: 'widget-height', height }, '*');
+            };
+            
+            // Send height on load and when content changes
+            window.addEventListener('load', sendHeight);
+            const observer = new MutationObserver(sendHeight);
+            observer.observe(document.body, { 
+                childList: true, 
+                subtree: true 
+            });
+        }
+    </script>
 
     <template id="assistant-card-template">
         <div class="assistant-card">

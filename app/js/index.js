@@ -70,11 +70,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         // Get current URL parameters
         const urlParams = new URLSearchParams(window.location.search);
+        const mode = urlParams.get('mode');
         
         // Set newChat parameter
         urlParams.set('newChat', (!isSameAssistant).toString());
         
-        // Redirect to chat.html with all parameters
-        window.location.href = `chat.html?${urlParams.toString()}`;
+        // Keep widget mode if present
+        if (mode === 'widget') {
+            urlParams.set('mode', 'widget');
+            
+            // In widget mode, notify parent to navigate
+            window.parent.postMessage({ 
+                type: 'navigate',
+                url: `/chat.html?${urlParams.toString()}`
+            }, '*');
+        } else {
+            // Regular navigation
+            window.location.href = `chat.html?${urlParams.toString()}`;
+        }
     }
 });

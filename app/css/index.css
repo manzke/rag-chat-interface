@@ -113,6 +113,31 @@
     color: #666;
 }
 
+/* Widget mode styles */
+.widget-mode {
+    background: white !important;
+}
+
+.widget-mode .welcome-container {
+    padding: 10px;
+    max-width: 100%;
+    margin: 0;
+}
+
+.widget-mode .full-mode-only {
+    display: none;
+}
+
+.widget-mode .assistants-grid {
+    gap: 10px;
+    padding: 0;
+}
+
+.widget-mode .assistant-card {
+    padding: 10px;
+    margin: 0;
+}
+
 /* Mobile optimizations */
 @media (max-width: 768px) {
     .welcome-container {

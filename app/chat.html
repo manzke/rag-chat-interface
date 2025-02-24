@@ -30,8 +30,8 @@
                     <div class="status-right">
                         <span class="status-indicator" id="status-indicator"></span>
                         <span class="status-text" id="status-text">Ready</span>
-                        <!-- Mobile Menu -->
-                        <div class="mobile-menu">
+                        <!-- Widget/Mobile Menu -->
+                        <div class="mobile-menu widget-menu">
                             <button class="menu-toggle" id="menu-toggle" title="Menu">
                                 <i class="fas fa-bars"></i>
                             </button>
@@ -47,6 +47,10 @@
                                 <button class="menu-item expert-mode-toggle-mobile" title="Expert Mode">
                                     <i class="fas fa-cog"></i>
                                     <span>Expert Mode</span>
+                                </button>
+                                <button class="menu-item close-widget-mobile widget-only" title="Close Widget">
+                                    <i class="fas fa-times"></i>
+                                    <span>Close Widget</span>
                                 </button>
                             </div>
                         </div>
@@ -256,5 +260,44 @@
             </button>
         </div>
     </template>
+
+    <script>
+        // Check if we're in widget mode
+        const urlParams = new URLSearchParams(window.location.search);
+        const mode = urlParams.get('mode');
+        
+        if (mode === 'widget') {
+            document.body.classList.add('widget-mode');
+            
+            // Add widget-specific event listeners
+            document.querySelector('.close-widget-mobile').addEventListener('click', () => {
+                window.parent.postMessage({ type: 'close-widget' }, '*');
+            });
+
+            // Handle back button in widget mode
+            document.getElementById('back-button').addEventListener('click', (e) => {
+                e.preventDefault();
+                const widgetMode = encodeURIComponent('widget');
+                window.parent.postMessage({ 
+                    type: 'navigate',
+                    url: `/index.html?mode=${widgetMode}`
+                }, '*');
+            });
+            
+            // Send height updates to parent
+            const sendHeight = () => {
+                const height = document.documentElement.scrollHeight;
+                window.parent.postMessage({ type: 'widget-height', height }, '*');
+            };
+            
+            // Send height on load and when content changes
+            window.addEventListener('load', sendHeight);
+            const observer = new MutationObserver(sendHeight);
+            observer.observe(document.body, { 
+                childList: true, 
+                subtree: true 
+            });
+        }
+    </script>
 </body>
 </html>

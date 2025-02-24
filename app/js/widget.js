@@ -1,0 +1,146 @@
+class RAGChatWidget {
+    constructor(options = {}) {
+        this.options = {
+            triggerElement: options.triggerElement || null,
+            triggerOffset: options.triggerOffset || 300,
+            position: options.position || 'right',
+            width: options.width || '380px',
+            height: options.height || '600px',
+            ...options
+        };
+        
+        this.isOpen = false;
+        this.isInitialized = false;
+        this.init();
+    }
+
+    init() {
+        // Create widget container
+        this.container = document.createElement('div');
+        this.container.className = 'rag-chat-widget';
+        this.container.style.display = 'none';
+        
+        // Create widget header
+        this.header = document.createElement('div');
+        this.header.className = 'widget-header';
+        
+        // Create toggle button
+        this.toggleButton = document.createElement('button');
+        this.toggleButton.className = 'widget-toggle';
+        this.toggleButton.innerHTML = '<i class="fas fa-comments"></i>';
+        
+        // Create iframe container
+        this.iframeContainer = document.createElement('div');
+        this.iframeContainer.className = 'widget-iframe-container';
+        
+        // Create iframe
+        this.iframe = document.createElement('iframe');
+        this.iframe.className = 'widget-iframe';
+        this.iframe.setAttribute('frameborder', '0');
+        this.iframe.setAttribute('scrolling', 'no');
+        
+        // Assemble widget
+        this.iframeContainer.appendChild(this.iframe);
+        this.container.appendChild(this.toggleButton);
+        this.container.appendChild(this.iframeContainer);
+        document.body.appendChild(this.container);
+        
+        // Add event listeners
+        this.toggleButton.addEventListener('click', () => this.toggle());
+        window.addEventListener('scroll', () => this.checkTrigger());
+        window.addEventListener('resize', () => this.checkTrigger());
+        
+        // Set initial state
+        this.isInitialized = true;
+        this.checkTrigger();
+        
+        // Load widget styles
+        this.loadStyles();
+    }
+
+    loadStyles() {
+        // Load Font Awesome
+        if (!document.querySelector('link[href*="font-awesome"]')) {
+            const fontAwesome = document.createElement('link');
+            fontAwesome.rel = 'stylesheet';
+            fontAwesome.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css';
+            document.head.appendChild(fontAwesome);
+        }
+
+        // Load widget styles
+        const styles = document.createElement('link');
+        styles.rel = 'stylesheet';
+        styles.href = '/css/widget.css';
+        document.head.appendChild(styles);
+    }
+
+    checkTrigger() {
+        if (!this.isInitialized) return;
+
+        if (this.options.triggerElement) {
+            // Check if trigger element is visible
+            const element = document.querySelector(this.options.triggerElement);
+            if (element) {
+                const rect = element.getBoundingClientRect();
+                const isVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
+                this.container.style.display = isVisible ? 'block' : 'none';
+            }
+        } else {
+            // Check scroll position
+            const scrolled = window.scrollY || window.pageYOffset;
+            if (scrolled > this.options.triggerOffset) {
+                this.container.style.display = 'block';
+            }
+        }
+    }
+
+    toggle() {
+        if (!this.isOpen) {
+            this.open();
+        } else {
+            this.close();
+        }
+    }
+
+    open() {
+        if (!this.isOpen) {
+            this.isOpen = true;
+            this.container.classList.add('open');
+            
+            // Load index.html in widget mode
+            const widgetMode = encodeURIComponent('widget');
+            this.iframe.src = `/index.html?mode=${widgetMode}`;
+            
+            // Add message listener for iframe communication
+            window.addEventListener('message', this.handleMessage.bind(this));
+        }
+    }
+
+    close() {
+        if (this.isOpen) {
+            this.isOpen = false;
+            this.container.classList.remove('open');
+            this.iframe.src = '';
+            
+            // Remove message listener
+            window.removeEventListener('message', this.handleMessage.bind(this));
+        }
+    }
+
+    handleMessage(event) {
+        // Handle messages from iframe
+        if (event.data.type === 'widget-height') {
+            this.iframeContainer.style.height = `${event.data.height}px`;
+        } else if (event.data.type === 'navigate') {
+            // Update iframe src for navigation
+            this.iframe.src = event.data.url;
+        }
+    }
+}
+
+// Export for both ES modules and global usage
+if (typeof exports !== 'undefined') {
+    exports.RAGChatWidget = RAGChatWidget;
+} else {
+    window.RAGChatWidget = RAGChatWidget;
+}

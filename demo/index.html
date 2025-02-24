@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Website with RAG Chat Widget</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 0;
+            background: #f5f5f5;
+            margin-bottom: 40px;
+        }
+        
+        section {
+            margin-bottom: 60px;
+        }
+        
+        h1, h2 {
+            color: #333;
+        }
+        
+        .trigger-element {
+            padding: 20px;
+            background: #e9ecef;
+            border-radius: 5px;
+            margin: 40px 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome to Our Demo Site</h1>
+        <p>Scroll down to see the RAG Chat Widget in action!</p>
+    </header>
+
+    <section>
+        <h2>About Us</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+    </section>
+
+    <section>
+        <h2>Our Services</h2>
+        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    </section>
+
+    <div class="trigger-element" id="chat-trigger">
+        <h2>Need Help?</h2>
+        <p>Our AI assistant is here to help you! The chat widget will appear when you see this section.</p>
+    </div>
+
+    <section>
+        <h2>More Content</h2>
+        <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+        <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
+    </section>
+
+    <!-- Load the RAG Chat Widget -->
+    <script src="/js/widget.js"></script>
+    <script>
+        // Initialize the widget
+        document.addEventListener('DOMContentLoaded', () => {
+            const widget = new RAGChatWidget({
+                triggerElement: '#chat-trigger',  // Show widget when this element is visible
+                position: 'right',
+                width: '380px',
+                height: '600px'
+            });
+        });
+    </script>
+</body>
+</html>

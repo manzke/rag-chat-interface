@@ -1198,6 +1198,41 @@ body {
     }
 }
 
+/* Widget mode styles */
+.widget-mode {
+    background: white !important;
+}
+
+.widget-mode .app-container {
+    max-width: 100%;
+    margin: 0;
+    height: 100vh;
+    border-radius: 0;
+}
+
+.widget-mode .main-content {
+    border-radius: 0;
+}
+
+.widget-mode .desktop-controls {
+    display: none;
+}
+
+.widget-mode .widget-menu {
+    display: block !important;
+}
+
+.widget-mode .widget-only {
+    display: flex !important;
+}
+
+.widget-mode .expert-panel {
+    width: 90%;
+    max-width: 350px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
 /* Mobile optimizations */
 @media (max-width: 480px) {
     .message {
