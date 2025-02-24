@@ -141,6 +141,9 @@ class RAGChatWidget {
         } else if (event.data.type === 'navigate') {
             // Update iframe src for navigation
             this.iframe.src = event.data.url;
+        } else if (event.data.type === 'close-widget') {
+            // Close the widget
+            this.close();
         }
     }
 }
