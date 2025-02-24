@@ -31,8 +31,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     let docIds = urlParams.get('docIds') ?? activeAssistant.defaultConfig.docIds?.join(',');
     let profileName = urlParams.get('profileName') ?? activeAssistant.defaultConfig.profileName;
     let query = urlParams.get('query') ?? activeAssistant.defaultConfig.query;
+    let filters = urlParams.get('filters') ?? JSON.stringify(activeAssistant.defaultConfig.filters || []);
 
     const isNewChat = urlParams.get('newChat') === 'true';
+
+    // Set expert mode fields with URL parameters if they exist
+    if (docIds) {
+        document.getElementById('expert-docIds').value = docIds;
+    }
+    if (query) {
+        document.getElementById('expert-query').value = query;
+    }
+    if (profileName) {
+        document.getElementById('expert-profileName').value = profileName;
+    }
+    if (filters) {
+        document.getElementById('expert-filters').value = filters;
+    }
 
     // Set assistant name
     document.getElementById('assistant-name').textContent = activeAssistant.name;
@@ -346,36 +361,47 @@ document.addEventListener('DOMContentLoaded', async () => {
             currentProfileId = btoa(currentProfileName);
         }
 
-        // Parse filters from expert mode or create default ones
-        let filter;
+        // Parse and merge filters with docIds and query
+        let filter = [];
+        
+        // First add docIds filter if present
+        if (currentDocIds) {
+            const docIds = currentDocIds.split(',').map(d => d.trim()).filter(d => d);
+            if (docIds.length > 0) {
+                filter.push({
+                    key: 'id.keyword',
+                    values: docIds,
+                    isNegated: false
+                });
+            }
+        }
+
+        // Add query filter if present
+        if (currentQuery) {
+            filter.push({
+                key: 'query',
+                values: [currentQuery],
+                isNegated: false
+            });
+        }
+
+        // Parse and merge additional filters from expert mode
         try {
             // Add a check if it is not already JSON
             if (typeof currentFilters !== 'string') {
                 currentFilters = JSON.stringify(currentFilters);
             }
 
-            filter = JSON.parse(currentFilters);
+            const expertFilters = JSON.parse(currentFilters);
+            
+            // Merge filters, but don't duplicate docIds or query filters
+            expertFilters.forEach(ef => {
+                if (ef.key !== 'id.keyword' && ef.key !== 'query') {
+                    filter.push(ef);
+                }
+            });
         } catch (e) {
             console.error('Invalid filters JSON:', e);
-            filter = [];
-            
-            if (currentDocIds) {
-                const docIds = currentDocIds.split(',').map(d => d.trim()).filter(d => d);
-                if (docIds.length > 0) {
-                    filter.push({
-                        key: 'id.keyword',
-                        values: docIds,
-                        isNegated: false
-                    });
-                }
-            }
-            if (currentQuery) {
-                filter.push({
-                    key: 'query',
-                    values: [currentQuery],
-                    isNegated: false
-                });
-            }
         }
 
         // Add to chat history

@@ -68,6 +68,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             card.classList.toggle('active', card.dataset.assistantId === assistant.id);
         });
         
-        window.location.href = `chat.html?newChat=${!isSameAssistant}`;
+        // Get current URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        // Set newChat parameter
+        urlParams.set('newChat', (!isSameAssistant).toString());
+        
+        // Redirect to chat.html with all parameters
+        window.location.href = `chat.html?${urlParams.toString()}`;
     }
 });
