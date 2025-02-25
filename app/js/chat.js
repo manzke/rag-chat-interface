@@ -1018,7 +1018,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // Expert mode panel functionality
-    const expertModeToggle = document.getElementById('expert-mode-toggle');
     const expertPanel = document.getElementById('expert-panel');
     const expertCancel = document.getElementById('expert-cancel');
     const expertSave = document.getElementById('expert-save');
@@ -1043,19 +1042,42 @@ document.addEventListener('DOMContentLoaded', async () => {
         filters: expertFilters.value
     };
 
-    expertModeToggle.addEventListener('click', (e) => {
-        e.stopPropagation();  // Prevent the click from bubbling up
-        expertPanel.classList.toggle('show');
-    });
+    function toggleExpertMode() {
+        const panel = document.getElementById('expert-panel');
+        panel.classList.toggle('show');
+    }
+
+    // Add click handlers for both expert mode toggles
+    const expertToggleMobile = document.querySelector('.expert-mode-toggle-mobile');
+    const expertToggleDesktop = document.getElementById('expert-mode-toggle');
+
+    if (expertToggleMobile) {
+        expertToggleMobile.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleExpertMode();
+        });
+    }
+
+    if (expertToggleDesktop) {
+        expertToggleDesktop.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleExpertMode();
+        });
+    }
 
     expertCancel.addEventListener('click', (e) => {
-        e.stopPropagation();  // Prevent the click from bubbling up
+        e.preventDefault();
+        e.stopPropagation();
         // Restore saved values
         expertDocIds.value = savedExpertValues.docIds;
         expertQuery.value = savedExpertValues.query;
         expertProfileName.value = savedExpertValues.profileName;
         expertProfileId.value = savedExpertValues.profileId;
         expertFilters.value = savedExpertValues.filters;
+        // Close the panel
+        document.getElementById('expert-panel').classList.remove('show');
         
         expertPanel.classList.remove('show');
     });

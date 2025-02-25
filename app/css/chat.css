@@ -929,24 +929,22 @@ body {
 
 /* Expert mode */
 .expert-panel {
-    position: fixed;
-    top: 50px;
-    right: 20px;
-    width: 350px;
-    background: white;
-    border: 1px solid #dee2e6;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
-    max-height: calc(100vh - 70px);
     display: none;
-    overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    width: 90%;
+    max-width: 500px;
 }
 
 .expert-panel.show {
-    display: flex;
-    flex-direction: column;
+    display: block;
 }
 
 .expert-panel h3 {
@@ -1214,8 +1212,11 @@ body {
     border-radius: 0;
 }
 
-.widget-mode .desktop-controls {
-    display: none;
+.widget-mode .desktop-controls,
+.widget-mode .expert-mode-toggle,
+.widget-mode .expert-mode-toggle-mobile,
+.widget-mode #expert-panel {
+    display: none !important;
 }
 
 .widget-mode .widget-menu {
@@ -1226,11 +1227,20 @@ body {
     display: flex !important;
 }
 
+.widget-mode .non-widget-only {
+    display: none !important;
+}
+
 .widget-mode .expert-panel {
     width: 90%;
     max-width: 350px;
     max-height: 90vh;
     overflow-y: auto;
+}
+
+/* Make sure the expert panel is properly layered in widget mode */
+.widget-mode .expert-panel.show {
+    z-index: 10000;
 }
 
 /* Mobile optimizations */
