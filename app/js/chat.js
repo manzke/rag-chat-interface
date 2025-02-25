@@ -14,6 +14,10 @@ import { initializeMobileMenu } from './mobile-menu.js';
 import { initializeVoiceInput } from './voice-input.js';
 import i18n from './i18n.js';
 import { getRelativeTime, getAbsoluteTime, isDifferentDay, getDateSeparatorText } from './utils/time.js';
+import { ProgressIndicator } from './components/progress-indicator.js';
+
+// Import additional CSS
+import '../css/progress-indicator.css';
 
 document.addEventListener('DOMContentLoaded', async () => {
     // Initialize i18n
@@ -387,130 +391,78 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     async function sendMessage(message = null) {
-        // If we're in stopping mode, stop the current request
-        if (isWaitingForResponse) {
-            updateStatus('', 'stopping');
-            
-            // Stop the current request and clean up
-            if (eventSource) {
-                await client.stopClient(currentRequestUuid);
-                eventSource = null;
-            }
-            
-            isWaitingForResponse = false;
-            disableInput(false);
-            updateStatus('', 'ready');
-            return;
-        }
-
-        const messageText = message || userInput.value.trim();
-        if (!messageText) return;
-
-        if (!message) {
-            userInput.value = '';
-        }
-
-        const messageElement = createMessageElement(messageText, true);
-        messagesContainer.appendChild(messageElement);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-        // Generate new UUID for this request
-        const requestUuid = generateUuid();
-        currentRequestUuid = requestUuid;
+        if (isWaitingForResponse) return;
         
-        // Update button to show stop state
-        isWaitingForResponse = true;
-        if (eventSource) {
-            await client.stopClient(currentRequestUuid);
-        }
-
-        // Get expert mode elements
-        const expertDocIds = document.getElementById('expert-docIds');
-        const expertQuery = document.getElementById('expert-query');
-        const expertProfileName = document.getElementById('expert-profileName');
-        const expertProfileId = document.getElementById('expert-profileId');
-        const expertFilters = document.getElementById('expert-filters');
-
-        // Get parameters from expert mode
-        let currentDocIds = expertDocIds?.value || docIds;
-        let currentQuery = expertQuery?.value || query;
-        let currentProfileName = expertProfileName?.value || profileName;
-        let currentProfileId = expertProfileId?.value || profileId;
-        let currentFilters = expertFilters?.value || activeAssistant.defaultConfig.filters || '[]';
+        const question = message || userInput.value.trim();
+        if (!question) return;
         
-        if (currentProfileName && !currentProfileId) {
-            currentProfileId = btoa(currentProfileName);
-        }
-
-        // Parse and merge filters with docIds and query
-        let filter = [];
-        
-        // First add docIds filter if present
-        if (currentDocIds) {
-            const docIds = currentDocIds.split(',').map(d => d.trim()).filter(d => d);
-            if (docIds.length > 0) {
-                filter.push({
-                    key: 'id.keyword',
-                    values: docIds,
-                    isNegated: false
-                });
-            }
-        }
-
-        // Add query filter if present
-        if (currentQuery) {
-            filter.push({
-                key: 'query',
-                values: [currentQuery],
-                isNegated: false
-            });
-        }
-
-        // Parse and merge additional filters from expert mode
         try {
-            // Add a check if it is not already JSON
-            if (typeof currentFilters !== 'string') {
-                currentFilters = JSON.stringify(currentFilters);
-            }
-
-            const expertFilters = JSON.parse(currentFilters);
-            
-            // Merge filters, but don't duplicate docIds or query filters
-            expertFilters.forEach(ef => {
-                if (ef.key !== 'id.keyword' && ef.key !== 'query') {
-                    filter.push(ef);
-                }
-            });
-        } catch (e) {
-            console.error('Invalid filters JSON:', e);
-        }
-
-        // Add to chat history
-        const historyEntry = {
-            timestamp: new Date().toISOString(),
-            type: 'question',
-            content: messageText,
-            parameters: {
-                docIds: currentDocIds,
-                query: currentQuery,
-                profileName: currentProfileName,
-                profileId: currentProfileId,
-                filters: currentFilters
-            }
-        };
-        chatHistory.push(historyEntry);
-
-        try {
-            updateStatus('connecting', 'connecting');
+            isWaitingForResponse = true;
             disableInput(true);
-
-            // Create message element for response
+            
+            // Create user message element
+            const messageElement = createMessageElement(question, true);
+            messagesContainer.appendChild(messageElement);
             const responseElement = createMessageElement('', false);
             messagesContainer.appendChild(responseElement);
             const contentDiv = responseElement.querySelector('.message-content');
+            
+            // Create progress indicator
+            const progressIndicator = new ProgressIndicator();
+            const progressContainer = progressIndicator.createElements();
+            contentDiv.innerHTML = '';
+            contentDiv.appendChild(progressContainer);
+            
+            const requestUuid = generateUuid();
+            currentRequestUuid = requestUuid;  // Store for cleanup
+            updateStatus('connecting', 'connecting');
 
+            // Get current expert mode settings
+            const expertSettings = {
+                docIds: expertElements.docIds.value,
+                query: expertElements.query.value,
+                profileName: expertElements.profileName.value,
+                profileId: expertElements.profileId.value,
+                filters: expertElements.filters.value
+            };
+
+            // Parse filters JSON and merge with docIds and query
+            let parsedFilters = [];
+            try {
+                if (expertSettings.filters) {
+                    parsedFilters = JSON.parse(expertSettings.filters);
+                }
+                
+                // Add docIds filter if present
+                if (expertSettings.docIds) {
+                    const docIds = expertSettings.docIds.split(',').map(id => id.trim()).filter(id => id);
+                    if (docIds.length > 0) {
+                        parsedFilters.push({
+                            key: 'id.keyword',
+                            values: docIds
+                        });
+                    }
+                }
+
+                // Add query filter if present
+                if (expertSettings.query) {
+                    parsedFilters.push({
+                        key: 'query',
+                        values: [expertSettings.query],
+                        isNegated: false
+                    });
+                }
+            } catch (e) {
+                console.warn('Invalid filters JSON:', e);
+            }
+            
             // Register client and get event source
             eventSource = await client.registerClient(requestUuid);
+
+            // Clear input after successful send
+            if (!message) {
+                userInput.value = '';
+            }
 
             let currentResponse = {
                 timestamp: new Date().toISOString(),
@@ -524,11 +476,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Set up event handlers
             let fullResponse = '';
             
+            eventSource.addEventListener('telemetry', (event) => {
+                const telemetryData = JSON.parse(event.data);
+                progressIndicator.updateMetrics(telemetryData);
+            });
+
             eventSource.addEventListener('answer', (event) => {
                 updateStatus('receiving-answer', 'receiving');
                 console.log('Received answer event:', event);
                 const answer = JSON.parse(event.data).answer;
-                //fullResponse += event.data + ' ';
                 fullResponse += answer;
                 // Process and render markdown content
                 const processedContent = processMarkdown(fullResponse.trim());
@@ -1011,11 +967,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             });
 
-            // Send the question
-            await client.askQuestion(requestUuid, messageText, {
+            // Send the question with properly merged filters
+            await client.askQuestion(requestUuid, question, {
                 searchMode: 'multiword',
-                filter,
-                profileId: currentProfileId
+                filter: parsedFilters,
+                profileId: expertSettings.profileId || (expertSettings.profileName ? btoa(expertSettings.profileName) : undefined)
             });
 
         } catch (error) {
@@ -1034,13 +990,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    sendButton.addEventListener('click', () => {
-        sendMessage();
-    });
-
-    stopButton.addEventListener('click', () => {
-        stop();
-    });
+    sendButton.addEventListener('click', () => sendMessage());
+    stopButton.addEventListener('click', () => stop());
 
     // Handle page unload
     window.addEventListener('beforeunload', () => {
@@ -1053,25 +1004,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     const expertPanel = document.getElementById('expert-panel');
     const expertCancel = document.getElementById('expert-cancel');
     const expertSave = document.getElementById('expert-save');
-    const expertFilters = document.getElementById('expert-filters');
-    const expertDocIds = document.getElementById('expert-docIds');
-    const expertQuery = document.getElementById('expert-query');
-    const expertProfileName = document.getElementById('expert-profileName');
-    const expertProfileId = document.getElementById('expert-profileId');
+    
+    // Get expert mode input elements once
+    let expertElements = {
+        filters: document.getElementById('expert-filters'),
+        docIds: document.getElementById('expert-docIds'),
+        query: document.getElementById('expert-query'),
+        profileName: document.getElementById('expert-profileName'),
+        profileId: document.getElementById('expert-profileId')
+    };
 
     // Initialize expert mode values
-    expertDocIds.value = docIds || '';
-    expertQuery.value = query || '';
-    expertProfileName.value = profileName || '';
-    expertProfileId.value = profileId || '';
-    //expertFilters.value = JSON.stringify(activeAssistant.defaultConfig.filters) || '[]';
+    expertElements.docIds.value = docIds || '';
+    expertElements.query.value = query || '';
+    expertElements.profileName.value = profileName || '';
+    expertElements.profileId.value = profileId || '';
+    expertElements.filters.value = filters || '[]';
 
     let savedExpertValues = {
-        docIds: expertDocIds.value,
-        query: expertQuery.value,
-        profileName: expertProfileName.value,
-        profileId: expertProfileId.value,
-        filters: expertFilters.value
+        docIds: expertElements.docIds.value,
+        query: expertElements.query.value,
+        profileName: expertElements.profileName.value,
+        profileId: expertElements.profileId.value,
+        filters: expertElements.filters.value
     };
 
     function toggleExpertMode() {
@@ -1103,11 +1058,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         e.preventDefault();
         e.stopPropagation();
         // Restore saved values
-        expertDocIds.value = savedExpertValues.docIds;
-        expertQuery.value = savedExpertValues.query;
-        expertProfileName.value = savedExpertValues.profileName;
-        expertProfileId.value = savedExpertValues.profileId;
-        expertFilters.value = savedExpertValues.filters;
+        expertElements.docIds.value = savedExpertValues.docIds;
+        expertElements.query.value = savedExpertValues.query;
+        expertElements.profileName.value = savedExpertValues.profileName;
+        expertElements.profileId.value = savedExpertValues.profileId;
+        expertElements.filters.value = savedExpertValues.filters;
         // Close the panel
         document.getElementById('expert-panel').classList.remove('show');
         
@@ -1118,16 +1073,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         e.stopPropagation();  // Prevent the click from bubbling up
         // Validate filters JSON
         try {
-            if (expertFilters.value) {
-                JSON.parse(expertFilters.value);
+            if (expertElements.filters.value) {
+                JSON.parse(expertElements.filters.value);
             }
             // Save values
             savedExpertValues = {
-                docIds: expertDocIds.value,
-                query: expertQuery.value,
-                profileName: expertProfileName.value,
-                profileId: expertProfileId.value,
-                filters: expertFilters.value
+                docIds: expertElements.docIds.value,
+                query: expertElements.query.value,
+                profileName: expertElements.profileName.value,
+                profileId: expertElements.profileId.value,
+                filters: expertElements.filters.value
             };
             expertPanel.classList.remove('show');
             expertPanel.querySelector('.error-message').style.display = 'none';
