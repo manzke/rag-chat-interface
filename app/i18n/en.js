@@ -1,4 +1,13 @@
 export default {
+    time: {
+        justNow: 'just now',
+        minutesAgo: '{count}m ago',
+        hoursAgo: '{count}h ago',
+        yesterday: 'yesterday',
+        daysAgo: '{count}d ago',
+        today: 'Today',
+        yesterday: 'Yesterday',
+    },
     welcome: {
         title: 'Choose your Assistant',
         subtitle: 'Select an assistant to help you with your questions'

@@ -13,6 +13,7 @@ import { createPDFViewer } from './pdf-viewer.js';
 import { initializeMobileMenu } from './mobile-menu.js';
 import { initializeVoiceInput } from './voice-input.js';
 import i18n from './i18n.js';
+import { getRelativeTime, getAbsoluteTime, isDifferentDay, getDateSeparatorText } from './utils/time.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     // Initialize i18n
@@ -193,6 +194,37 @@ document.addEventListener('DOMContentLoaded', async () => {
         messageElement.classList.add(isUser ? 'user-message' : 'assistant-message');
         const contentDiv = messageElement.querySelector('.message-content');
         contentDiv.textContent = text;
+
+        // Add timestamp
+        const now = new Date();
+        const timestamp = messageElement.querySelector('.message-timestamp time');
+        timestamp.setAttribute('datetime', now.toISOString());
+        timestamp.textContent = getRelativeTime(now);
+        timestamp.parentElement.setAttribute('title', getAbsoluteTime(now));
+
+        // Check if we need to add a date separator
+        const lastMessage = messagesContainer.lastElementChild;
+        if (lastMessage) {
+            const lastTimestamp = lastMessage.querySelector('time')?.getAttribute('datetime');
+            if (lastTimestamp && isDifferentDay(lastTimestamp, now)) {
+                const separator = document.createElement('div');
+                separator.className = 'date-separator';
+                separator.innerHTML = `<span>${getDateSeparatorText(now)}</span>`;
+                messagesContainer.appendChild(separator);
+            }
+        } else if (!isWelcome) {
+            // First message (not welcome message), add today's separator
+            const separator = document.createElement('div');
+            separator.className = 'date-separator';
+            separator.innerHTML = `<span>${getDateSeparatorText(now)}</span>`;
+            messagesContainer.appendChild(separator);
+        }
+
+        // Update timestamps periodically
+        const updateTimestamp = () => {
+            timestamp.textContent = getRelativeTime(timestamp.getAttribute('datetime'));
+        };
+        setInterval(updateTimestamp, 60000); // Update every minute
         
         // Hide sources section for welcome messages and user messages
         if (isUser || isWelcome) {

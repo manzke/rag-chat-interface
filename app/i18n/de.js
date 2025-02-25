@@ -1,4 +1,13 @@
 export default {
+    time: {
+        justNow: 'gerade eben',
+        minutesAgo: 'vor {count}m',
+        hoursAgo: 'vor {count}h',
+        yesterday: 'gestern',
+        daysAgo: 'vor {count}d',
+        today: 'Heute',
+        yesterday: 'Gestern',
+    },
     welcome: {
         title: 'Wählen Sie Ihren Assistenten',
         subtitle: 'Wählen Sie einen Assistenten, der Ihnen bei Ihren Fragen hilft'
