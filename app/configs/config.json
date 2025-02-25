@@ -47,8 +47,8 @@
         {
             "id": "docs-assistant",
             "name": {
-                "en": "Documentation Guide",
-                "de": "Dokumentationsführer"
+                "en": "Docu Assistant",
+                "de": "Doku Assistent"
             },
             "description": {
                 "en": "Navigate through documentation, find specific information, and understand complex topics.",

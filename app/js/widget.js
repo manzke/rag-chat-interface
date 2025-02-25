@@ -6,6 +6,7 @@ class RAGChatWidget {
     constructor(options = {}) {
         this.options = {
             triggerElement: options.triggerElement || null,
+            autoOpenTrigger: options.autoOpenTrigger || null,
             triggerOffset: options.triggerOffset || 300,
             position: options.position || 'right',
             width: options.width || '380px',
@@ -77,19 +78,33 @@ class RAGChatWidget {
     checkTrigger() {
         if (!this.isInitialized) return;
 
-        if (this.options.triggerElement) {
-            // Check if trigger element is visible
-            const element = document.querySelector(this.options.triggerElement);
+        // Function to check if an element is visible in viewport
+        const isElementVisible = (selector) => {
+            const element = document.querySelector(selector);
             if (element) {
                 const rect = element.getBoundingClientRect();
-                const isVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
-                this.container.style.display = isVisible ? 'block' : 'none';
+                return rect.top >= 0 && rect.bottom <= window.innerHeight;
             }
+            return false;
+        };
+
+        // Handle widget visibility trigger
+        if (this.options.triggerElement) {
+            const isVisible = isElementVisible(this.options.triggerElement);
+            this.container.style.display = isVisible ? 'block' : 'none';
         } else {
             // Check scroll position
             const scrolled = window.scrollY || window.pageYOffset;
             if (scrolled > this.options.triggerOffset) {
                 this.container.style.display = 'block';
+            }
+        }
+
+        // Handle auto-open trigger
+        if (this.options.autoOpenTrigger && !this.isOpen) {
+            const isAutoTriggerVisible = isElementVisible(this.options.autoOpenTrigger);
+            if (isAutoTriggerVisible) {
+                this.open();
             }
         }
     }

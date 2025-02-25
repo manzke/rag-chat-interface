@@ -49,6 +49,18 @@
     </section>
 
     <section>
+        <h2>More Content</h2>
+        <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+        <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
+    </section>
+
+    <section>
+        <h2>More Content</h2>
+        <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+        <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
+    </section>
+
+    <section>
         <h2>Our Products</h2>
         <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
     </section>
@@ -58,7 +70,10 @@
         <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
     </section>
 
-    
+    <div class="trigger-element" id="chat-trigger">
+        <h2>Need Help?</h2>
+        <p>Our AI assistant is here to help you! The chat widget icon will appear when you see this section.</p>
+    </div>
 
     
     <section>
@@ -66,17 +81,28 @@
         <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
         <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
     </section>
-    <div class="trigger-element" id="chat-trigger">
-        <h2>Need Help?</h2>
-        <p>Our AI assistant is here to help you! The chat widget will appear when you see this section.</p>
-    </div>
+
+    <section>
+        <h2>More Content</h2>
+        <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+        <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
+    </section>
+
+    <section>
+        <h2>Automatic Chat Section</h2>
+        <div class="trigger-element" id="auto-chat-trigger">
+            <h2>Important Information</h2>
+            <p>When this section becomes visible, the chat widget will automatically open to assist you.</p>
+        </div>
+    </section>
 
     <!-- Widget will be loaded automatically by webpack -->
     <script type="module">
         // Initialize the widget
         document.addEventListener('DOMContentLoaded', () => {
             const widget = new RAGChatWidget({
-                triggerElement: '#chat-trigger',  // Show widget when this element is visible
+                triggerElement: '#chat-trigger',  // Show widget icon when this element is visible
+                autoOpenTrigger: '#auto-chat-trigger',  // Automatically open widget when this element is visible
                 position: 'right',
                 width: '380px',
                 height: '600px'
