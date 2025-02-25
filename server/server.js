@@ -4,7 +4,7 @@ import { RAGBackend } from './rag_backend.js';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { createReadStream, statSync } from 'fs';
-import { generateResponse } from './response-template.js';
+import { generateResponse, generateTelemetry } from './response-template.js';
 import { createServer } from 'http';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -143,43 +143,13 @@ app.post('/api/v2/rag/ask', async (req, res) => {
         return;
     }
 
-    // Send initial telemetry
-    sendSSE(client.response, 'telemetry', {
-        telemetry: {
-            detected_question_language: 'English',
-            model: 'gpt-3.5-turbo'
-        }
-    });
+    // Send initial telemetry with search metrics
+    const initialTelemetry = generateTelemetry(question, 'initial');
+    sendSSE(client.response, 'telemetry', initialTelemetry);
 
     // Process context and passages from backend result
     const { context, passages } = result;
     
-    // Send initial telemetry with passage info
-    sendSSE(client.response, 'telemetry', {
-        telemetry: JSON.stringify({
-            telemetry: {
-                retrieval_query_generation_result_text: `GeneratedQueries[semanticQueries=[${question}], keywordQueries=[${context.query || ''}]]`,
-                usage: {
-                    prompt_tokens: 889,
-                    total_tokens: 915,
-                    completion_tokens: 26
-                },
-                retrieval_query_execution_number_of_passages_in_query_result: passages.length,
-                retrieval_final_number_of_retrieved_passages: passages.length,
-                retrieval_query_generation_duration: 1.743,
-                retrieval_query_execution_duration: 0.14,
-                retrieval_passage_processing_duration: 0.007,
-                detected_question_language: "German",
-                language_detection_duration: 0.0,
-                model: "hugging-quants/Meta-Llama-3.1-8B-Instruct-AWQ-INT4",
-                retrieval_threshold_passage_retrieval: 0.9212912,
-                retrieval_duration: 0.257,
-                retrieval_number_of_candidate_documents: passages.length + 2
-            }
-        }),
-        eventType: "telemetry"
-    });
-
     // Send passages event
     sendSSE(client.response, 'passages', { passages });
 
@@ -231,13 +201,8 @@ app.post('/api/v2/rag/ask', async (req, res) => {
         }
     });
 
-    // Send final telemetry
-    sendSSE(client.response, 'telemetry', {
-        telemetry: {
-            processing_time: 1.234,
-            tokens_used: 156
-        }
-    });
+    const finalTelemetry = generateTelemetry(question, 'final');
+    sendSSE(client.response, 'telemetry', finalTelemetry);
 
     // Send completion
     sendSSE(client.response, 'complete', '');
