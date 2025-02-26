@@ -62,7 +62,7 @@
 .metrics-toggle {
     background: none;
     border: none;
-    color: #6c757d;
+    color: var(--metrics-text, #6c757d);
     font-size: 13px;
     padding: 5px 10px;
     cursor: pointer;
@@ -71,11 +71,12 @@
     gap: 5px;
     width: 100%;
     text-align: left;
+    border-radius: 4px;
 }
 
 .metrics-toggle:hover {
-    color: #495057;
-    background: #f8f9fa;
+    color: var(--metrics-text-hover, #495057);
+    background: var(--metrics-bg-hover, rgba(0,0,0,0.05));
 }
 
 .metrics-toggle i {
@@ -89,12 +90,11 @@
 .metrics-details {
     display: none;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 10px;
-    margin-top: 10px;
-    padding: 10px;
-    background: #ffffff;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 8px;
+    background: var(--metrics-details-bg, #ffffff);
     border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .metrics-details.expanded {
@@ -103,61 +103,85 @@
 
 .metric {
     display: flex;
-    align-items: center;
-    gap: 10px;
+    align-items: flex-start;
+    gap: 8px;
     font-size: 13px;
     padding: 4px;
 }
 
 .metric i {
-    color: #6c757d;
+    color: var(--metric-icon, #6c757d);
     width: 16px;
     text-align: center;
+    margin-top: 2px;
 }
 
 .metric-info {
     display: flex;
     flex-direction: column;
     flex: 1;
+    gap: 2px;
 }
 
 .metric-label {
-    color: #6c757d;
+    color: var(--metric-label, #6c757d);
     font-size: 12px;
 }
 
 .metric-value {
-    color: #212529;
+    color: var(--metric-value, #212529);
     font-weight: 500;
 }
 
 .metric-group {
     grid-column: 1 / -1;
-    margin-top: 8px;
-    border-top: 1px solid #dee2e6;
-    padding-top: 8px;
+    margin-top: 4px;
+    border-top: 1px solid var(--metric-group-border, #dee2e6);
+    padding-top: 4px;
 }
 
-.metric-group details {
-    margin-top: 0.5rem;
-    padding: 0.5rem;
-    background-color: rgba(0, 0, 0, 0.05);
+.metric-details {
+    background: var(--metric-details-bg, rgba(0, 0, 0, 0.03));
     border-radius: 4px;
+    padding: 8px;
+    margin-top: 8px;
 }
 
 .metric-group summary {
-    color: #6c757d;
+    color: var(--metric-group-summary, #6c757d);
     cursor: pointer;
     user-select: none;
-    margin-bottom: 8px;
+    padding: 4px;
+    margin: -4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .metric-group summary:hover {
-    color: #495057;
+    color: var(--metric-group-summary-hover, #495057);
+    background: var(--metric-group-bg-hover, rgba(0, 0, 0, 0.05));
+}
+
+.metric-group summary::marker {
+    display: none;
+}
+
+.metric-group summary::-webkit-details-marker {
+    display: none;
+}
+
+.metric-group summary i {
+    transition: transform 0.2s ease;
+}
+
+.metric-group details[open] summary i {
+    transform: rotate(90deg);
 }
 
 .sub-metric {
-    margin-left: 16px;
+    margin: 4px 0 0 24px;
 }
 
 .sub-metric .metric-info {
@@ -168,8 +192,19 @@
     margin: 0.5rem 0;
     padding: 0.5rem;
     border-radius: 4px;
-    background: #f8f9fa;
+    background: var(--insights-bg, #f8f9fa);
     font-size: 14px;
+    border-bottom: 1px solid var(--insights-border, #dee2e6);
+    transition: opacity 0.5s ease, background-color 0.3s ease;
+}
+
+.processing-insights.complete {
+    background: var(--insights-bg-complete, #e8f5e9);
+}
+
+.processing-insights.fade-out {
+    opacity: 0;
+    pointer-events: none;
 }
 
 .metrics-container {
@@ -177,9 +212,35 @@
     flex-direction: column;
 }
 
+.message-text {
+    margin-top: 1rem;
+}
+
 .fade-out {
     opacity: 0;
     transition: opacity 0.5s ease;
+}
+
+.query-info {
+    grid-column: 1 / -1;
+    font-size: 13px;
+    color: var(--metric-value, #212529);
+    background: var(--metric-details-bg, rgba(0, 0, 0, 0.03));
+    padding: 8px;
+    border-radius: 4px;
+    margin-top: 4px;
+}
+
+.query-info pre {
+    margin: 4px 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.query-info .label {
+    color: var(--metric-label, #6c757d);
+    font-size: 12px;
+    margin-bottom: 2px;
 }
 
 /* Dark mode support */
@@ -206,5 +267,24 @@
 
     .metric i {
         color: #adb5bd;
+    }
+
+    :root {
+        --insights-bg: #2d2d2d;
+        --insights-bg-complete: #1b3320;
+        --insights-border: #444;
+        --metrics-text: #adb5bd;
+        --metrics-text-hover: #e9ecef;
+        --metrics-bg-hover: rgba(255,255,255,0.05);
+        --metrics-details-bg: #1e1e1e;
+        --metric-icon: #adb5bd;
+        --metric-label: #adb5bd;
+        --metric-value: #e9ecef;
+        --metric-group-border: #444;
+        --metric-group-bg: rgba(255, 255, 255, 0.05);
+        --metric-group-summary: #adb5bd;
+        --metric-group-summary-hover: #e9ecef;
+        --metric-details-bg: rgba(255, 255, 255, 0.05);
+        --metric-group-bg-hover: rgba(255, 255, 255, 0.1);
     }
 }

@@ -362,10 +362,6 @@ body {
 .filter-options {
     display: flex;
     align-items: center;
-}
-
-.filter-options {
-    display: flex;
     gap: 16px;
 }
 
@@ -882,23 +878,33 @@ body {
 
 .editing .message-content {
     padding: 0;
+    background: none;
+    box-shadow: none;
 }
 
 .edit-textarea {
     width: 100%;
-    padding: 10px;
-    border: 2px solid #007bff;
-    border-radius: 8px;
+    border: 2px solid #dee2e6;
+    border-radius: 18px !important;
+    padding: 12px 16px !important;
     font-family: inherit;
     font-size: inherit;
+    line-height: 1.4;
     resize: vertical;
-    min-height: 100px;
+    min-height: 60px;
+    background: white;
+    transition: border-color 0.2s ease;
+}
+
+.edit-textarea:focus {
+    outline: none;
+    border-color: #007bff;
 }
 
 .edit-actions {
     display: flex;
-    gap: 10px;
-    padding: 10px;
+    gap: 8px;
+    padding: 8px;
     justify-content: flex-end;
 }
 
@@ -913,41 +919,31 @@ body {
     justify-content: center;
     font-size: 14px;
     transition: all 0.2s ease;
+    color: white;
 }
 
 .save-edit {
-    background-color: #28a745;
-    color: white;
+    background-color: #007bff;
 }
 
 .save-edit:hover {
-    background-color: #218838;
-}
-
-.edit-textarea {
-    min-height: 60px !important;
-    max-height: 200px !important;
-    width: calc(100% - 32px) !important;  /* Account for padding */
+    background-color: #0056b3;
+    transform: scale(1.05);
 }
 
 .cancel-edit {
-    background-color: #dc3545;
-    color: white;
+    background-color: #6c757d;
 }
 
 .cancel-edit:hover {
-    background-color: #c82333;
+    background-color: #5a6268;
+    transform: scale(1.05);
 }
 
+/* Remove duplicate styles that were causing the issue */
 .edit-textarea {
-    background-color: white;
-    padding: 12px 16px !important;
-    border-radius: 18px !important;
+    width: 100% !important;
     margin: 0 !important;
-    min-height: auto !important;
-    font-family: inherit !important;
-    font-size: inherit !important;
-    line-height: 1.4 !important;
 }
 
 /* Expert mode buttons */
@@ -970,16 +966,17 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     background: white;
-    padding: 20px;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     z-index: 1000;
     width: 90%;
     max-width: 500px;
+    flex-direction: column;
+    max-height: 90vh;
 }
 
 .expert-panel.show {
-    display: block;
+    display: flex;
 }
 
 .expert-panel h3 {
@@ -997,94 +994,46 @@ body {
     flex-grow: 1;
 }
 
+.expert-panel textarea {
+    width: 100%;
+    height: 200px;
+    margin: 5px 0 15px;
+    font-family: monospace;
+    font-size: 12px;
+    padding: 10px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    resize: vertical;
+}
+
 .expert-panel label {
     display: block;
-    margin-bottom: 8px;
+    margin-top: 10px;
     font-weight: 500;
-    color: #555;
+    color: #495057;
 }
 
 .expert-panel input {
     width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    margin-bottom: 16px;
-    font-size: 14px;
-    transition: border-color 0.2s;
-}
-
-.expert-panel input:focus {
-    border-color: #007bff;
-    outline: none;
-}
-
-.expert-panel textarea {
-    width: 100%;
-    min-height: 120px;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-    font-size: 13px;
-    line-height: 1.4;
-    resize: vertical;
-    transition: border-color 0.2s;
-}
-
-.expert-panel textarea:focus {
-    border-color: #007bff;
-    outline: none;
-}
-
-.expert-panel textarea.error {
-    border-color: #dc3545;
-    background-color: #fff8f8;
-}
-
-.expert-panel .error-message {
-    color: #dc3545;
-    font-size: 12px;
-    margin-top: -12px;
-    margin-bottom: 16px;
-    display: none;
-}
-
-.expert-panel textarea.error + .error-message {
-    display: block;
-}
-
-.expert-mode-toggle {
-    position: fixed;
-    right: 20px;
-    bottom: 180px;
-    z-index: 1000;
-    padding: 0;
-    background: #f8f9fa;
+    padding: 8px;
+    margin: 5px 0 15px;
     border: 1px solid #dee2e6;
-    border-radius: 50%;
-    cursor: pointer;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-.expert-mode-toggle:hover {
-    transform: scale(1.05);
-    background: #e9ecef;
+    border-radius: 4px;
+    font-size: 14px;
 }
 
 .expert-panel-buttons {
+    padding: 15px 20px;
+    border-top: 1px solid #eee;
     display: flex;
     gap: 10px;
     justify-content: flex-end;
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid #dee2e6;
+    background: white;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    position: sticky;
+    bottom: 0;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .expert-panel-button {

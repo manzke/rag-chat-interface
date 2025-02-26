@@ -12,6 +12,10 @@ export class ProcessingInsights {
         const metrics = document.createElement('div');
         metrics.className = 'metrics-container';
 
+        // Create metrics details container first
+        const metricsDetails = document.createElement('div');
+        metricsDetails.className = 'metrics-details';
+
         // Create metrics toggle button
         const metricsToggle = document.createElement('button');
         metricsToggle.className = 'metrics-toggle';
@@ -24,10 +28,6 @@ export class ProcessingInsights {
                 ? '<i class="fas fa-chevron-down"></i> Hide processing details'
                 : '<i class="fas fa-chevron-down"></i> Show processing details';
         });
-
-        // Create metrics details container
-        const metricsDetails = document.createElement('div');
-        metricsDetails.className = 'metrics-details';
         
         metrics.appendChild(metricsToggle);
         metrics.appendChild(metricsDetails);
@@ -43,22 +43,47 @@ export class ProcessingInsights {
         return container;
     }
 
-    updateMetrics(telemetry) {
-        this.metrics = telemetry;
+    updateMetrics(metrics) {
+        if (!metrics) return;
+
+        this.metrics = metrics;
         if (this.elements?.metricsDetails) {
-            this.elements.metricsDetails.innerHTML = this.formatMetrics(telemetry);
+            this.elements.metricsDetails.innerHTML = this.formatMetrics(metrics);
+            
+            // Show the toggle button but keep the details collapsed by default
             this.elements.metricsToggle.style.display = 'flex';
+            this.elements.metricsDetails.classList.remove('expanded');
+            this.elements.metricsToggle.classList.remove('expanded');
+            
+            // If we have complete metrics, update any background color transitions
+            if (metrics.completion === 100) {
+                this.elements.container.classList.add('complete');
+            }
         }
     }
 
     formatMetrics(metrics) {
-        if (!metrics) return '';
+        if (!metrics?.telemetry) return '';
 
-        const telemetry = typeof metrics.telemetry === 'string' 
-            ? JSON.parse(metrics.telemetry).telemetry 
-            : metrics.telemetry;
-
-        let html = '<div class="metrics-details">';
+        const telemetry = metrics.telemetry;
+        let html = '';
+        
+        // Query information
+        if (telemetry.retrieval_query_generation_result_text) {
+            try {
+                const queryData = JSON.parse(telemetry.retrieval_query_generation_result_text.replace('GeneratedQueries', ''));
+                html += `
+                    <div class="query-info">
+                        <div class="label">Semantic queries:</div>
+                        <pre>${queryData.semanticQueries.join('\n')}</pre>
+                        <div class="label">Keyword queries:</div>
+                        <pre>${queryData.keywordQueries.join('\n')}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                console.debug('Could not parse query data:', error);
+            }
+        }
         
         // Search metrics
         if (telemetry.retrieval_number_of_candidate_documents) {
@@ -139,48 +164,48 @@ export class ProcessingInsights {
             html += `
                 <div class="metric-group">
                     <details>
-                        <summary>Detailed timings</summary>
-                        ${telemetry.retrieval_query_generation_duration ? `
-                            <div class="metric sub-metric">
-                                <div class="metric-info">
-                                    <span class="metric-label">Query generation:</span>
-                                    <span class="metric-value">${telemetry.retrieval_query_generation_duration.toFixed(2)}s</span>
+                        <summary>
+                            <i class="fas fa-chevron-right"></i>
+                            Detailed timings
+                        </summary>
+                        <div class="metric-details">
+                            ${telemetry.retrieval_query_generation_duration ? `
+                                <div class="metric sub-metric">
+                                    <div class="metric-info">
+                                        <span class="metric-label">Query generation:</span>
+                                        <span class="metric-value">${telemetry.retrieval_query_generation_duration.toFixed(2)}s</span>
+                                    </div>
                                 </div>
-                            </div>
-                        ` : ''}
-                        ${telemetry.retrieval_query_execution_duration ? `
-                            <div class="metric sub-metric">
-                                <div class="metric-info">
-                                    <span class="metric-label">Query execution:</span>
-                                    <span class="metric-value">${telemetry.retrieval_query_execution_duration.toFixed(2)}s</span>
+                            ` : ''}
+                            ${telemetry.retrieval_query_execution_duration ? `
+                                <div class="metric sub-metric">
+                                    <div class="metric-info">
+                                        <span class="metric-label">Query execution:</span>
+                                        <span class="metric-value">${telemetry.retrieval_query_execution_duration.toFixed(2)}s</span>
+                                    </div>
                                 </div>
-                            </div>
-                        ` : ''}
-                        ${telemetry.abstract_generation_duration ? `
-                            <div class="metric sub-metric">
-                                <div class="metric-info">
-                                    <span class="metric-label">Answer generation:</span>
-                                    <span class="metric-value">${telemetry.abstract_generation_duration.toFixed(2)}s</span>
+                            ` : ''}
+                            ${telemetry.abstract_generation_duration ? `
+                                <div class="metric sub-metric">
+                                    <div class="metric-info">
+                                        <span class="metric-label">Answer generation:</span>
+                                        <span class="metric-value">${telemetry.abstract_generation_duration.toFixed(2)}s</span>
+                                    </div>
                                 </div>
-                            </div>
-                        ` : ''}
+                            ` : ''}
+                        </div>
                     </details>
                 </div>
             `;
         }
 
-        html += '</div>';
         return html;
     }
 
     complete() {
-        setTimeout(() => {
-            if (this.elements?.container) {
-                this.elements.container.classList.add('fade-out');
-                setTimeout(() => {
-                    this.elements.container.remove();
-                }, 500);
-            }
-        }, 1000);
+        // Only add completion state if we have complete metrics
+        if (this.metrics?.telemetry?.overall_duration) {
+            this.elements.container.classList.add('complete');
+        }
     }
 }

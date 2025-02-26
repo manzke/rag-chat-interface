@@ -8,10 +8,15 @@ export class ChatEventManager {
         this.messagesContainer = messagesContainer;
         this.progressIndicator = progressIndicator;
         this.contentDiv = responseElement.querySelector('.message-content');
+        this.messageContent = document.createElement('div');
+        this.messageContent.className = 'message-text';
+        this.contentDiv.appendChild(this.progressIndicator.createElements());
+        this.contentDiv.appendChild(this.messageContent);
         this.fullResponse = '';
         this.passagesManager = null;
         this.onRelatedQuestionClick = null;
         this.createDocumentLink = null;
+        this.accumulatedTelemetry = {}; // Add a property to store accumulated telemetry data
     }
 
     setupEventHandlers(eventSource, createDocumentLink) {
@@ -34,8 +39,32 @@ export class ChatEventManager {
 
     setupTelemetryHandler(eventSource) {
         eventSource.addEventListener('telemetry', (event) => {
-            const telemetryData = JSON.parse(event.data);
-            this.progressIndicator.updateMetrics(telemetryData);
+            try {
+                const rawData = JSON.parse(event.data);
+                const telemetryData = JSON.parse(rawData.telemetry);
+                console.debug('Telemetry received:', telemetryData);
+                
+                // Merge new telemetry data with accumulated data
+                if (!this.currentResponse.telemetry) {
+                    this.currentResponse.telemetry = {};
+                }
+                
+                // Merge the telemetry data instead of replacing it
+                this.currentResponse.telemetry = {
+                    ...this.currentResponse.telemetry,
+                    ...telemetryData.telemetry
+                };
+                
+                // Update the progress indicator with the merged data
+                this.progressIndicator.updateMetrics({
+                    telemetry: this.currentResponse.telemetry,
+                    completion: telemetryData.phase === 'final' ? 100 : 50
+                });
+                
+                console.debug('Accumulated telemetry:', this.currentResponse.telemetry);
+            } catch (error) {
+                console.error('Error parsing telemetry:', error);
+            }
         });
     }
 
@@ -46,8 +75,8 @@ export class ChatEventManager {
             
             // Process and render markdown content
             const processedContent = processMarkdown(this.fullResponse.trim());
-            this.contentDiv.innerHTML = processedContent;
-            this.contentDiv.classList.add('markdown-content');
+            this.messageContent.innerHTML = processedContent;
+            this.messageContent.classList.add('markdown-content');
 
             // Initialize code copy buttons and fix table rendering
             this.initializeContentFormatting();
@@ -92,10 +121,10 @@ export class ChatEventManager {
 
     initializeContentFormatting() {
         // Initialize code copy buttons
-        initializeCodeCopyButtons(this.contentDiv);
+        initializeCodeCopyButtons(this.messageContent);
 
         // Fix table rendering
-        this.contentDiv.querySelectorAll('table').forEach(table => {
+        this.messageContent.querySelectorAll('table').forEach(table => {
             if (!table.parentElement.classList.contains('table-container')) {
                 const wrapper = document.createElement('div');
                 wrapper.className = 'table-container';

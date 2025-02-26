@@ -5,7 +5,7 @@ import './polyfills.js';
 import '../css/index.css';
 import '../css/chat.css';
 import '../css/mobile.css';
-import '../css/progress-indicator.css';
+import '../css/processing-insights.css';
 
 // Import modules
 import { client } from './rag-client.js';

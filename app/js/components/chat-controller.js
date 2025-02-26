@@ -1,4 +1,4 @@
-import { ProgressIndicator } from './progress-indicator.js';
+import { ProcessingInsights } from './processing-insights.js';
 import { ChatEventManager } from './chat-event-manager.js';
 
 export class ChatController {
@@ -30,11 +30,8 @@ export class ChatController {
             ];
             this.messageManager.appendMessages([messageElement, responseElement]);
             
-            // Setup progress indicator
-            const progressIndicator = new ProgressIndicator();
-            const contentDiv = responseElement.querySelector('.message-content');
-            contentDiv.innerHTML = '';
-            contentDiv.appendChild(progressIndicator.createElements());
+            // Setup processing insights
+            const processingInsights = new ProcessingInsights();
             
             // Initialize request
             this.currentRequestUuid = `ifs-ai-assistant-answer-${crypto.randomUUID()}`;
@@ -61,13 +58,13 @@ export class ChatController {
                 responseElement,
                 currentResponse,
                 this.messageManager.container,
-                progressIndicator
+                processingInsights
             );
             const observer = eventManager.setupEventHandlers(this.eventSource, this.openDocument);
             eventManager.setRelatedQuestionCallback((text) => this.sendMessage(text));
 
             this.setupErrorHandler(eventManager, observer);
-            this.setupCompletionHandler(eventManager, observer, progressIndicator);
+            this.setupCompletionHandler(eventManager, observer, processingInsights);
 
             // Send the question
             await this.client.askQuestion(this.currentRequestUuid, question, this.getQuestionOptions());
@@ -89,11 +86,11 @@ export class ChatController {
         });
     }
 
-    setupCompletionHandler(eventManager, observer, progressIndicator) {
+    setupCompletionHandler(eventManager, observer, processingInsights) {
         this.eventSource.addEventListener('complete', async () => {
             if (this.eventSource) {
                 await this.cleanup(eventManager, observer);
-                progressIndicator.complete();
+                processingInsights.complete();
             }
         });
     }
@@ -116,11 +113,6 @@ export class ChatController {
 
     async stop() {
         this.statusManager.setStopping();
-        
-        const currentProgressIndicator = document.querySelector('.progress-container');
-        if (currentProgressIndicator) {
-            currentProgressIndicator.remove();
-        }
             
         if (this.eventSource) {
             const oldEventSource = this.eventSource;
