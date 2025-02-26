@@ -17,6 +17,7 @@ export class ChatEventManager {
         this.onRelatedQuestionClick = null;
         this.createDocumentLink = null;
         this.accumulatedTelemetry = {}; // Add a property to store accumulated telemetry data
+        this.hasScrolledToAnswer = false;
     }
 
     setupEventHandlers(eventSource, createDocumentLink) {
@@ -28,13 +29,24 @@ export class ChatEventManager {
         this.setupPassagesHandler(eventSource);
         this.setupRelatedQuestionsHandler(eventSource);
 
-        // Add observer to scroll to bottom when content changes
+        // Only watch for DOM changes to check visibility
         const observer = new MutationObserver(() => {
-            this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+            // Only scroll once when the answer section becomes visible
+            if (!this.hasScrolledToAnswer && this.messageContent.offsetHeight > 0) {
+                this.scrollToAnswer();
+                this.hasScrolledToAnswer = true;
+            }
         });
         observer.observe(this.contentDiv, { childList: true, subtree: true });
 
-        return observer;  // Return for cleanup if needed
+        return observer;
+    }
+
+    scrollToAnswer() {
+        const elementRect = this.responseElement.getBoundingClientRect();
+        const absoluteElementTop = elementRect.top + window.pageYOffset;
+        const middle = absoluteElementTop - (window.innerHeight / 3);
+        window.scrollTo({ top: middle, behavior: 'smooth' });
     }
 
     setupTelemetryHandler(eventSource) {

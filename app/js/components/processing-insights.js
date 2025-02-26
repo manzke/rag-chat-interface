@@ -71,15 +71,40 @@ export class ProcessingInsights {
         // Query information
         if (telemetry.retrieval_query_generation_result_text) {
             try {
-                const queryData = JSON.parse(telemetry.retrieval_query_generation_result_text.replace('GeneratedQueries', ''));
-                html += `
-                    <div class="query-info">
-                        <div class="label">Semantic queries:</div>
-                        <pre>${queryData.semanticQueries.join('\n')}</pre>
-                        <div class="label">Keyword queries:</div>
-                        <pre>${queryData.keywordQueries.join('\n')}</pre>
-                    </div>
-                `;
+                const queryText = telemetry.retrieval_query_generation_result_text;
+                
+                // Extract semantic queries
+                const semanticMatches = queryText.match(/semanticQueries=\[(.*?)\]/);
+                const semanticQueries = semanticMatches ? 
+                    semanticMatches[1].split(',').map(q => q.trim()).filter(q => q) : [];
+                
+                // Extract keyword queries
+                const keywordMatches = queryText.match(/keywordQueries=\[(.*?)\]/);
+                const keywordQueries = keywordMatches ? 
+                    keywordMatches[1].split(',').map(q => q.trim()).filter(q => q) : [];
+                
+                if (semanticQueries.length > 0) {
+                    html += `
+                        <div class="query-info">
+                            <div class="metric">
+                                <i class="fas fa-brain"></i>
+                                <div class="metric-info">
+                                    <span class="metric-label">Semantic queries</span>
+                                    <pre>${semanticQueries.join('\n')}</pre>
+                                </div>
+                            </div>
+                            ${keywordQueries.length > 0 ? `
+                                <div class="metric">
+                                    <i class="fas fa-key"></i>
+                                    <div class="metric-info">
+                                        <span class="metric-label">Keyword queries</span>
+                                        <pre>${keywordQueries.join('\n')}</pre>
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }
             } catch (error) {
                 console.debug('Could not parse query data:', error);
             }
@@ -157,44 +182,38 @@ export class ProcessingInsights {
             `;
         }
 
-        // Detailed timing metrics (collapsible)
-        if (telemetry.retrieval_query_generation_duration || 
-            telemetry.retrieval_query_execution_duration || 
-            telemetry.abstract_generation_duration) {
+        if (telemetry.retrieval_query_generation_duration) {
             html += `
-                <div class="metric-group">
-                    <details>
-                        <summary>
-                            <i class="fas fa-chevron-right"></i>
-                            Detailed timings
-                        </summary>
-                        <div class="metric-details">
-                            ${telemetry.retrieval_query_generation_duration ? `
-                                <div class="metric sub-metric">
-                                    <div class="metric-info">
-                                        <span class="metric-label">Query generation:</span>
-                                        <span class="metric-value">${telemetry.retrieval_query_generation_duration.toFixed(2)}s</span>
-                                    </div>
-                                </div>
-                            ` : ''}
-                            ${telemetry.retrieval_query_execution_duration ? `
-                                <div class="metric sub-metric">
-                                    <div class="metric-info">
-                                        <span class="metric-label">Query execution:</span>
-                                        <span class="metric-value">${telemetry.retrieval_query_execution_duration.toFixed(2)}s</span>
-                                    </div>
-                                </div>
-                            ` : ''}
-                            ${telemetry.abstract_generation_duration ? `
-                                <div class="metric sub-metric">
-                                    <div class="metric-info">
-                                        <span class="metric-label">Answer generation:</span>
-                                        <span class="metric-value">${telemetry.abstract_generation_duration.toFixed(2)}s</span>
-                                    </div>
-                                </div>
-                            ` : ''}
-                        </div>
-                    </details>
+                <div class="metric">
+                    <i class="fas fa-clock"></i>
+                    <div class="metric-info">
+                        <span class="metric-label">Query generation time:</span>
+                        <span class="metric-value">${telemetry.retrieval_query_generation_duration.toFixed(2)}s</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        if (telemetry.retrieval_query_execution_duration) {
+            html += `
+                <div class="metric">
+                    <i class="fas fa-clock"></i>
+                    <div class="metric-info">
+                        <span class="metric-label">Query execution time:</span>
+                        <span class="metric-value">${telemetry.retrieval_query_execution_duration.toFixed(2)}s</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        if (telemetry.abstract_generation_duration) {
+            html += `
+                <div class="metric">
+                    <i class="fas fa-clock"></i>
+                    <div class="metric-info">
+                        <span class="metric-label">Answer generation time:</span>
+                        <span class="metric-value">${telemetry.abstract_generation_duration.toFixed(2)}s</span>
+                    </div>
                 </div>
             `;
         }

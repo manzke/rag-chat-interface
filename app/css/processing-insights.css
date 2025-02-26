@@ -223,24 +223,33 @@
 
 .query-info {
     grid-column: 1 / -1;
-    font-size: 13px;
-    color: var(--metric-value, #212529);
-    background: var(--metric-details-bg, rgba(0, 0, 0, 0.03));
-    padding: 8px;
-    border-radius: 4px;
-    margin-top: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
 }
 
-.query-info pre {
-    margin: 4px 0;
-    white-space: pre-wrap;
-    word-break: break-word;
+.query-info .metric {
+    background: var(--metrics-details-bg, #ffffff);
+    border-radius: 4px;
+    padding: 8px;
 }
 
 .query-info .label {
     color: var(--metric-label, #6c757d);
     font-size: 12px;
-    margin-bottom: 2px;
+    font-weight: 500;
+}
+
+.query-info pre {
+    margin: 4px 0 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--metric-value, #212529);
+    font-weight: 500;
+    line-height: 1.4;
 }
 
 /* Dark mode support */
@@ -284,7 +293,7 @@
         --metric-group-bg: rgba(255, 255, 255, 0.05);
         --metric-group-summary: #adb5bd;
         --metric-group-summary-hover: #e9ecef;
-        --metric-details-bg: rgba(255, 255, 255, 0.05);
-        --metric-group-bg-hover: rgba(255, 255, 255, 0.1);
+        --pre-bg: rgba(0, 0, 0, 0.2);
+        --pre-border: rgba(255, 255, 255, 0.1);
     }
 }
