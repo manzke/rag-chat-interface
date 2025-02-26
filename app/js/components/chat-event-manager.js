@@ -40,8 +40,7 @@ export class ChatEventManager {
     setupTelemetryHandler(eventSource) {
         eventSource.addEventListener('telemetry', (event) => {
             try {
-                const rawData = JSON.parse(event.data);
-                const telemetryData = JSON.parse(rawData.telemetry);
+                const telemetryData = JSON.parse(event.data);
                 console.debug('Telemetry received:', telemetryData);
                 
                 // Merge new telemetry data with accumulated data
