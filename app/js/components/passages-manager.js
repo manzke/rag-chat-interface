@@ -6,7 +6,7 @@ export class PassagesManager {
         this.sourcesContainer = responseElement.querySelector('.sources-content');
         this.template = document.getElementById('source-passage-template');
         this.showMoreTemplate = document.getElementById('show-more-sources-template');
-        this.isExpanded = false; // Add state tracking
+        this.isSourcesExpanded = false; // Track sources section expanded state
     }
 
     handlePassages(passagesData) {
@@ -22,16 +22,7 @@ export class PassagesManager {
         let filteredPassages = [...allPassages];
         let sortedPassages = this.sortPassages(filteredPassages, 'relevance');
         
-        // Store expanded state before updating content
-        const wasExpanded = this.sourcesContainer?.classList.contains('expanded');
         this.setupPassageDisplay(sortedPassages);
-        // Restore expanded state if it was expanded
-        if (wasExpanded) {
-            this.sourcesContainer.classList.add('expanded');
-            const toggleButton = this.responseElement.querySelector('.toggle-sources');
-            toggleButton.querySelector('i').className = 'fas fa-chevron-up';
-            toggleButton.querySelector('i').style.transform = 'rotate(180deg)';
-        }
         this.setupEventListeners(allPassages);
     }
 
@@ -94,12 +85,19 @@ export class PassagesManager {
         const sourcesExpanded = this.responseElement.querySelector('.sources-expanded');
         const sourcesHeader = this.responseElement.querySelector('.sources-header');
 
+        // Make sure the sources display matches our tracked state
+        sourcesExpanded.style.display = this.isSourcesExpanded ? 'block' : 'none';
+        toggleButton.querySelector('i').className = this.isSourcesExpanded ? 
+            'fas fa-chevron-up' : 'fas fa-chevron-down';
+        toggleButton.querySelector('i').style.transform = this.isSourcesExpanded ? 
+            'rotate(180deg)' : 'rotate(0deg)';
+
         const toggleSources = () => {
-            this.isExpanded = !this.isExpanded;
-            sourcesExpanded.style.display = this.isExpanded ? 'block' : 'none';
-            toggleButton.querySelector('i').className = this.isExpanded ? 
+            this.isSourcesExpanded = !this.isSourcesExpanded;
+            sourcesExpanded.style.display = this.isSourcesExpanded ? 'block' : 'none';
+            toggleButton.querySelector('i').className = this.isSourcesExpanded ? 
                 'fas fa-chevron-up' : 'fas fa-chevron-down';
-            toggleButton.querySelector('i').style.transform = this.isExpanded ? 
+            toggleButton.querySelector('i').style.transform = this.isSourcesExpanded ? 
                 'rotate(180deg)' : 'rotate(0deg)';
         };
 
@@ -113,9 +111,6 @@ export class PassagesManager {
                 toggleSources();
             }
         });
-
-        // Initialize state
-        sourcesExpanded.style.display = this.isExpanded ? 'block' : 'none';
     }
 
     setupEventListeners(allPassages) {
@@ -126,24 +121,31 @@ export class PassagesManager {
         
         let searchTimeout;
         const updateDisplay = () => {
-            const wasExpanded = this.isExpanded; // Store current state
+            // Store current state before updating
+            const isExpanded = this.isSourcesExpanded;
+            
             const filtered = this.filterPassages(
                 allPassages, 
                 searchInput.value, 
                 highRelevanceCheckbox.checked
             );
             const sorted = this.sortPassages(filtered, sortSelect.value);
+            
+            // Clear container but keep expanded state
             this.sourcesContainer.innerHTML = '';
             this.setupPassageDisplay(sorted);
             
-            // Restore expanded state after updating
+            // Restore expanded state
+            this.isSourcesExpanded = isExpanded;
             const sourcesExpanded = this.responseElement.querySelector('.sources-expanded');
             const toggleButton = this.responseElement.querySelector('.toggle-sources');
-            if (wasExpanded) {
-                this.isExpanded = true;
-                sourcesExpanded.style.display = 'block';
-                toggleButton.querySelector('i').className = 'fas fa-chevron-up';
-                toggleButton.querySelector('i').style.transform = 'rotate(180deg)';
+            
+            if (sourcesExpanded && toggleButton) {
+                sourcesExpanded.style.display = this.isSourcesExpanded ? 'block' : 'none';
+                toggleButton.querySelector('i').className = this.isSourcesExpanded ? 
+                    'fas fa-chevron-up' : 'fas fa-chevron-down';
+                toggleButton.querySelector('i').style.transform = this.isSourcesExpanded ? 
+                    'rotate(180deg)' : 'rotate(0deg)';
             }
         };
 

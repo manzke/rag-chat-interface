@@ -165,10 +165,33 @@ export class MessageManager {
 
     appendMessages(messages) {
         messages.forEach(message => this.container.appendChild(message));
-        this.scrollToBottom();
+        
+        // Scroll to the most recent message that was added
+        if (messages.length > 0) {
+            const lastMessage = messages[messages.length - 1];
+            this.scrollToMessage(lastMessage);
+        }
     }
-
+    
     scrollToBottom() {
         this.container.scrollTop = this.container.scrollHeight;
+    }
+    
+    // Updated to scroll within the container, not the window
+    scrollToMessage(messageElement) {
+        if (!messageElement) return;
+        
+        // This scrolls within the chat container itself
+        const containerRect = this.container.getBoundingClientRect();
+        const elementRect = messageElement.getBoundingClientRect();
+        
+        // Calculate the element's position relative to the container
+        const relativeTop = elementRect.top - containerRect.top;
+        const targetScrollPosition = this.container.scrollTop + relativeTop - (containerRect.height / 3);
+        
+        this.container.scrollTo({
+            top: targetScrollPosition,
+            behavior: 'smooth'
+        });
     }
 }

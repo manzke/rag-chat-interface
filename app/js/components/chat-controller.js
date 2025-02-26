@@ -28,6 +28,8 @@ export class ChatController {
                 this.messageManager.createMessage(question, true),
                 this.messageManager.createMessage('', false)
             ];
+            
+            // Append messages without scrolling to bottom - ChatEventManager will handle scrolling
             this.messageManager.appendMessages([messageElement, responseElement]);
             
             // Setup processing insights
@@ -68,6 +70,11 @@ export class ChatController {
 
             // Send the question
             await this.client.askQuestion(this.currentRequestUuid, question, this.getQuestionOptions());
+            
+            // Ensure the user's message is visible initially, then let ChatEventManager handle answer scroll
+            if (messageElement) {
+                this.messageManager.scrollToMessage(messageElement);
+            }
 
         } catch (error) {
             console.error('Error sending message:', error);
