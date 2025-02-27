@@ -6,6 +6,7 @@ export class MessageManager {
         this.i18n = i18n;
         this.onMessageAction = onMessageAction;
         this.messageTemplate = document.getElementById('message-template');
+        this.hasAddedInitialDateSeparator = false;
     }
 
     createMessage(text, isUser = false, isWelcome = false) {
@@ -15,7 +16,7 @@ export class MessageManager {
         const contentDiv = messageElement.querySelector('.message-content');
         contentDiv.textContent = text;
 
-        this.addTimestamp(messageElement);
+        this.addTimestamp(messageElement, isWelcome);
         this.setupMessageButtons(messageElement, text, isUser);
         
         if (isUser || isWelcome) {
@@ -25,7 +26,7 @@ export class MessageManager {
         return messageElement;
     }
 
-    addTimestamp(messageElement) {
+    addTimestamp(messageElement, isWelcome = false) {
         const now = new Date();
         const timestamp = messageElement.querySelector('.message-timestamp time');
         timestamp.setAttribute('datetime', now.toISOString());
@@ -33,13 +34,17 @@ export class MessageManager {
         timestamp.parentElement.setAttribute('title', getAbsoluteTime(now));
 
         const lastMessage = this.container.lastElementChild;
-        if (lastMessage) {
-            const lastTimestamp = lastMessage.querySelector('time')?.getAttribute('datetime');
-            if (lastTimestamp && isDifferentDay(lastTimestamp, now)) {
+        
+        if (!isWelcome) {
+            if (!this.hasAddedInitialDateSeparator) {
                 this.addDateSeparator(now);
+                this.hasAddedInitialDateSeparator = true;
+            } else if (lastMessage) {
+                const lastTimestamp = lastMessage.querySelector('time')?.getAttribute('datetime');
+                if (lastTimestamp && isDifferentDay(lastTimestamp, now)) {
+                    this.addDateSeparator(now);
+                }
             }
-        } else {
-            this.addDateSeparator(now);
         }
 
         setInterval(() => {
@@ -161,6 +166,7 @@ export class MessageManager {
 
     clearMessages() {
         this.container.innerHTML = '';
+        this.hasAddedInitialDateSeparator = false; // Reset the date separator state when messages are cleared
     }
 
     appendMessages(messages) {
