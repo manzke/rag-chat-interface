@@ -18,6 +18,7 @@ export class ExpertMode {
 
         this.initializeValues();
         this.setupEventListeners();
+        this.setupProfileSync();
         
         // Hide error message by default
         document.querySelector('#expert-panel .error-message').style.display = 'none';
@@ -113,6 +114,63 @@ export class ExpertMode {
             panel.classList.remove('show');
         });
     }
+    
+    /**
+     * Setup bidirectional synchronization between profileName and profileId
+     */
+    setupProfileSync() {
+        const profileNameInput = this.elements.profileName;
+        const profileIdInput = this.elements.profileId;
+        
+        // When profileName changes, update profileId with base64 encoding
+        profileNameInput.addEventListener('input', () => {
+            if (profileNameInput.value.trim()) {
+                try {
+                    // Only update if this is a change initiated by user input, not our script
+                    if (document.activeElement === profileNameInput) {
+                        profileIdInput.value = btoa(profileNameInput.value);
+                    }
+                } catch (e) {
+                    console.warn('Failed to encode profile name to base64', e);
+                }
+            }
+        });
+        
+        // When profileId changes, try to decode and update profileName
+        profileIdInput.addEventListener('input', () => {
+            if (profileIdInput.value.trim()) {
+                try {
+                    // Only update if this is a change initiated by user input, not our script
+                    if (document.activeElement === profileIdInput) {
+                        const decoded = atob(profileIdInput.value);
+                        profileNameInput.value = decoded;
+                    }
+                } catch (e) {
+                    // Not a valid base64 string, don't update profileName
+                    console.warn('Failed to decode profileId as base64', e);
+                }
+            }
+        });
+        
+        // Initial sync if we have a profileName but no profileId
+        if (profileNameInput.value && !profileIdInput.value) {
+            try {
+                profileIdInput.value = btoa(profileNameInput.value);
+            } catch (e) {
+                console.warn('Failed to encode initial profile name to base64', e);
+            }
+        }
+        
+        // Initial sync if we have a profileId but no profileName
+        if (profileIdInput.value && !profileNameInput.value) {
+            try {
+                const decoded = atob(profileIdInput.value);
+                profileNameInput.value = decoded;
+            } catch (e) {
+                console.warn('Failed to decode initial profileId as base64', e);
+            }
+        }
+    }
 
     restoreValues() {
         Object.entries(this.savedValues).forEach(([key, value]) => {
@@ -141,13 +199,25 @@ export class ExpertMode {
     }
 
     getSettings() {
-        return {
+        // Get the current settings from input elements
+        const settings = {
             docIds: this.elements.docIds.value,
             query: this.elements.query.value,
             profileName: this.elements.profileName.value,
             profileId: this.elements.profileId.value,
             filters: this.elements.filters.value
         };
+        
+        // If profileName exists but profileId is empty, generate it
+        if (settings.profileName && !settings.profileId) {
+            try {
+                settings.profileId = btoa(settings.profileName);
+            } catch (e) {
+                console.warn('Failed to encode profile name to base64', e);
+            }
+        }
+        
+        return settings;
     }
 
     parseFilters() {
