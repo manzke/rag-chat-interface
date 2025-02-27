@@ -18,6 +18,9 @@ export class ExpertMode {
 
         this.initializeValues();
         this.setupEventListeners();
+        
+        // Hide error message by default
+        document.querySelector('#expert-panel .error-message').style.display = 'none';
     }
 
     initializeValues() {
@@ -34,6 +37,32 @@ export class ExpertMode {
         const expertSave = document.getElementById('expert-save');
         const expertToggleMobile = document.querySelector('.expert-mode-toggle-mobile');
         const expertToggleDesktop = document.getElementById('expert-mode-toggle');
+
+        // Add JSON validation while typing and on blur
+        const filtersTextarea = this.elements.filters;
+        const errorMessage = document.querySelector('#expert-panel .error-message');
+        
+        // Add debounce function to avoid too many validations while typing
+        let debounceTimeout;
+        const validateJson = () => {
+            try {
+                if (filtersTextarea.value && filtersTextarea.value.trim() !== '') {
+                    JSON.parse(filtersTextarea.value);
+                    errorMessage.style.display = 'none';
+                    filtersTextarea.classList.remove('invalid-json');
+                }
+            } catch (e) {
+                errorMessage.style.display = 'block';
+                filtersTextarea.classList.add('invalid-json');
+            }
+        };
+        
+        filtersTextarea.addEventListener('input', () => {
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(validateJson, 500); // Validate after 500ms of no typing
+        });
+        
+        filtersTextarea.addEventListener('blur', validateJson);
 
         const toggleExpertMode = () => {
             panel.classList.toggle('show');
@@ -60,15 +89,19 @@ export class ExpertMode {
             e.stopPropagation();
             this.restoreValues();
             panel.classList.remove('show');
+            errorMessage.style.display = 'none';
+            filtersTextarea.classList.remove('invalid-json');
         });
 
         expertSave.addEventListener('click', (e) => {
             e.stopPropagation();
             if (this.validateAndSaveValues()) {
                 panel.classList.remove('show');
-                panel.querySelector('.error-message').style.display = 'none';
+                errorMessage.style.display = 'none';
+                filtersTextarea.classList.remove('invalid-json');
             } else {
-                panel.querySelector('.error-message').style.display = 'block';
+                errorMessage.style.display = 'block';
+                filtersTextarea.classList.add('invalid-json');
             }
         });
 
@@ -99,8 +132,10 @@ export class ExpertMode {
                 this.savedValues[key] = element.value;
             });
 
+            document.querySelector('#expert-panel .error-message').style.display = 'none';
             return true;
         } catch (e) {
+            document.querySelector('#expert-panel .error-message').style.display = 'block';
             return false;
         }
     }
