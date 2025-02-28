@@ -18,6 +18,7 @@ export class ChatEventManager {
         this.createDocumentLink = null;
         this.accumulatedTelemetry = {}; // Add a property to store accumulated telemetry data
         this.hasScrolledToAnswer = false;
+        this.userHasScrolled = false;
     }
 
     setupEventHandlers(eventSource, createDocumentLink) {
@@ -28,11 +29,24 @@ export class ChatEventManager {
         this.setupAnswerHandler(eventSource);
         this.setupPassagesHandler(eventSource);
         this.setupRelatedQuestionsHandler(eventSource);
+        
+        // Track user scrolling to avoid interrupting their reading
+        this.messagesContainer.addEventListener('scroll', () => {
+            // If the user has scrolled down past the initial view, mark as user-scrolled
+            const scrollPosition = this.messagesContainer.scrollTop;
+            const containerHeight = this.messagesContainer.clientHeight;
+            const initialViewThreshold = this.responseElement.offsetTop - containerHeight / 2;
+            
+            if (scrollPosition > initialViewThreshold) {
+                this.userHasScrolled = true;
+            }
+        });
 
         // Only watch for DOM changes to check visibility
         const observer = new MutationObserver(() => {
             // Only scroll once when the answer section becomes visible
-            if (!this.hasScrolledToAnswer && this.messageContent.offsetHeight > 0) {
+            // And only if user hasn't already scrolled down to read
+            if (!this.hasScrolledToAnswer && this.messageContent.offsetHeight > 0 && !this.userHasScrolled) {
                 this.scrollToAnswer();
                 this.hasScrolledToAnswer = true;
             }
