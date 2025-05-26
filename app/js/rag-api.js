@@ -211,7 +211,9 @@ class HTTPRAGApi extends RAGAPIBase {
             searchMode = 'multiword',
             searchDistance = '',
             profileId,
-            filter = []
+            filter = [],
+            metaData = true,
+            telemetry = true
         } = options;
 
         const url = new URL(`${this.baseUrl}/api/v2/rag/ask`);
@@ -227,7 +229,9 @@ class HTTPRAGApi extends RAGAPIBase {
             body: JSON.stringify({
                 question,
                 profileId,
-                filter
+                filter,
+                metaData,
+                telemetry
             })
         });
 
