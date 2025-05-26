@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             // In widget mode, notify parent to navigate
             window.parent.postMessage({ 
                 type: 'navigate',
-                url: `/chat.html?${urlParams.toString()}`
+                url: `chat.html?${urlParams.toString()}`
             }, '*');
         } else {
             // Regular navigation
