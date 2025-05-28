@@ -46,9 +46,11 @@ export class ProcessingInsights {
     updateMetrics(metrics) {
         if (!metrics) return;
 
+        console.debug('Updating metrics with:', metrics);
+
         this.metrics = metrics;
         if (this.elements?.metricsDetails) {
-            this.elements.metricsDetails.innerHTML = this.formatMetrics(metrics);
+            this.elements.metricsDetails.innerHTML = this.formatMetrics(metrics.telemetry);
             
             // Show the toggle button but keep the details collapsed by default
             this.elements.metricsToggle.style.display = 'flex';
@@ -67,6 +69,9 @@ export class ProcessingInsights {
 
         const telemetry = metrics.telemetry;
         let html = '';
+
+        // Debug output to verify what we're getting
+        console.debug('Formatting metrics:', JSON.stringify(telemetry, null, 2));
         
         // Query information
         if (telemetry.retrieval_query_generation_result_text) {

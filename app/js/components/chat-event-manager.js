@@ -69,16 +69,16 @@ export class ChatEventManager {
                 const telemetryData = JSON.parse(event.data);
                 console.debug('Telemetry received:', telemetryData);
                 
-                // Merge new telemetry data with accumulated data
+                // Initialize telemetry object if needed
                 if (!this.currentResponse.telemetry) {
                     this.currentResponse.telemetry = {};
                 }
                 
-                // Merge the telemetry data instead of replacing it
-                this.currentResponse.telemetry = {
-                    ...this.currentResponse.telemetry,
-                    ...telemetryData.telemetry
-                };
+                // Parse and get the actual telemetry object
+                const newTelemetryData = JSON.parse(telemetryData.telemetry);
+                
+                // Deep merge the telemetry data
+                this.currentResponse.telemetry = this.deepMerge(this.currentResponse.telemetry, newTelemetryData);
                 
                 // Update the progress indicator with the merged data
                 this.progressIndicator.updateMetrics({
@@ -88,9 +88,34 @@ export class ChatEventManager {
                 
                 console.debug('Accumulated telemetry:', this.currentResponse.telemetry);
             } catch (error) {
-                console.error('Error parsing telemetry:', error);
+                console.error('Error parsing telemetry:', error, event.data);
             }
         });
+    }
+
+    // Helper method for deep merging objects
+    deepMerge(target, source) {
+        const output = Object.assign({}, target);
+        
+        if (this.isObject(target) && this.isObject(source)) {
+            Object.keys(source).forEach(key => {
+                if (this.isObject(source[key])) {
+                    if (!(key in target)) {
+                        Object.assign(output, { [key]: source[key] });
+                    } else {
+                        output[key] = this.deepMerge(target[key], source[key]);
+                    }
+                } else {
+                    Object.assign(output, { [key]: source[key] });
+                }
+            });
+        }
+        
+        return output;
+    }
+
+    isObject(item) {
+        return (item && typeof item === 'object' && !Array.isArray(item));
     }
 
     setupAnswerHandler(eventSource) {
